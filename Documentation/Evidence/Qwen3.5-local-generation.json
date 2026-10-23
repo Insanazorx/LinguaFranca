@@ -1,0 +1,71 @@
+[
+  {
+    "englishText" : "It was a crisp autumn afternoon when I finally sat down to make tea at the café. The crisp air smelled faintly of dried leaves, and I watched the sun cast long, golden shadows across the wooden benches. My hand trembled slightly as I dipped my fork into the steaming cup; the warmth seeped through the ceramic, filling my stomach with a sense of cozy comfort.\n\nA friend approached, offering me a slice of apple pie to share with him. We sat close together, enjoying the quiet moment as we discussed our weekly plans and local favorites. The café felt like a sanctuary, filled not only with the scent of fresh bread but also with the soft hum of conversation. As the evening wore on, the bustling noise of the street faded into the background, leaving behind a comfortable silence where I could listen to stories unfold comfortably.",
+    "metadata" : {
+      "attempts" : "1",
+      "contentSource" : "local-model",
+      "contextWindow" : "2048",
+      "effectiveSeed" : "42",
+      "modelLoadSeconds" : "0.638001083",
+      "modelRevision" : "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+      "modelSHA256" : "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+      "runtime" : "llama.cpp-b11829",
+      "thinking" : "disabled",
+      "timeToFirstTokenSeconds" : "1.091081583",
+      "wordCount" : "148"
+    },
+    "requestedLevel" : "B2",
+    "requestedWordCount" : 110,
+    "seconds" : 3.1112969169999998,
+    "seed" : 42,
+    "tokenCount" : 170,
+    "topic" : "daily life",
+    "wordCount" : 148
+  },
+  {
+    "englishText" : "The sudden surge of artificial intelligence in the cloud has reshaped my daily workflow, transforming a routine administrative task into a complex cognitive load. My colleague, Elena, is currently deployed in the data center, yet the sheer volume of processed documents has overwhelmed her operational capacity. I find myself standing on the edge of a precipice where the model predicts a new policy recommendation that could redefine corporate governance structures overnight. The system is silent, the lights dimming as the predictive analytics feed consumes my attention, demanding a momentary lapse in concentration to assess the implications of such a rapid evolution before it becomes irreversible.",
+    "metadata" : {
+      "attempts" : "2",
+      "contentSource" : "local-model",
+      "contextWindow" : "2048",
+      "effectiveSeed" : "44",
+      "modelLoadSeconds" : "1.041e-06",
+      "modelRevision" : "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+      "modelSHA256" : "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+      "runtime" : "llama.cpp-b11829",
+      "thinking" : "disabled",
+      "timeToFirstTokenSeconds" : "3.772959375",
+      "wordCount" : "105"
+    },
+    "requestedLevel" : "C1",
+    "requestedWordCount" : 110,
+    "seconds" : 5.2085335409999995,
+    "seed" : 43,
+    "tokenCount" : 119,
+    "topic" : "technology",
+    "wordCount" : 105
+  },
+  {
+    "englishText" : "The mountainous road winds its way through the dense fog, a tapestry of gray and white that defies the clear sky above. The engine hums with an intensity that matches the biting wind outside, and the driver feels the pressure to keep moving despite the lack of visibility. The weather forecast predicted heavy snowfall, yet the road remained accessible, a stark contrast to the expectations. Every step forward demands concentration; the driver checks the map, adjusts the radio frequency, and watches for any obstacles in the distance. This relentless pursuit of progress brings him closer to his destination, proving that despite the blizzard, his journey remains unwavering.",
+    "metadata" : {
+      "attempts" : "2",
+      "contentSource" : "local-model",
+      "contextWindow" : "2048",
+      "effectiveSeed" : "45",
+      "modelLoadSeconds" : "2.208e-06",
+      "modelRevision" : "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+      "modelSHA256" : "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+      "runtime" : "llama.cpp-b11829",
+      "thinking" : "disabled",
+      "timeToFirstTokenSeconds" : "4.5494301660000005",
+      "wordCount" : "107"
+    },
+    "requestedLevel" : "C1",
+    "requestedWordCount" : 110,
+    "seconds" : 6.109533292,
+    "seed" : 44,
+    "tokenCount" : 129,
+    "topic" : "travel",
+    "wordCount" : 107
+  }
+]

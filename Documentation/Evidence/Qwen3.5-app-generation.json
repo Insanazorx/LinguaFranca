@@ -1,0 +1,12 @@
+[
+  {
+    "id": "CC8AC9DA-09D0-49C1-A52C-2E6A434C101B",
+    "originalEnglish": "The journey began in a quiet forest where the air was crisp and the leaves rustled with a low, rhythmic thrum. My mother, a seasoned traveler, had been here for years, carrying a leather-bound notebook filled with maps and handwritten notes on every possible route she encountered. She taught me that the most profound departure is not leaving a city, but choosing a path that honors your soul rather than merely following the crowd.\n\nAs I packed my bag, I found myself standing before a towering oak tree whose branches reached so high they seemed to touch the sky. The wind carried the scent of pine and earth, a mixture that made me feel both grounded and awake. I realized then that true travel lies in the silence between words; it is the quiet moment when you listen to your own thoughts without rushing them forward. With this new perspective, my first meaningful trip was not just a destination, but an alchemy of experience.",
+    "topic": "Travel",
+    "cefrLevel": "C1",
+    "generatedAt": 1792748189.9312239,
+    "modelID": "Qwen3.5-0.8B-Q4_K_M",
+    "seed": 1475087561,
+    "generationMetadata": "{\"modelRevision\":\"6ab461498e2023f6e3c1baea90a8f0fe38ab64d0\",\"effectiveSeed\":\"1475087561\",\"runtime\":\"llama.cpp-b11829\",\"thinking\":\"disabled\",\"wordCount\":\"164\",\"timeToFirstTokenSeconds\":\"5.661767958\",\"modelLoadSeconds\":\"1.067633875\",\"attempts\":\"1\",\"replacementStatus\":\"language-packs-not-yet-bundled\",\"contentSource\":\"local-model\",\"contextWindow\":\"2048\",\"tokenCount\":\"187\",\"modelSHA256\":\"bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517\",\"durationSeconds\":\"20.712652792\"}"
+  }
+]

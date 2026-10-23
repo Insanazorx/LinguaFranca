@@ -1,0 +1,84 @@
+{
+  "source": "NLTK 3.9.2 PerceptronTagger, original unmodified classes executed with fixed JSON model",
+  "sourceSHA256": "2332a63191688f70c64d7f609d82b8f61267dca6cb9f5b19314fd8efe6d3dcd8",
+  "fixtures": [
+    {
+      "tokens": [
+        "The",
+        "quick",
+        "brown",
+        "fox",
+        "jumps",
+        "over",
+        "the",
+        "lazy",
+        "dog"
+      ],
+      "tags": [
+        "DT",
+        "JJ",
+        "NN",
+        "NN",
+        "VBZ",
+        "IN",
+        "DT",
+        "JJ",
+        "NN"
+      ]
+    },
+    {
+      "tokens": [
+        "She",
+        "taught",
+        "me",
+        "that",
+        "I",
+        "should",
+        "read",
+        "the",
+        "book",
+        "."
+      ],
+      "tags": [
+        "PRP",
+        "VBD",
+        "PRP",
+        "IN",
+        "PRP",
+        "MD",
+        "VB",
+        "DT",
+        "NN",
+        "."
+      ]
+    },
+    {
+      "tokens": [
+        "The",
+        "children",
+        "carried",
+        "maps",
+        "and",
+        "handwritten",
+        "notes",
+        "through",
+        "the",
+        "forest",
+        "."
+      ],
+      "tags": [
+        "DT",
+        "NNS",
+        "VBD",
+        "NNS",
+        "CC",
+        "JJ",
+        "NNS",
+        "IN",
+        "DT",
+        "NN",
+        "."
+      ]
+    }
+  ]
+}

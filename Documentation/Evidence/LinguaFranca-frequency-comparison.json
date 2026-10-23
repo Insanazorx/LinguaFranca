@@ -1,0 +1,2266 @@
+[
+  {
+    "actualDensity" : 0.09696969696969697,
+    "languageCounts" : {
+      "de" : 8,
+      "ru" : 8
+    },
+    "original" : "The journey began in a quiet forest where the air was crisp and the leaves rustled with a low, rhythmic thrum. My mother, a seasoned traveler, had been here for years, carrying a leather-bound notebook filled with maps and handwritten notes on every possible route she encountered. She taught me that the most profound departure is not leaving a city, but choosing a path that honors your soul rather than merely following the crowd.\n\nAs I packed my bag, I found myself standing before a towering oak tree whose branches reached so high they seemed to touch the sky. The wind carried the scent of pine and earth, a mixture that made me feel both grounded and awake. I realized then that true travel lies in the silence between words; it is the quiet moment when you listen to your own thoughts without rushing them forward. With this new perspective, my first meaningful trip was not just a destination, but an alchemy of experience.",
+    "profile" : "Gentle",
+    "rendered" : "The journey began в a quiet forest wo the air was crisp and the Blätter rustled with a low, rhythmic thrum. My mother, a seasoned traveler, had been here for years, carrying a leather-bound notebook filled mit maps and handwritten заметки on every possible route she encountered. She taught me that the most profound departure is nicht leaving a city, aber choosing a path что honors your soul rather than merely following the Menschenmenge.\n\nAs ich packed my bag, I found myself standing before a towering oak tree whose branches reached so high they seemed to touch the Himmel. The wind carried the scent of pine и earth, a mixture that made me feel both grounded и awake. I realized then that true travel lies in the тишина́ between words; it is the quiet moment when you listen to your own мысли without rushing them forward. С this new perspective, my first meaningful trip was not just a destination, but an alchemy of experience.",
+    "replacements" : [
+      {
+        "id" : "local-model-reading-18-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "in",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "in",
+        "originalUTF16Range" : {
+          "length" : 2,
+          "location" : 18
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 18
+        },
+        "senseDescription" : "contained by",
+        "sourceSenseID" : "eng/in__Preposition__1#6d888a5f88d5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "в",
+        "targetSurface" : "в",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-36-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "where",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "where",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 36
+        },
+        "renderedUTF16Range" : {
+          "length" : 2,
+          "location" : 35
+        },
+        "senseDescription" : "at or in which place",
+        "sourceSenseID" : "eng/where__Adverb__1#e922e2c1434c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "wo",
+        "targetSurface" : "wo",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-68-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "leaf",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "leaves",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 68
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 64
+        },
+        "senseDescription" : "part of a plant",
+        "sourceSenseID" : "eng/leaf__Noun__1#cdde81578c22",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Blatt",
+        "targetSurface" : "Blätter",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-209-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "with",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "with",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 209
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 206
+        },
+        "senseDescription" : "with",
+        "sourceSenseID" : "eng/with__Preposition__1#0695b563acde",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "mit",
+        "targetSurface" : "mit",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-235-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "note",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "notes",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 235
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 231
+        },
+        "senseDescription" : "memorandum",
+        "sourceSenseID" : "eng/note__Noun__1#2564570691d1",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "заме́тка",
+        "targetSurface" : "заметки",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-332-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "not",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "not",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 332
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 330
+        },
+        "senseDescription" : "negates meaning of another word",
+        "sourceSenseID" : "eng/not__Adverb__1#6c8d04c61ca8",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "nicht",
+        "targetSurface" : "nicht",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-352-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "but",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "but",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 352
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 352
+        },
+        "senseDescription" : "although",
+        "sourceSenseID" : "eng/but__Conjunction__1#2e1d76579d44",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "aber",
+        "targetSurface" : "aber",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-372-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "that",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "that",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 372
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 373
+        },
+        "senseDescription" : "connecting a noun clause",
+        "sourceSenseID" : "eng/that__Conjunction__1#7a64f776820b",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "что",
+        "targetSurface" : "что",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-427-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "crowd",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "crowd",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 427
+        },
+        "renderedUTF16Range" : {
+          "length" : 13,
+          "location" : 427
+        },
+        "senseDescription" : "",
+        "sourceSenseID" : "eng/crowd__Noun__1#e3b0c44298fc",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Menschenmenge",
+        "targetSurface" : "Menschenmenge",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-438-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "i",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "I",
+        "originalUTF16Range" : {
+          "length" : 1,
+          "location" : 438
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 446
+        },
+        "senseDescription" : "personal pronoun",
+        "sourceSenseID" : "eng/I__Pronoun__1#08eca2d64bf5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "ich",
+        "targetSurface" : "ich",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-562-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "sky",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "sky",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 562
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 572
+        },
+        "senseDescription" : "atmosphere above a given point, especially as visible from the surface of the Earth as the place where the sun, moon, stars, and clouds are seen",
+        "sourceSenseID" : "eng/sky__Noun__1#17efe5ca8452",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Himmel",
+        "targetSurface" : "Himmel",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-602-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 602
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 615
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-655-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 655
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 666
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-711-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "silence",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "silence",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 711
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 720
+        },
+        "senseDescription" : "lack of sound",
+        "sourceSenseID" : "eng/silence__Noun__1#882654d5f05c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "тишина́",
+        "targetSurface" : "тишина́",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-785-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "thought",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "thoughts",
+        "originalUTF16Range" : {
+          "length" : 8,
+          "location" : 785
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 794
+        },
+        "senseDescription" : "representation created in the mind",
+        "sourceSenseID" : "eng/thought__Noun__1#c884aaebc411",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "мысль",
+        "targetSurface" : "мысли",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-824-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "with",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "With",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 824
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 830
+        },
+        "senseDescription" : "with",
+        "sourceSenseID" : "eng/with__Preposition__1#0695b563acde",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "с",
+        "targetSurface" : "С",
+        "translationConfidence" : 0.9
+      }
+    ],
+    "requestedDensity" : 0.1,
+    "wordCount" : 165
+  },
+  {
+    "actualDensity" : 0.2,
+    "languageCounts" : {
+      "de" : 17,
+      "ru" : 16
+    },
+    "original" : "The journey began in a quiet forest where the air was crisp and the leaves rustled with a low, rhythmic thrum. My mother, a seasoned traveler, had been here for years, carrying a leather-bound notebook filled with maps and handwritten notes on every possible route she encountered. She taught me that the most profound departure is not leaving a city, but choosing a path that honors your soul rather than merely following the crowd.\n\nAs I packed my bag, I found myself standing before a towering oak tree whose branches reached so high they seemed to touch the sky. The wind carried the scent of pine and earth, a mixture that made me feel both grounded and awake. I realized then that true travel lies in the silence between words; it is the quiet moment when you listen to your own thoughts without rushing them forward. With this new perspective, my first meaningful trip was not just a destination, but an alchemy of experience.",
+    "profile" : "Medium",
+    "rendered" : "The journey began в a quiet forest wo the Luft was crisp и the Blätter rustled with a low, rhythmic thrum. My mother, a seasoned traveler, had been here for Jahre, carrying a leather-bound notebook filled mit maps и handwritten заметки on every possible route she encountered. She taught me that the most profound departure is nicht leaving a city, aber choosing a path что honors your Seele rather than merely following the Menschenmenge.\n\nAs ich packed my Tasche, I found myself standing пе́ред a towering oak tree whose ветви reached так high they seemed to touch the Himmel. The Wind carried the scent of pine и earth, a Mischung that made me feel both grounded и awake. Ich realized then that true travel lies in the тишина́ between words; it is the quiet moment когда́ you listen to your own мысли without rushing them forward. С this new perspective, my first meaningful пое́здка was не just a Reiseziel, but an Alchemie of experience.",
+    "replacements" : [
+      {
+        "id" : "local-model-reading-18-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "in",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "in",
+        "originalUTF16Range" : {
+          "length" : 2,
+          "location" : 18
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 18
+        },
+        "senseDescription" : "contained by",
+        "sourceSenseID" : "eng/in__Preposition__1#6d888a5f88d5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "в",
+        "targetSurface" : "в",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-36-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "where",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "where",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 36
+        },
+        "renderedUTF16Range" : {
+          "length" : 2,
+          "location" : 35
+        },
+        "senseDescription" : "at or in which place",
+        "sourceSenseID" : "eng/where__Adverb__1#e922e2c1434c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "wo",
+        "targetSurface" : "wo",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-46-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "air",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "air",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 46
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 42
+        },
+        "senseDescription" : "mixture of gases making up the atmosphere of the Earth",
+        "sourceSenseID" : "eng/air__Noun__1#28390d0bdc71",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Luft",
+        "targetSurface" : "Luft",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-60-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 60
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 57
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-68-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "leaf",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "leaves",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 68
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 63
+        },
+        "senseDescription" : "part of a plant",
+        "sourceSenseID" : "eng/leaf__Noun__1#cdde81578c22",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Blatt",
+        "targetSurface" : "Blätter",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-161-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "year",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "years",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 161
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 157
+        },
+        "senseDescription" : "time it takes for the Earth to complete one revolution around the Sun",
+        "sourceSenseID" : "eng/year__Noun__1#cb6a4959a4bf",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Jahr",
+        "targetSurface" : "Jahre",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-209-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "with",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "with",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 209
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 205
+        },
+        "senseDescription" : "with",
+        "sourceSenseID" : "eng/with__Preposition__1#0695b563acde",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "mit",
+        "targetSurface" : "mit",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-219-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 219
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 214
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-235-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "note",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "notes",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 235
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 228
+        },
+        "senseDescription" : "memorandum",
+        "sourceSenseID" : "eng/note__Noun__1#2564570691d1",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "заме́тка",
+        "targetSurface" : "заметки",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-332-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "not",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "not",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 332
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 327
+        },
+        "senseDescription" : "negates meaning of another word",
+        "sourceSenseID" : "eng/not__Adverb__1#6c8d04c61ca8",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "nicht",
+        "targetSurface" : "nicht",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-352-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "but",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "but",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 352
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 349
+        },
+        "senseDescription" : "although",
+        "sourceSenseID" : "eng/but__Conjunction__1#2e1d76579d44",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "aber",
+        "targetSurface" : "aber",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-372-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "that",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "that",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 372
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 370
+        },
+        "senseDescription" : "connecting a noun clause",
+        "sourceSenseID" : "eng/that__Conjunction__1#7a64f776820b",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "что",
+        "targetSurface" : "что",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-389-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "soul",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "soul",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 389
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 386
+        },
+        "senseDescription" : "the spirit or essence of a person that is often believed to live on after the person's death",
+        "sourceSenseID" : "eng/soul__Noun__1#45ccf0e3c147",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Seele",
+        "targetSurface" : "Seele",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-427-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "crowd",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "crowd",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 427
+        },
+        "renderedUTF16Range" : {
+          "length" : 13,
+          "location" : 425
+        },
+        "senseDescription" : "",
+        "sourceSenseID" : "eng/crowd__Noun__1#e3b0c44298fc",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Menschenmenge",
+        "targetSurface" : "Menschenmenge",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-438-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "i",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "I",
+        "originalUTF16Range" : {
+          "length" : 1,
+          "location" : 438
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 444
+        },
+        "senseDescription" : "personal pronoun",
+        "sourceSenseID" : "eng/I__Pronoun__1#08eca2d64bf5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "ich",
+        "targetSurface" : "ich",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-450-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "bag",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "bag",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 450
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 458
+        },
+        "senseDescription" : "flexible container",
+        "sourceSenseID" : "eng/bag__Noun__1#15f8af39e5ab",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Tasche",
+        "targetSurface" : "Tasche",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-479-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "before",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "before",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 479
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 490
+        },
+        "senseDescription" : "in front of in space",
+        "sourceSenseID" : "eng/before__Preposition__1#5fa1c1f35f49",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "пе́ред",
+        "targetSurface" : "пе́ред",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-512-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "branch",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "branches",
+        "originalUTF16Range" : {
+          "length" : 8,
+          "location" : 512
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 523
+        },
+        "senseDescription" : "woody part of a tree arising from the trunk",
+        "sourceSenseID" : "eng/branch__Noun__1#89cc91713a17",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "ветвь",
+        "targetSurface" : "ветви",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-529-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "so",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "so",
+        "originalUTF16Range" : {
+          "length" : 2,
+          "location" : 529
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 537
+        },
+        "senseDescription" : "to a particular extent",
+        "sourceSenseID" : "eng/so__Adverb__1#b25a03d0e11c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "так",
+        "targetSurface" : "так",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-562-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "sky",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "sky",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 562
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 571
+        },
+        "senseDescription" : "atmosphere above a given point, especially as visible from the surface of the Earth as the place where the sun, moon, stars, and clouds are seen",
+        "sourceSenseID" : "eng/sky__Noun__1#17efe5ca8452",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Himmel",
+        "targetSurface" : "Himmel",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-571-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "wind",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "wind",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 571
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 583
+        },
+        "senseDescription" : "movement of air",
+        "sourceSenseID" : "eng/wind__Noun__1#1151e75b67e3",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Wind",
+        "targetSurface" : "Wind",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-602-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 602
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 614
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-615-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "mixture",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "mixture",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 615
+        },
+        "renderedUTF16Range" : {
+          "length" : 8,
+          "location" : 625
+        },
+        "senseDescription" : "something produced by mixing",
+        "sourceSenseID" : "eng/mixture__Noun__1#a166f3eff910",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Mischung",
+        "targetSurface" : "Mischung",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-655-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 655
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 666
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-666-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "i",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "I",
+        "originalUTF16Range" : {
+          "length" : 1,
+          "location" : 666
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 675
+        },
+        "senseDescription" : "personal pronoun",
+        "sourceSenseID" : "eng/I__Pronoun__1#08eca2d64bf5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "ich",
+        "targetSurface" : "Ich",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-711-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "silence",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "silence",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 711
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 722
+        },
+        "senseDescription" : "lack of sound",
+        "sourceSenseID" : "eng/silence__Noun__1#882654d5f05c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "тишина́",
+        "targetSurface" : "тишина́",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-757-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "when",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "when",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 757
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 768
+        },
+        "senseDescription" : "at what time, as a direct question",
+        "sourceSenseID" : "eng/when__Adverb__1#0d3cb375eeb1",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "когда́",
+        "targetSurface" : "когда́",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-785-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "thought",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "thoughts",
+        "originalUTF16Range" : {
+          "length" : 8,
+          "location" : 785
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 798
+        },
+        "senseDescription" : "representation created in the mind",
+        "sourceSenseID" : "eng/thought__Noun__1#c884aaebc411",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "мысль",
+        "targetSurface" : "мысли",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-824-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "with",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "With",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 824
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 834
+        },
+        "senseDescription" : "with",
+        "sourceSenseID" : "eng/with__Preposition__1#0695b563acde",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "с",
+        "targetSurface" : "С",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-871-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "trip",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "trip",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 871
+        },
+        "renderedUTF16Range" : {
+          "length" : 8,
+          "location" : 878
+        },
+        "senseDescription" : "",
+        "sourceSenseID" : "eng/trip__Noun__1#e3b0c44298fc",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "пое́здка",
+        "targetSurface" : "пое́здка",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-880-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "not",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "not",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 880
+        },
+        "renderedUTF16Range" : {
+          "length" : 2,
+          "location" : 891
+        },
+        "senseDescription" : "negates meaning of another word",
+        "sourceSenseID" : "eng/not__Adverb__1#6c8d04c61ca8",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "не",
+        "targetSurface" : "не",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-891-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "destination",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "destination",
+        "originalUTF16Range" : {
+          "length" : 11,
+          "location" : 891
+        },
+        "renderedUTF16Range" : {
+          "length" : 9,
+          "location" : 901
+        },
+        "senseDescription" : "the place set for the end of a journey, or to which something is sent",
+        "sourceSenseID" : "eng/destination__Noun__1#efbfe9107cdf",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Reiseziel",
+        "targetSurface" : "Reiseziel",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-911-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "alchemy",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "alchemy",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 911
+        },
+        "renderedUTF16Range" : {
+          "length" : 8,
+          "location" : 919
+        },
+        "senseDescription" : "ancient chemistry",
+        "sourceSenseID" : "eng/alchemy__Noun__1#4aa58cf31678",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Alchemie",
+        "targetSurface" : "Alchemie",
+        "translationConfidence" : 0.9
+      }
+    ],
+    "requestedDensity" : 0.2,
+    "wordCount" : 165
+  },
+  {
+    "actualDensity" : 0.3151515151515151,
+    "languageCounts" : {
+      "de" : 26,
+      "ru" : 26
+    },
+    "original" : "The journey began in a quiet forest where the air was crisp and the leaves rustled with a low, rhythmic thrum. My mother, a seasoned traveler, had been here for years, carrying a leather-bound notebook filled with maps and handwritten notes on every possible route she encountered. She taught me that the most profound departure is not leaving a city, but choosing a path that honors your soul rather than merely following the crowd.\n\nAs I packed my bag, I found myself standing before a towering oak tree whose branches reached so high they seemed to touch the sky. The wind carried the scent of pine and earth, a mixture that made me feel both grounded and awake. I realized then that true travel lies in the silence between words; it is the quiet moment when you listen to your own thoughts without rushing them forward. With this new perspective, my first meaningful trip was not just a destination, but an alchemy of experience.",
+    "profile" : "Psycho",
+    "rendered" : "The journey began в a quiet лес wo the Luft was crisp и the Blätter rustled mit a low, rhythmic thrum. My мать, a seasoned traveler, had been here for Jahre, carrying a leather-bound notebook filled mit maps и handwritten заметки on every possible route она́ encountered. Она́ taught me что the most profound departure is nicht leaving a Stadt, aber choosing a путь что honors your Seele rather than merely following the Menschenmenge.\n\nAs ich packed my Tasche, я found myself standing пе́ред a towering Eiche дерево whose ветви reached так high they seemed to touch the Himmel. The Wind carried the scent of pine и Erde, a Mischung that made me feel both grounded и awake. Ich realized then dass true travel lies in the тишина́ ме́жду words; it is the quiet Moment когда́ you listen to your own мысли ohne rushing them вперёд. С this new perspective, my first meaningful пое́здка was не just a Reiseziel, aber an Alchemie of Erfahrung.",
+    "replacements" : [
+      {
+        "id" : "local-model-reading-18-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "in",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "in",
+        "originalUTF16Range" : {
+          "length" : 2,
+          "location" : 18
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 18
+        },
+        "senseDescription" : "contained by",
+        "sourceSenseID" : "eng/in__Preposition__1#6d888a5f88d5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "в",
+        "targetSurface" : "в",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-29-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "forest",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "forest",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 29
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 28
+        },
+        "senseDescription" : "dense collection of trees",
+        "sourceSenseID" : "eng/forest__Noun__1#b27be5b050ff",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "лес",
+        "targetSurface" : "лес",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-36-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "where",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "where",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 36
+        },
+        "renderedUTF16Range" : {
+          "length" : 2,
+          "location" : 32
+        },
+        "senseDescription" : "at or in which place",
+        "sourceSenseID" : "eng/where__Adverb__1#e922e2c1434c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "wo",
+        "targetSurface" : "wo",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-46-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "air",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "air",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 46
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 39
+        },
+        "senseDescription" : "mixture of gases making up the atmosphere of the Earth",
+        "sourceSenseID" : "eng/air__Noun__1#28390d0bdc71",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Luft",
+        "targetSurface" : "Luft",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-60-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 60
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 54
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-68-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "leaf",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "leaves",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 68
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 60
+        },
+        "senseDescription" : "part of a plant",
+        "sourceSenseID" : "eng/leaf__Noun__1#cdde81578c22",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Blatt",
+        "targetSurface" : "Blätter",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-83-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "with",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "with",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 83
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 76
+        },
+        "senseDescription" : "with",
+        "sourceSenseID" : "eng/with__Preposition__1#0695b563acde",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "mit",
+        "targetSurface" : "mit",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-114-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "mother",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "mother",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 114
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 106
+        },
+        "senseDescription" : "female (human) who parents a child, gives birth to a baby, or is pregnant",
+        "sourceSenseID" : "eng/mother__Noun__1#4451c9a7b183",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "мать",
+        "targetSurface" : "мать",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-161-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "year",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "years",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 161
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 151
+        },
+        "senseDescription" : "time it takes for the Earth to complete one revolution around the Sun",
+        "sourceSenseID" : "eng/year__Noun__1#cb6a4959a4bf",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Jahr",
+        "targetSurface" : "Jahre",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-209-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "with",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "with",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 209
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 199
+        },
+        "senseDescription" : "with",
+        "sourceSenseID" : "eng/with__Preposition__1#0695b563acde",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "mit",
+        "targetSurface" : "mit",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-219-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 219
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 208
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-235-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "note",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "notes",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 235
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 222
+        },
+        "senseDescription" : "memorandum",
+        "sourceSenseID" : "eng/note__Noun__1#2564570691d1",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "заме́тка",
+        "targetSurface" : "заметки",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-265-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "she",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "she",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 265
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 254
+        },
+        "senseDescription" : "person",
+        "sourceSenseID" : "eng/she__Pronoun__1#38a81e87e796",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "она́",
+        "targetSurface" : "она́",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-282-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "she",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "She",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 282
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 272
+        },
+        "senseDescription" : "person",
+        "sourceSenseID" : "eng/she__Pronoun__1#38a81e87e796",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "она́",
+        "targetSurface" : "Она́",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-296-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "that",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "that",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 296
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 287
+        },
+        "senseDescription" : "connecting a noun clause",
+        "sourceSenseID" : "eng/that__Conjunction__1#7a64f776820b",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "что",
+        "targetSurface" : "что",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-332-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "not",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "not",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 332
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 322
+        },
+        "senseDescription" : "negates meaning of another word",
+        "sourceSenseID" : "eng/not__Adverb__1#6c8d04c61ca8",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "nicht",
+        "targetSurface" : "nicht",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-346-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "city",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "city",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 346
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 338
+        },
+        "senseDescription" : "large settlement",
+        "sourceSenseID" : "eng/city__Noun__1#668a344da51e",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Stadt",
+        "targetSurface" : "Stadt",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-352-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "but",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "but",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 352
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 345
+        },
+        "senseDescription" : "although",
+        "sourceSenseID" : "eng/but__Conjunction__1#2e1d76579d44",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "aber",
+        "targetSurface" : "aber",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-367-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "path",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "path",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 367
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 361
+        },
+        "senseDescription" : "",
+        "sourceSenseID" : "eng/path__Noun__1#e3b0c44298fc",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "путь",
+        "targetSurface" : "путь",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-372-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "that",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "that",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 372
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 366
+        },
+        "senseDescription" : "connecting a noun clause",
+        "sourceSenseID" : "eng/that__Conjunction__1#7a64f776820b",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "что",
+        "targetSurface" : "что",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-389-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "soul",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "soul",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 389
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 382
+        },
+        "senseDescription" : "the spirit or essence of a person that is often believed to live on after the person's death",
+        "sourceSenseID" : "eng/soul__Noun__1#45ccf0e3c147",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Seele",
+        "targetSurface" : "Seele",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-427-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "crowd",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "crowd",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 427
+        },
+        "renderedUTF16Range" : {
+          "length" : 13,
+          "location" : 421
+        },
+        "senseDescription" : "",
+        "sourceSenseID" : "eng/crowd__Noun__1#e3b0c44298fc",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Menschenmenge",
+        "targetSurface" : "Menschenmenge",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-438-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "i",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "I",
+        "originalUTF16Range" : {
+          "length" : 1,
+          "location" : 438
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 440
+        },
+        "senseDescription" : "personal pronoun",
+        "sourceSenseID" : "eng/I__Pronoun__1#08eca2d64bf5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "ich",
+        "targetSurface" : "ich",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-450-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "bag",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "bag",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 450
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 454
+        },
+        "senseDescription" : "flexible container",
+        "sourceSenseID" : "eng/bag__Noun__1#15f8af39e5ab",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Tasche",
+        "targetSurface" : "Tasche",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-455-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "i",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "I",
+        "originalUTF16Range" : {
+          "length" : 1,
+          "location" : 455
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 462
+        },
+        "senseDescription" : "personal pronoun",
+        "sourceSenseID" : "eng/I__Pronoun__1#08eca2d64bf5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "я",
+        "targetSurface" : "я",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-479-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "before",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "before",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 479
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 486
+        },
+        "senseDescription" : "in front of in space",
+        "sourceSenseID" : "eng/before__Preposition__1#5fa1c1f35f49",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "пе́ред",
+        "targetSurface" : "пе́ред",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-497-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "oak",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "oak",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 497
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 504
+        },
+        "senseDescription" : "tree or shrub of the genus Quercus",
+        "sourceSenseID" : "eng/oak__Noun__1#d2c1450afaf4",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Eiche",
+        "targetSurface" : "Eiche",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-501-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "tree",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "tree",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 501
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 510
+        },
+        "senseDescription" : "large woody plant",
+        "sourceSenseID" : "eng/tree__Noun__1#4f745d7e1df2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "дерево",
+        "targetSurface" : "дерево",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-512-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "branch",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "branches",
+        "originalUTF16Range" : {
+          "length" : 8,
+          "location" : 512
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 523
+        },
+        "senseDescription" : "woody part of a tree arising from the trunk",
+        "sourceSenseID" : "eng/branch__Noun__1#89cc91713a17",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "ветвь",
+        "targetSurface" : "ветви",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-529-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "so",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "so",
+        "originalUTF16Range" : {
+          "length" : 2,
+          "location" : 529
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 537
+        },
+        "senseDescription" : "to a particular extent",
+        "sourceSenseID" : "eng/so__Adverb__1#b25a03d0e11c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "так",
+        "targetSurface" : "так",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-562-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "sky",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "sky",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 562
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 571
+        },
+        "senseDescription" : "atmosphere above a given point, especially as visible from the surface of the Earth as the place where the sun, moon, stars, and clouds are seen",
+        "sourceSenseID" : "eng/sky__Noun__1#17efe5ca8452",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Himmel",
+        "targetSurface" : "Himmel",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-571-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "wind",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "wind",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 571
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 583
+        },
+        "senseDescription" : "movement of air",
+        "sourceSenseID" : "eng/wind__Noun__1#1151e75b67e3",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Wind",
+        "targetSurface" : "Wind",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-602-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 602
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 614
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-606-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "earth",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "earth",
+        "originalUTF16Range" : {
+          "length" : 5,
+          "location" : 606
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 616
+        },
+        "senseDescription" : "any general rock-based material",
+        "sourceSenseID" : "eng/earth__Noun__1#e859f3abb052",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Erde",
+        "targetSurface" : "Erde",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-615-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "mixture",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "mixture",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 615
+        },
+        "renderedUTF16Range" : {
+          "length" : 8,
+          "location" : 624
+        },
+        "senseDescription" : "something produced by mixing",
+        "sourceSenseID" : "eng/mixture__Noun__1#a166f3eff910",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Mischung",
+        "targetSurface" : "Mischung",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-655-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "and",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "and",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 655
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 665
+        },
+        "senseDescription" : "used to connect two similar words, phrases, et cetera",
+        "sourceSenseID" : "eng/and__Conjunction__1#2a0101a924b2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "и",
+        "targetSurface" : "и",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-666-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "i",
+        "originalPartOfSpeech" : "pronoun",
+        "originalSurface" : "I",
+        "originalUTF16Range" : {
+          "length" : 1,
+          "location" : 666
+        },
+        "renderedUTF16Range" : {
+          "length" : 3,
+          "location" : 674
+        },
+        "senseDescription" : "personal pronoun",
+        "sourceSenseID" : "eng/I__Pronoun__1#08eca2d64bf5",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "ich",
+        "targetSurface" : "Ich",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-682-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "that",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "that",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 682
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 692
+        },
+        "senseDescription" : "connecting a noun clause",
+        "sourceSenseID" : "eng/that__Conjunction__1#7a64f776820b",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "dass",
+        "targetSurface" : "dass",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-711-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "silence",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "silence",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 711
+        },
+        "renderedUTF16Range" : {
+          "length" : 7,
+          "location" : 721
+        },
+        "senseDescription" : "lack of sound",
+        "sourceSenseID" : "eng/silence__Noun__1#882654d5f05c",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "тишина́",
+        "targetSurface" : "тишина́",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-719-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "between",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "between",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 719
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 729
+        },
+        "senseDescription" : "in the position or interval that separates two things",
+        "sourceSenseID" : "eng/between__Preposition__1#95846159164b",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "ме́жду",
+        "targetSurface" : "ме́жду",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-750-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "moment",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "moment",
+        "originalUTF16Range" : {
+          "length" : 6,
+          "location" : 750
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 759
+        },
+        "senseDescription" : "very brief period of time",
+        "sourceSenseID" : "eng/moment__Noun__1#21633edb5711",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Moment",
+        "targetSurface" : "Moment",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-757-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "when",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "when",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 757
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 766
+        },
+        "senseDescription" : "at what time, as a direct question",
+        "sourceSenseID" : "eng/when__Adverb__1#0d3cb375eeb1",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "когда́",
+        "targetSurface" : "когда́",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-785-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "thought",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "thoughts",
+        "originalUTF16Range" : {
+          "length" : 8,
+          "location" : 785
+        },
+        "renderedUTF16Range" : {
+          "length" : 5,
+          "location" : 796
+        },
+        "senseDescription" : "representation created in the mind",
+        "sourceSenseID" : "eng/thought__Noun__1#c884aaebc411",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "мысль",
+        "targetSurface" : "мысли",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-794-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "without",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "without",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 794
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 802
+        },
+        "senseDescription" : "not having",
+        "sourceSenseID" : "eng/without__Preposition__1#b2e0de958554",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "ohne",
+        "targetSurface" : "ohne",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-815-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "forward",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "forward",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 815
+        },
+        "renderedUTF16Range" : {
+          "length" : 6,
+          "location" : 820
+        },
+        "senseDescription" : "at, near or towards the front of something",
+        "sourceSenseID" : "eng/forward__Adverb__1#dc0324e71df2",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "вперёд",
+        "targetSurface" : "вперёд",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-824-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "with",
+        "originalPartOfSpeech" : "preposition",
+        "originalSurface" : "With",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 824
+        },
+        "renderedUTF16Range" : {
+          "length" : 1,
+          "location" : 828
+        },
+        "senseDescription" : "with",
+        "sourceSenseID" : "eng/with__Preposition__1#0695b563acde",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "с",
+        "targetSurface" : "С",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-871-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "trip",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "trip",
+        "originalUTF16Range" : {
+          "length" : 4,
+          "location" : 871
+        },
+        "renderedUTF16Range" : {
+          "length" : 8,
+          "location" : 872
+        },
+        "senseDescription" : "",
+        "sourceSenseID" : "eng/trip__Noun__1#e3b0c44298fc",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "пое́здка",
+        "targetSurface" : "пое́здка",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-880-ru",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "not",
+        "originalPartOfSpeech" : "adverb",
+        "originalSurface" : "not",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 880
+        },
+        "renderedUTF16Range" : {
+          "length" : 2,
+          "location" : 885
+        },
+        "senseDescription" : "negates meaning of another word",
+        "sourceSenseID" : "eng/not__Adverb__1#6c8d04c61ca8",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "ru",
+        "targetLemma" : "не",
+        "targetSurface" : "не",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-891-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "destination",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "destination",
+        "originalUTF16Range" : {
+          "length" : 11,
+          "location" : 891
+        },
+        "renderedUTF16Range" : {
+          "length" : 9,
+          "location" : 895
+        },
+        "senseDescription" : "the place set for the end of a journey, or to which something is sent",
+        "sourceSenseID" : "eng/destination__Noun__1#efbfe9107cdf",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Reiseziel",
+        "targetSurface" : "Reiseziel",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-904-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "but",
+        "originalPartOfSpeech" : "conjunction",
+        "originalSurface" : "but",
+        "originalUTF16Range" : {
+          "length" : 3,
+          "location" : 904
+        },
+        "renderedUTF16Range" : {
+          "length" : 4,
+          "location" : 906
+        },
+        "senseDescription" : "although",
+        "sourceSenseID" : "eng/but__Conjunction__1#2e1d76579d44",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "aber",
+        "targetSurface" : "aber",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-911-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "alchemy",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "alchemy",
+        "originalUTF16Range" : {
+          "length" : 7,
+          "location" : 911
+        },
+        "renderedUTF16Range" : {
+          "length" : 8,
+          "location" : 914
+        },
+        "senseDescription" : "ancient chemistry",
+        "sourceSenseID" : "eng/alchemy__Noun__1#4aa58cf31678",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Alchemie",
+        "targetSurface" : "Alchemie",
+        "translationConfidence" : 0.9
+      },
+      {
+        "id" : "local-model-reading-922-de",
+        "languagePackVersion" : "wikdict-2026-06-lf2",
+        "originalLemma" : "experience",
+        "originalPartOfSpeech" : "noun",
+        "originalSurface" : "experience",
+        "originalUTF16Range" : {
+          "length" : 10,
+          "location" : 922
+        },
+        "renderedUTF16Range" : {
+          "length" : 9,
+          "location" : 926
+        },
+        "senseDescription" : "the knowledge thus gathered",
+        "sourceSenseID" : "eng/experience__Noun__1#2bab59002ebd",
+        "sourceTextID" : "local-model-reading",
+        "targetLanguageCode" : "de",
+        "targetLemma" : "Erfahrung",
+        "targetSurface" : "Erfahrung",
+        "translationConfidence" : 0.9
+      }
+    ],
+    "requestedDensity" : 0.5,
+    "wordCount" : 165
+  }
+]

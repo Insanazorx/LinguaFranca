@@ -1,0 +1,33 @@
+# Generated dependencies and build resources; restored by ./build.sh
+/Vendor/
+/.bootstrap/
+/build/
+/.build/
+/.swiftpm/
+/LinguaFranca.xcodeproj/
+/ModelCandidates/
+/Resources/Models/*.gguf
+/Resources/Models/*.part
+/Resources/LanguagePacks/*.sqlite
+/Resources/LanguagePacks/*.sqlite-*
+/Resources/LanguagePacks/en-??.json
+/Resources/LanguagePacks/coverage.json
+/Resources/LanguagePacks/_english/averaged_perceptron_tagger_eng.*.json
+/Resources/LanguagePacks/**/*.part
+/Documentation/Evidence/*.png
+
+# Machine-local state, signing material, temporary outputs
+.DS_Store
+DerivedData/
+xcuserdata/
+*.xcuserstate
+__pycache__/
+*.pyc
+*.dSYM/
+*.mobileprovision
+*.p12
+*.p8
+.env
+.env.*
+/work/
+/outputs/

@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-23",
+  "sourceOnlyCheckout": true,
+  "trackedSourceFilesBeforeEvidence": 61,
+  "sourceBytesBeforeEvidence": 479660,
+  "nativeSimulatorRuntime": "fresh source build succeeded",
+  "languagePacks": "regenerated; hashes match previously validated packs",
+  "buildToolTests": 7,
+  "swiftCoreTests": 28,
+  "swiftInferenceTests": 4,
+  "simulatorAppBuild": "passed",
+  "bundleChecksums": "passed",
+  "warmOfflineRestore": "passed",
+  "downloadExercise": "new pinned dawg2-python wheel fetched and checked; other archives and GGUF reused from verified local cache",
+  "missingCMakeInstallation": "not exercised",
+  "remoteGitHubActions": "not run"
+}

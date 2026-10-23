@@ -1,0 +1,23 @@
+{
+  "identifier": "Qwen3.5-0.8B-Q4_K_M",
+  "filename": "Qwen3.5-0.8B-Q4_K_M.gguf",
+  "repository": "unsloth/Qwen3.5-0.8B-GGUF",
+  "revision": "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+  "sha256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+  "byteCount": 532517120,
+  "license": "apache-2.0",
+  "upstream": "https://huggingface.co/Qwen/Qwen3.5-0.8B",
+  "upstreamRevision": "2fc06364715b967f1860aea9cf38778875588b17",
+  "verificationSource": "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/blob/6ab461498e2023f6e3c1baea90a8f0fe38ab64d0/Qwen3.5-0.8B-Q4_K_M.gguf",
+  "purpose": "User-selected bundled local text-generation model",
+  "runtimeValidation": "Native Mac Metal and iPhone 13 simulator genuine generation passed; physical device pending",
+  "deviceValidation": "pending",
+  "downloadVerification": {
+    "sha256Passed": true,
+    "exactSizePassed": true,
+    "ggufVersion": 3,
+    "tensorCount": 320,
+    "metadataCount": 46,
+    "verifiedAtUTC": "2026-10-23T09:11:15.061337+00:00"
+  }
+}

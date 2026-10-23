@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-23",
+  "device": "iPhone 13",
+  "os": "iOS 26.6.1",
+  "bundleID": "com.linguafranca.app",
+  "version": "0.1.0",
+  "build": "1",
+  "installation": "passed",
+  "signatureVerification": "passed",
+  "bundleChecksums": "passed",
+  "profileDeviceAndEntitlements": "passed",
+  "launch": "confirmed by user after iOS developer trust approval",
+  "physicalInference": "not measured",
+  "profileExpiresIstanbul": "2026-10-30 14:54"
+}

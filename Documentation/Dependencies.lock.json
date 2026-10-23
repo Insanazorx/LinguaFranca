@@ -1,0 +1,82 @@
+{
+  "GRDB.swift": {
+    "version": "7.11.1",
+    "commit": "b83108d10f42680d78f23fe4d4d80fc88dab3212",
+    "source": "https://codeload.github.com/groue/GRDB.swift/tar.gz/b83108d10f42680d78f23fe4d4d80fc88dab3212",
+    "archiveSHA256": "2beeb6962c1d5721707c0fae4bf803ee4d03b84202e16390eda10126fd213cb7",
+    "license": "MIT",
+    "vendoredPath": "Vendor/GRDB.swift"
+  },
+  "llama.cpp": {
+    "version": "b11829",
+    "source": "https://github.com/ggml-org/llama.cpp/releases/download/b11829/llama-b11829-xcframework.zip",
+    "archiveSHA256": "5ae60fc3165acc72f67c7305c29fe9307137d000c06327a71ed24a6d228fa6ac",
+    "license": "MIT",
+    "vendoredPath": "Vendor/llama.xcframework",
+    "availablePlatforms": [
+      "ios-arm64",
+      "macos-arm64_x86_64",
+      "ios-arm64_x86_64-simulator"
+    ],
+    "simulatorSlice": true,
+    "archiveVerified": true,
+    "simulatorBuild": {
+      "sourceCommit": "184f6536024668e8908ab8c86033d56708e62b40",
+      "sourceArchiveSHA256": "69f6f6b71ceb020210ea235aa8c61fcc8a375f17e9cf78885f782696c200c9f6",
+      "command": "bash ./build-xcframework.sh ios-sim",
+      "upstreamScriptUnmodified": true,
+      "sourceURL": "https://codeload.github.com/ggml-org/llama.cpp/tar.gz/refs/tags/b11829"
+    }
+  },
+  "schemaVersion": 1,
+  "languageData": {
+    "wikdict": [
+      {
+        "filename": "en-de.sqlite3",
+        "url": "https://download.wikdict.com/dictionaries/sqlite/2_2026-06/en-de.sqlite3",
+        "sha256": "f2154e82c4a34851922e0c0d275decea7b34ad0ec8fd087090c592b59112d0c2",
+        "license": "CC-BY-SA-4.0"
+      },
+      {
+        "filename": "en-ru.sqlite3",
+        "url": "https://download.wikdict.com/dictionaries/sqlite/2_2026-06/en-ru.sqlite3",
+        "sha256": "3f65395883b996131c9b7a7b7b7c14c1b4458c892fae0050decd71dc0a3b4b0a",
+        "license": "CC-BY-SA-4.0"
+      }
+    ],
+    "morphology": [
+      {
+        "package": "german-nouns",
+        "version": "1.2.5",
+        "filename": "german_nouns-1.2.5-py3-none-any.whl",
+        "sha256": "0f113c59ea331aae750bc03c7b6c7217bae975c6677b4df8d8932093093f509f",
+        "license": "CC-BY-SA-4.0",
+        "pythonModule": false
+      },
+      {
+        "package": "pymorphy3-dicts-ru",
+        "version": "2.4.417150.4580142",
+        "filename": "pymorphy3_dicts_ru-2.4.417150.4580142-py2.py3-none-any.whl",
+        "sha256": "718bac64c73c10c16073a199402657283d9b64c04188b694f6d3e9b0d85440f4",
+        "license": "CC-BY-SA-3.0",
+        "pythonModule": true
+      },
+      {
+        "package": "pymorphy3",
+        "version": "2.0.6",
+        "filename": "pymorphy3-2.0.6-py3-none-any.whl",
+        "sha256": "0254317c02ce3ea17e080b7fc9d675e44662b3a5296bae68605b7a41d25b36c3",
+        "license": "MIT",
+        "pythonModule": true
+      },
+      {
+        "package": "dawg2-python",
+        "version": "0.9.0",
+        "filename": "dawg2_python-0.9.0-py3-none-any.whl",
+        "sha256": "4fab6fc097bd176cd783cd8421b757348ea5a460789e53b0f6bb64831380bab5",
+        "license": "MIT",
+        "pythonModule": true
+      }
+    ]
+  }
+}

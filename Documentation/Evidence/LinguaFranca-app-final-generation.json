@@ -1,0 +1,22 @@
+[
+  {
+    "id": "87AD278B-97AE-4852-B577-202511C70B10",
+    "originalEnglish": "The quiet classroom of the city university stood as a beacon of academic rigor amidst the hum of the lecture hall, where every student felt like an observer rather than a participant. Professor Elias, with his sharp wit and deep knowledge of quantum physics, watched as students engaged in debates about the latest AI breakthroughs. He didn't just lecture; he dissected their arguments with precise, yet accessible, clarity. This environment fostered critical thinking, where students realized that their questions mattered more than the answers themselves. The air smelled of ozone and fresh chalk dust, a scent that encapsulated the energy of a nation ready to build a future grounded in truth.",
+    "topic": "Education",
+    "cefrLevel": "C1",
+    "generatedAt": 1792755682.252627,
+    "modelID": "Qwen3.5-0.8B-Q4_K_M",
+    "seed": 1566625264,
+    "generationMetadata": "{\"effectiveSeed\":\"1566625264\",\"contentSource\":\"local-model\",\"requestedDensity\":\"0.5\",\"modelSHA256\":\"bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517\",\"actualDensity\":\"0.22321428571428573\",\"wordCount\":\"111\",\"replacementStatus\":\"local-lexicon\",\"replacementWordCount\":\"112\",\"modelRevision\":\"6ab461498e2023f6e3c1baea90a8f0fe38ab64d0\",\"modelLoadSeconds\":\"1.127621167\",\"replacementEngineVersion\":\"contextual-3\",\"timeToFirstTokenSeconds\":\"5.297425334\",\"attempts\":\"1\",\"runtime\":\"llama.cpp-b11829\",\"replacementCount.de\":\"13\",\"replacementCount\":\"25\",\"thinking\":\"disabled\",\"contextWindow\":\"2048\",\"replacementCount.ru\":\"12\",\"durationSeconds\":\"14.466473542\",\"tokenCount\":\"129\"}"
+  },
+  {
+    "id": "CC8AC9DA-09D0-49C1-A52C-2E6A434C101B",
+    "originalEnglish": "The journey began in a quiet forest where the air was crisp and the leaves rustled with a low, rhythmic thrum. My mother, a seasoned traveler, had been here for years, carrying a leather-bound notebook filled with maps and handwritten notes on every possible route she encountered. She taught me that the most profound departure is not leaving a city, but choosing a path that honors your soul rather than merely following the crowd.\n\nAs I packed my bag, I found myself standing before a towering oak tree whose branches reached so high they seemed to touch the sky. The wind carried the scent of pine and earth, a mixture that made me feel both grounded and awake. I realized then that true travel lies in the silence between words; it is the quiet moment when you listen to your own thoughts without rushing them forward. With this new perspective, my first meaningful trip was not just a destination, but an alchemy of experience.",
+    "topic": "Travel",
+    "cefrLevel": "C1",
+    "generatedAt": 1792748189.9312239,
+    "modelID": "Qwen3.5-0.8B-Q4_K_M",
+    "seed": 1475087561,
+    "generationMetadata": "{\"durationSeconds\":\"20.712652792\",\"requestedDensity\":\"0.5\",\"runtime\":\"llama.cpp-b11829\",\"timeToFirstTokenSeconds\":\"5.661767958\",\"replacementStatus\":\"local-lexicon\",\"tokenCount\":\"187\",\"modelSHA256\":\"bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517\",\"actualDensity\":\"0.3151515151515151\",\"modelLoadSeconds\":\"1.067633875\",\"contextWindow\":\"2048\",\"contentSource\":\"local-model\",\"wordCount\":\"164\",\"thinking\":\"disabled\",\"replacementCount.ru\":\"26\",\"replacementEngineVersion\":\"contextual-3\",\"replacementCount.de\":\"26\",\"attempts\":\"1\",\"replacementWordCount\":\"165\",\"modelRevision\":\"6ab461498e2023f6e3c1baea90a8f0fe38ab64d0\",\"replacementCount\":\"52\",\"effectiveSeed\":\"1475087561\"}"
+  }
+]
