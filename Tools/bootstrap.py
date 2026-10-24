@@ -262,7 +262,7 @@ class Bootstrap:
 
     def languages(self):
         spec = self.lock['languageData']
-        scripts = ['Tools/prepare_language_packs.py', 'Tools/prepare_morphology.py']
+        scripts = ['Tools/prepare_language_packs.py', 'Tools/prepare_morphology.py', 'Tools/prepare_practice_forms.py']
         fingerprint = self.fingerprint(spec, scripts)
         if self.current('language-packs', fingerprint):
             return
@@ -270,7 +270,7 @@ class Bootstrap:
             temporary = Path(temporary)
             sources, output = temporary / 'sources', temporary / 'output'
             sources.mkdir()
-            for item in spec['wikdict'] + spec['morphology']:
+            for item in spec['wikdict'] + spec['morphology'] + spec.get('paradigms', []):
                 cached = self.download(item)
                 shutil.copyfile(cached, sources / item['filename'])
                 if item.get('pythonModule'):
@@ -279,6 +279,8 @@ class Bootstrap:
                 log=self.cache / 'logs/language-packs.log')
             run([sys.executable, self.root / scripts[1], '--sources', sources, '--output', output],
                 log=self.cache / 'logs/morphology.log')
+            run([sys.executable, self.root / scripts[2], '--sources', sources, '--output', output],
+                log=self.cache / 'logs/practice-forms.log')
             target = self.root / 'Resources/LanguagePacks'
             target.mkdir(parents=True, exist_ok=True)
             paths = []

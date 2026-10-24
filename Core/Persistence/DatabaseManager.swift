@@ -83,6 +83,10 @@ public actor DatabaseManager {
                 """
             )
         }
+        migrator.registerMigration("v2_ephemeral_reading_sessions") { db in
+            // Readings are now process-local. User vocabulary/examples and SRS history are independent.
+            try db.execute(sql: "DROP TABLE replacement; DROP TABLE generatedText;")
+        }
         return migrator
     }
 
@@ -210,65 +214,12 @@ public actor DatabaseManager {
         }
     }
 
-    public func savePassage(_ passage: GeneratedText) async throws {
-        _ = try passage.renderedText()
-        let metadata = String(decoding: try JSONEncoder().encode(passage.metadata), as: UTF8.self)
-        let spans = try passage.replacements.map { ($0, String(decoding: try JSONEncoder().encode($0), as: UTF8.self)) }
-        try await queue.write { db in
-            try db.execute(sql: """
-                INSERT INTO generatedText VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET generationMetadata = excluded.generationMetadata
-                WHERE generatedText.originalEnglish = excluded.originalEnglish
-                """,
-                           arguments: [passage.id, passage.originalEnglish, passage.topic, passage.cefrLevel.rawValue,
-                                       passage.generatedAt.timeIntervalSince1970, passage.modelID, Int64(passage.seed), metadata])
-            guard db.changesCount == 1 else { throw DomainError.invalidInput("A saved passage's English original cannot be changed.") }
-            try db.execute(sql: "DELETE FROM replacement WHERE generatedTextID = ?", arguments: [passage.id])
-            for (span, json) in spans {
-                try db.execute(sql: "INSERT INTO replacement VALUES (?, ?, ?, ?, ?, ?, ?)",
-                               arguments: [span.id, passage.id, span.originalUTF16Range.location, span.originalUTF16Range.length,
-                                           span.renderedUTF16Range.location, span.renderedUTF16Range.length, json])
-            }
-        }
-    }
-
-    public func recentPassages(limit: Int = 20) async throws -> [GeneratedText] {
-        let count = min(100, max(1, limit))
-        return try await queue.read { db in
-            try Row.fetchAll(db, sql: "SELECT * FROM generatedText ORDER BY generatedAt DESC, id LIMIT ?", arguments: [count]).map { row in
-                let id: String = row["id"], json: String = row["generationMetadata"]
-                let spans = try String.fetchAll(db, sql: "SELECT spanJSON FROM replacement WHERE generatedTextID = ? ORDER BY sourceStart", arguments: [id])
-                    .map { try JSONDecoder().decode(ReplacementSpan.self, from: Data($0.utf8)) }
-                guard let level = CEFRLevel(rawValue: row["cefrLevel"]), let seed = UInt32(exactly: row["seed"] as Int64)
-                else { throw DomainError.invalidInput("Invalid saved generation metadata.") }
-                let passage = GeneratedText(id: id, originalEnglish: row["originalEnglish"], topic: row["topic"], cefrLevel: level,
-                    generatedAt: Date(timeIntervalSince1970: row["generatedAt"]), modelID: row["modelID"],
-                    seed: seed, metadata: try JSONDecoder().decode([String: String].self, from: Data(json.utf8)), replacements: spans)
-                _ = try passage.renderedText()
-                return passage
-            }
-        }
-    }
-
-    /// Removes only explicitly tagged former UI fixtures. User vocabulary, settings and real readings are preserved.
-    @discardableResult public func removeSamplePassages() async throws -> Int {
-        try await queue.write { db in
-            try db.execute(sql: "DELETE FROM generatedText WHERE modelID = ? OR json_extract(generationMetadata, '$.contentSource') = ?",
-                           arguments: ["sample-preview", "hand-authored-sample"])
-            return db.changesCount
-        }
-    }
-
     public func storageBytes() async throws -> Int64 {
         try await queue.read { db in
             let pages = try Int64.fetchOne(db, sql: "PRAGMA page_count") ?? 0
             let size = try Int64.fetchOne(db, sql: "PRAGMA page_size") ?? 0
             return pages * size
         }
-    }
-
-    public func passageCount() async throws -> Int {
-        try await queue.read { try Int.fetchOne($0, sql: "SELECT count(*) FROM generatedText") ?? 0 }
     }
 
     public func studySummary(deckID: String? = nil, now: Date = .now, calendar: Calendar = .current) async throws -> StudySummary {

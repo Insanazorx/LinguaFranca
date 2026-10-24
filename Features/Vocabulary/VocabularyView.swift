@@ -17,6 +17,11 @@ struct VocabularyView: View {
     }
     @State private var memberIDs: Set<String> = []
     var visible: [VocabularyItem] { deckID.isEmpty ? filtered : filtered.filter { memberIDs.contains($0.id) } }
+    private var languageGroups: [VocabularyLanguageGroup] {
+        let current = deckID.isEmpty ? model.vocabulary : model.vocabulary.filter { memberIDs.contains($0.id) }
+        let matching = Set(visible.map(\.id))
+        return VocabularyLanguageGroup.grouped(current).filter { $0.items.contains { matching.contains($0.id) } }
+    }
     var body: some View {
         NavigationStack {
             List {
@@ -32,27 +37,21 @@ struct VocabularyView: View {
                         description: Text(query.isEmpty ? "Create a list and add your first expression." : "Try another expression or meaning."))
                         .listRowBackground(Color.clear)
                 }
-                ForEach(visible) { item in
-                    Button { edited = item; showEditor = true } label: {
+                ForEach(languageGroups) { group in
+                    NavigationLink {
+                        VocabularyLanguageGroupView(group: group, deckID: deckID, deckName: model.decks.first { $0.id == deckID }?.name ?? "All vocabulary")
+                            .environment(model)
+                    } label: {
                         VStack(alignment: .leading, spacing: 6) {
-                            HStack(alignment: .firstTextBaseline) {
-                                Text(item.draft.targetSurface).font(.title3.weight(.medium))
-                                    .foregroundStyle(item.draft.targetLanguage == "de" ? Theme.german : Theme.russian)
+                            HStack {
+                                Text(Theme.language(group.languageCode)).font(.headline)
                                 Spacer()
-                                Text(Theme.language(item.draft.targetLanguage)).font(.caption).foregroundStyle(.secondary)
+                                Text("\(group.items.count) words").font(.subheadline).foregroundStyle(.secondary)
                             }
-                            Text(item.draft.englishLemma).foregroundStyle(.primary)
-                            Text(item.draft.senseID).font(.caption).foregroundStyle(.secondary)
-                        }.padding(.vertical, 7)
-                    }.buttonStyle(.plain)
-                    .swipeActions {
-                        Button("Delete", role: .destructive) { deleteItem = item }
-                        if !deckID.isEmpty {
-                            Button("Remove from list") {
-                                Task { await model.perform { try await $0.removeVocabulary(id: item.id, fromDeck: deckID) }; await loadMemberships() }
-                            }.tint(.orange)
-                        }
-                    }
+                            Text(group.items.prefix(4).map { $0.draft.targetSurface }.joined(separator: " · "))
+                                .lineLimit(2).font(.subheadline).foregroundStyle(.secondary)
+                        }.padding(.vertical, 8)
+                    }.accessibilityIdentifier("vocabulary-group-" + group.languageCode)
                 }
             }
             .navigationTitle("Vocabulary").searchable(text: $query, prompt: "Expression or meaning")

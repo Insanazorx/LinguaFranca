@@ -4,7 +4,7 @@ import NaturalLanguage
 struct EnglishToken: Sendable {
     let surface: String
     var lemma: String
-    let pos: String
+    var pos: String
     let span: UTF16Span
     let sentence: String
     let sentenceIndex: Int
@@ -12,10 +12,13 @@ struct EnglishToken: Sendable {
     var previousWord: String? = nil
     var followingWord: String? = nil
     var followingPOS: String? = nil
+    var followingTokens: [(String,String,String?)] = []
     var isCompoundComponent = false
     var isSentenceInitial = false
     var isPlural = false
     var followingNoun: String? = nil
+    var pennTag: String? = nil
+    var precedingTokens: [(String, String, Bool)] = []
 }
 
 enum EnglishAnalyzer {
@@ -42,19 +45,42 @@ enum EnglishAnalyzer {
                 let surface = String(text[range])
                 guard surface.unicodeScalars.contains(where: CharacterSet.letters.contains) else { continue }
                 let raw = bundledTags.map { BundledEnglishTagger.partOfSpeech($0[i],word:surface) } ?? applePOS ?? "unknown"
-                let pos = raw == "particle" ? "preposition" : raw
+                let pos = raw
                 let lemma = appleLemma ?? surface.lowercased()
                 let ns = NSRange(range, in: text)
                 var token = EnglishToken(surface: surface, lemma: lemma, pos: pos,
                     span: UTF16Span(location: ns.location, length: ns.length), sentence: sentence, sentenceIndex: sentenceIndex)
                 token.isPlural = bundledTags?[i] == "NNS" || (pos == "noun" && lemma != surface.lowercased())
+                token.pennTag = bundledTags?[i]
                 result.append(token)
             }
             sentenceIndex += 1
             return true
         }
         for i in result.indices {
+            if result[i].surface.lowercased() == "to", i+1 < result.count, result[i+1].pennTag == "VB" {
+                result[i].pos = "infinitiveMarker"
+            }
+            if result[i].surface.lowercased() == "that", result[i].pos == "conjunction", i > 0,
+               ["noun","propernoun"].contains(result[i-1].pos), !["fact","idea","hope","belief","news","claim"].contains(result[i-1].lemma) {
+                result[i].pos = "pronoun"
+            }
+            if ["before","after","since","when","as","for"].contains(result[i].surface.lowercased()) {
+                let following = result.dropFirst(i+1).prefix(4).filter { $0.sentenceIndex == result[i].sentenceIndex }
+                var clause = Array(following)
+                if clause.first?.pos == "determiner" { clause.removeFirst() }
+                let subject = clause.first
+                if !clause.isEmpty { clause.removeFirst() }
+                while clause.first?.pos == "adverb" { clause.removeFirst() }
+                if subject.map({ ["pronoun","noun","propernoun"].contains($0.pos) }) == true,
+                   clause.first?.pos == "verb" {
+                    result[i].pos = "conjunction"
+                }
+            }
+            result[i].followingTokens = result.dropFirst(i+1).prefix(8).filter { $0.sentenceIndex == result[i].sentenceIndex }.map { ($0.surface.lowercased(),$0.pos,$0.pennTag) }
             result[i].isSentenceInitial = i == 0 || result[i-1].sentenceIndex != result[i].sentenceIndex
+            result[i].precedingTokens = result[..<i].suffix(6).filter { $0.sentenceIndex == result[i].sentenceIndex }
+                .map { ($0.surface.lowercased(), $0.pos, $0.isPlural) }
             let sentenceTokens = result.indices.filter { result[$0].sentenceIndex == result[i].sentenceIndex }
             let repeated = sentenceTokens.filter { result[$0].lemma == result[i].lemma }.count > 1
             let neighbours = repeated ? Array(max(0, i-5)...min(result.count-1, i+5)) : sentenceTokens
@@ -64,9 +90,9 @@ enum EnglishAnalyzer {
             if i+1 < result.count, result[i+1].sentenceIndex == result[i].sentenceIndex {
                 result[i].followingWord = result[i+1].surface.lowercased()
                 result[i].followingPOS = result[i+1].pos
-                for j in (i+1)...min(result.count-1,i+4) where result[j].sentenceIndex == result[i].sentenceIndex {
-                    if result[j].pos == "noun" { result[i].followingNoun = result[j].lemma; break }
-                    if !["adjective","determiner"].contains(result[j].pos) { break }
+                for j in (i+1)...min(result.count-1,i+6) where result[j].sentenceIndex == result[i].sentenceIndex {
+                    if result[j].pos == "noun" { result[i].followingNoun = EnglishAnalyzer.nounLemmaCandidates(result[j]).first ?? result[j].lemma; break }
+                    if !["adjective","determiner"].contains(result[j].pos) && result[j].pennTag != "CD" { break }
                 }
             }
             // Never translate just one side of a compound, including hyphenated proper names.

@@ -37,6 +37,9 @@ def main():
             assert db.execute('pragma quick_check').fetchone()[0]=='ok'
             assert db.execute('select count(*) from entry').fetchone()[0]>1000
             assert db.execute('select count(*) from nounForm').fetchone()[0]>1000
+            assert db.execute('select count(*) from caseForm').fetchone()[0]>1000
+            for pos in ['verb','adjective']:
+                assert db.execute('select count(*) from practiceForm where pos=?',(pos,)).fetchone()[0]>100
         if args.checksums:assert sha(database)==meta['licenseMetadata']['databaseSHA256']
     assert {'de','ru'}.issubset(languages), 'Initial target languages missing'
     english=packs/'_english'

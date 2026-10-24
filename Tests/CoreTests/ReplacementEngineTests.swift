@@ -122,22 +122,22 @@ private struct FixturePack: LanguagePack {
     #expect(try await empty.replace(text:"Tea and coffee.",sourceTextID:"id",settings:settings,seed:7).spans.isEmpty)
 }
 
-@Test func remixPersistsSpansWithoutDuplicatingOrChangingOriginal() async throws {
-    let database = try DatabaseManager()
+@Test func remixUpdatesSessionWithoutDuplicatingOrChangingOriginal() async throws {
+    var session = ReadingSession()
     let original = GeneratedText(id:"remix",originalEnglish:"Tea and coffee.",topic:"Test",cefrLevel:.b2,modelID:"fixture",seed:42)
-    try await database.savePassage(original)
+    try session.append(original)
     let engine = ContextualReplacementEngine(registry:try LanguagePackRegistry(packs:[FixturePack("de")]))
     var settings = AppSettings(); settings.enabledLanguages = ["de"]; settings.languageFrequencies = ["de":0.5]
     let mix = try await engine.replace(text:original.originalEnglish,sourceTextID:original.id,settings:settings,seed:42)
     let remixed = GeneratedText(id:original.id,originalEnglish:original.originalEnglish,topic:original.topic,cefrLevel:original.cefrLevel,
         generatedAt:original.generatedAt,modelID:original.modelID,seed:original.seed,replacements:mix.spans)
-    try await database.savePassage(remixed)
-    try await database.savePassage(remixed)
-    #expect(try await database.passageCount() == 1)
-    #expect(try await database.recentPassages().first?.replacements == mix.spans)
+    try session.remix(remixed)
+    try session.remix(remixed)
+    #expect(session.passages.count == 1)
+    #expect(session.passages.first?.replacements == mix.spans)
     let changed = GeneratedText(id:original.id,originalEnglish:"Changed original.",topic:"Test",cefrLevel:.b2,modelID:"fixture",seed:42)
-    await #expect(throws:DomainError.self) { try await database.savePassage(changed) }
-    #expect(try await database.recentPassages().first?.originalEnglish == original.originalEnglish)
+    #expect(throws:DomainError.self) { try session.remix(changed) }
+    #expect(session.passages.first?.originalEnglish == original.originalEnglish)
 }
 
 @Test func tripDoesNotBecomeADrugExperienceInTravelContext() async throws {

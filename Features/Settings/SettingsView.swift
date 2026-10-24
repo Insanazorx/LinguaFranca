@@ -11,6 +11,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section("Reading preferences") {
+                    ReadingOptionsView(settings: $draft)
                     Picker("English level", selection: $draft.generationLevel) {
                         ForEach(CEFRLevel.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                     }
@@ -21,9 +22,9 @@ struct SettingsView: View {
                         let code = pack.languageCode
                         VStack(alignment: .leading, spacing: 12) {
                             languageToggle(code, name: pack.displayName)
-                            if draft.enabledLanguages.contains(code) {
+                            if draft.enabledLanguages.contains(code) && draft.replacementMode == .balanced {
                                 HStack {
-                                    Text("Frequency")
+                                    Text(draft.replacementMode == .aggressive ? "Language weight" : "Frequency")
                                     Spacer()
                                     Text(draft.frequency(for: code) >= 0.495 ? "Psycho · 50%" : "\(Int((draft.frequency(for: code) * 100).rounded()))%")
                                         .fontWeight(.semibold).foregroundStyle(Theme.forest)
@@ -46,16 +47,18 @@ struct SettingsView: View {
                             }
                         }.padding(.vertical, 5)
                     }
-                    LabeledContent("Combined target", value: "\(Int((draft.effectiveFrequencies.values.reduce(0,+) * 100).rounded()))%")
+                    if draft.replacementMode == .balanced {
+                        LabeledContent("Combined target", value: "\(Int((draft.effectiveFrequencies.values.reduce(0,+) * 100).rounded()))%")
+                    }
                 } header: { Text("Language practice") } footer: {
-                    Text("Psycho targets one word in every 2–3. Each language remembers its frequency; together they share a 50% ceiling. Words without a clear match stay in English, so the actual mix can be lower. Save, then tap Remix on a passage to try it.")
+                    Text(draft.replacementMode == .aggressive ? "Aggressive requires verified translations for every selected component. Balanced frequencies have no effect. Enabled languages participate equally. Incomplete translations remain labeled English drafts. Save, then tap Remix on a reading." : "Psycho targets one word in every 2–3. Each language remembers its frequency; together they share a 50% ceiling. International lookalikes and words without a clear match stay in English, so the actual mix can be lower. Save, then tap Remix on a passage to try it.")
                 }
                 Section("Study preferences") {
                     Stepper("Daily target: \(draft.dailyReviewTarget)", value: $draft.dailyReviewTarget, in: 1...100)
                 }
                 Section("On your device") {
                     LabeledContent("Saved vocabulary", value: "\(model.vocabulary.count)")
-                    LabeledContent("Saved passages", value: "\(model.passageCount)")
+                    LabeledContent("Readings this session", value: "\(model.passageCount)")
                     LabeledContent("Library storage", value: ByteCountFormatter.string(fromByteCount: model.storageBytes, countStyle: .file))
                     LabeledContent("Reading source", value: model.modelDisplayName)
                     LabeledContent("Model included", value: model.modelURL == nil ? "Not yet" : "Yes")

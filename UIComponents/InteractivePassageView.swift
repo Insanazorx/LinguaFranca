@@ -50,6 +50,8 @@ struct PassageWordSheet: View {
     @State private var saving = false
     @State private var saved = false
     @State private var error: String?
+    @State private var speech = SentenceSpeechController()
+    @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         NavigationStack {
             Form {
@@ -60,6 +62,12 @@ struct PassageWordSheet: View {
                         Text(span.originalSurface).font(.title3)
                         Text(span.senseDescription?.isEmpty == false ? span.senseDescription! : span.originalPartOfSpeech.capitalized)
                             .font(.subheadline).foregroundStyle(.secondary)
+                        Button(speech.isSpeaking ? "Stop pronunciation" : "Pronounce", systemImage: speech.isSpeaking ? "stop.fill" : "speaker.wave.2.fill") {
+                            if speech.isSpeaking { speech.stop() }
+                            else { speech.speak([span.pronunciation]) }
+                        }.buttonStyle(.bordered).font(.subheadline)
+                            .accessibilityIdentifier("pronounce-word")
+                        if let message = speech.errorMessage { Text(message).font(.footnote).foregroundStyle(.secondary) }
                     }.padding(.vertical, 10)
                 }
                 Section("Save to your vocabulary") {
@@ -80,6 +88,8 @@ struct PassageWordSheet: View {
             }.navigationTitle("A word to keep").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
                 .onAppear { deck = model.decks.first?.id ?? "new" }
+                .onDisappear { speech.stop() }
+                .onChange(of: scenePhase) { _, phase in if phase != .active { speech.stop() } }
         }
     }
     private func save() async {
@@ -87,10 +97,11 @@ struct PassageWordSheet: View {
         saving = true
         defer { saving = false }
         do {
+            let context = try passage.vocabularyContext(for: span)
             let draft = try VocabularyDraft(englishLemma: span.originalLemma, targetLanguage: span.targetLanguageCode,
                 targetLemma: span.targetLemma, targetSurface: span.targetSurface, senseID: span.sourceSenseID,
-                partOfSpeech: span.originalPartOfSpeech, exampleEnglish: passage.originalEnglish,
-                exampleMixed: passage.renderedText()).validated()
+                partOfSpeech: span.originalPartOfSpeech, exampleEnglish: context.english,
+                exampleMixed: context.mixed).validated()
             let id: String
             if deck == "new" { id = try await database.createDeck(name: name) } else { id = deck }
             _ = try await database.saveVocabulary(draft, inDeck: id)

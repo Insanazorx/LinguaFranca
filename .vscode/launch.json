@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:LinguaFranca}",
+            "name": "Debug model-smoke",
+            "target": "model-smoke",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug model-smoke"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:LinguaFranca}",
+            "name": "Release model-smoke",
+            "target": "model-smoke",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release model-smoke"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:LinguaFranca}",
+            "name": "Debug replacement-smoke",
+            "target": "replacement-smoke",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug replacement-smoke"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:LinguaFranca}",
+            "name": "Release replacement-smoke",
+            "target": "replacement-smoke",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release replacement-smoke"
+        }
+    ]
+}

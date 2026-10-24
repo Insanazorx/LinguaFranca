@@ -64,9 +64,15 @@ public struct VocabularyItem: Identifiable, Sendable, Equatable {
     public let id: String
     public let draft: VocabularyDraft
     public let createdAt: Date
+    public init(id: String, draft: VocabularyDraft, createdAt: Date) {
+        self.id = id; self.draft = draft; self.createdAt = createdAt
+    }
 }
 
 public struct AppSettings: Codable, Sendable, Equatable {
+    public var writingGenre: WritingGenre = .story
+    public var replacementMode: ReplacementMode = .balanced
+    public var practiceDomains: Set<PracticeDomain> = [.structure, .content, .actions]
     public var generationLevel: CEFRLevel = .c1
     public var defaultWordCount: Int = 110
     public var enabledLanguages: [String] = ["de", "ru"]
@@ -80,11 +86,15 @@ public struct AppSettings: Codable, Sendable, Equatable {
     public var preferredTopics: [String] = []
     public init() {}
     private enum CodingKeys: String, CodingKey {
+        case writingGenre, replacementMode, practiceDomains
         case generationLevel, defaultWordCount, enabledLanguages, languageWeights, replacementDensity,
              languageFrequencies, dailyReviewTarget, desiredRetention, preferredTopics
     }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
+        writingGenre = try c.decodeIfPresent(WritingGenre.self, forKey: .writingGenre) ?? .story
+        replacementMode = try c.decodeIfPresent(ReplacementMode.self, forKey: .replacementMode) ?? .balanced
+        practiceDomains = try c.decodeIfPresent(Set<PracticeDomain>.self, forKey: .practiceDomains) ?? [.structure, .content, .actions]
         generationLevel = try c.decodeIfPresent(CEFRLevel.self, forKey: .generationLevel) ?? .c1
         defaultWordCount = try c.decodeIfPresent(Int.self, forKey: .defaultWordCount) ?? 110
         enabledLanguages = try c.decodeIfPresent([String].self, forKey: .enabledLanguages) ?? ["de", "ru"]
@@ -105,6 +115,13 @@ public struct AppSettings: Codable, Sendable, Equatable {
         let total = values.values.reduce(0, +)
         let scale = total > 0.5 ? 0.5 / total : 1
         return values.mapValues { $0 * scale }
+    }
+    /// Aggressive always attempts every eligible occurrence, independent of frequency settings.
+    public var replacementLanguageShares: [String: Double] {
+        if replacementMode == .aggressive {
+            return Dictionary(uniqueKeysWithValues: enabledLanguages.map { ($0, 1.0 / Double(max(1, enabledLanguages.count))) })
+        }
+        return effectiveFrequencies.filter { $0.value > 0 }
     }
     public func validate() throws {
         guard (90...150).contains(defaultWordCount), (1...500).contains(dailyReviewTarget),

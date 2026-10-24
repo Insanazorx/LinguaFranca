@@ -1,0 +1,246 @@
+{
+  "date": "2026-10-23",
+  "project": "/Users/insanazor/Desktop/LinguaFranca",
+  "automatedTests": {
+    "coreSwift": 46,
+    "inferenceSwift": 4,
+    "pythonBuildTools": 9,
+    "total": 59,
+    "result": "passed"
+  },
+  "build": {
+    "command": "./build.sh --test --offline",
+    "result": "passed",
+    "bundleIntegrity": "passed"
+  },
+  "nativeModelFormats": [
+    {
+      "eligible": 69,
+      "genre": "story",
+      "metadata": {
+        "attempts": "1",
+        "contentSource": "local-model",
+        "contextPolicy": "fresh-per-attempt",
+        "contextWindow": "2048",
+        "effectiveSeed": "72",
+        "formatConstraint": "prose",
+        "modelLoadSeconds": "0.315804792",
+        "modelRevision": "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+        "modelSHA256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+        "noveltyHistoryCount": "0",
+        "runtime": "llama.cpp-b11829",
+        "scenarioID": "282",
+        "thinking": "disabled",
+        "timeToFirstTokenSeconds": "0.39343870799999997",
+        "wordCount": "88",
+        "writingGenre": "story"
+      },
+      "partsOfSpeech": {
+        "adverb": 4,
+        "conjunction": 4,
+        "noun": 11,
+        "preposition": 2,
+        "verb": 3
+      },
+      "replacements": 24,
+      "status": "passed",
+      "words": 88
+    },
+    {
+      "eligible": 64,
+      "genre": "novel",
+      "metadata": {
+        "attempts": "1",
+        "contentSource": "local-model",
+        "contextPolicy": "fresh-per-attempt",
+        "contextWindow": "2048",
+        "effectiveSeed": "73",
+        "formatConstraint": "prose",
+        "modelLoadSeconds": "8.75e-07",
+        "modelRevision": "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+        "modelSHA256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+        "noveltyHistoryCount": "1",
+        "runtime": "llama.cpp-b11829",
+        "scenarioID": "187",
+        "thinking": "disabled",
+        "timeToFirstTokenSeconds": "0.06722450099999999",
+        "wordCount": "86",
+        "writingGenre": "novel"
+      },
+      "partsOfSpeech": {
+        "adverb": 2,
+        "conjunction": 3,
+        "noun": 10,
+        "preposition": 3,
+        "verb": 2
+      },
+      "replacements": 20,
+      "status": "passed",
+      "words": 86
+    },
+    {
+      "eligible": 73,
+      "genre": "dialogue",
+      "metadata": {
+        "attempts": "1",
+        "contentSource": "local-model",
+        "contextPolicy": "fresh-per-attempt",
+        "contextWindow": "2048",
+        "effectiveSeed": "74",
+        "formatConstraint": "grammar",
+        "modelLoadSeconds": "8.75e-07",
+        "modelRevision": "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+        "modelSHA256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+        "noveltyHistoryCount": "2",
+        "runtime": "llama.cpp-b11829",
+        "scenarioID": "339",
+        "thinking": "disabled",
+        "timeToFirstTokenSeconds": "0.084374292",
+        "wordCount": "107",
+        "writingGenre": "dialogue"
+      },
+      "partsOfSpeech": {
+        "adverb": 5,
+        "conjunction": 4,
+        "noun": 5,
+        "verb": 3
+      },
+      "replacements": 17,
+      "status": "passed",
+      "words": 107
+    },
+    {
+      "eligible": 82,
+      "genre": "play",
+      "metadata": {
+        "attempts": "1",
+        "contentSource": "local-model",
+        "contextPolicy": "fresh-per-attempt",
+        "contextWindow": "2048",
+        "effectiveSeed": "75",
+        "formatConstraint": "grammar",
+        "modelLoadSeconds": "9.17e-07",
+        "modelRevision": "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+        "modelSHA256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+        "noveltyHistoryCount": "3",
+        "runtime": "llama.cpp-b11829",
+        "scenarioID": "369",
+        "thinking": "disabled",
+        "timeToFirstTokenSeconds": "0.081426209",
+        "wordCount": "106",
+        "writingGenre": "play"
+      },
+      "partsOfSpeech": {
+        "adverb": 4,
+        "conjunction": 6,
+        "noun": 12
+      },
+      "replacements": 22,
+      "status": "passed",
+      "words": 106
+    },
+    {
+      "eligible": 83,
+      "genre": "essay",
+      "metadata": {
+        "attempts": "1",
+        "contentSource": "local-model",
+        "contextPolicy": "fresh-per-attempt",
+        "contextWindow": "2048",
+        "effectiveSeed": "76",
+        "formatConstraint": "prose",
+        "modelLoadSeconds": "1e-06",
+        "modelRevision": "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+        "modelSHA256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+        "noveltyHistoryCount": "4",
+        "runtime": "llama.cpp-b11829",
+        "scenarioID": "266",
+        "thinking": "disabled",
+        "timeToFirstTokenSeconds": "0.068437709",
+        "wordCount": "91",
+        "writingGenre": "essay"
+      },
+      "partsOfSpeech": {
+        "adverb": 2,
+        "conjunction": 2,
+        "noun": 11,
+        "preposition": 2,
+        "verb": 1
+      },
+      "replacements": 18,
+      "status": "passed",
+      "words": 91
+    },
+    {
+      "eligible": 52,
+      "genre": "poem",
+      "metadata": {
+        "attempts": "1",
+        "contentSource": "local-model",
+        "contextPolicy": "fresh-per-attempt",
+        "contextWindow": "2048",
+        "effectiveSeed": "77",
+        "formatConstraint": "grammar",
+        "modelLoadSeconds": "8.34e-07",
+        "modelRevision": "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+        "modelSHA256": "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517",
+        "noveltyHistoryCount": "5",
+        "runtime": "llama.cpp-b11829",
+        "scenarioID": "58",
+        "thinking": "disabled",
+        "timeToFirstTokenSeconds": "0.085625834",
+        "wordCount": "72",
+        "writingGenre": "poem"
+      },
+      "partsOfSpeech": {
+        "conjunction": 2,
+        "noun": 10,
+        "preposition": 3,
+        "verb": 4
+      },
+      "replacements": 19,
+      "status": "passed",
+      "words": 72
+    }
+  ],
+  "simulator": {
+    "name": "iPhone Duo",
+    "runtime": "iOS 27.1",
+    "installedAndLaunched": true,
+    "genre": "dialogue",
+    "focusedGroups": [
+      "structure"
+    ],
+    "sourceWords": 90,
+    "speakerTurns": 6,
+    "replacements": 3,
+    "selectedEligibleTokens": 17
+  },
+  "speech": {
+    "api": "AVSpeechSynthesizer",
+    "runtimeNetworkingAdded": false,
+    "voiceDownloadInitiated": false,
+    "uiPlaybackVerified": [
+      "en-de mixed",
+      "en-ru mixed",
+      "en original"
+    ],
+    "normalCompletionVerified": true,
+    "immediateStopVerified": true,
+    "missingVoiceMessageObserved": false,
+    "nativeAudioBufferProductionObserved": true,
+    "nativeSampleRateHz": 22050,
+    "underflowEventsInObservedSimulatorLog": 8,
+    "humanListeningPerformed": false
+  },
+  "notPerformed": [
+    "physical iPhone 13 performance and audio validation",
+    "fresh-install airplane-mode audio check",
+    "human literary/CEFR assessment"
+  ],
+  "limits": [
+    "Focused mode translates all safe available matches, with conservative adjective agreement and verb/aspect coverage.",
+    "Format constraints validate structure, not literary or semantic quality.",
+    "Simulator native audio buffers do not establish audible continuity on a physical phone."
+  ]
+}

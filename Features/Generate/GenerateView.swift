@@ -7,6 +7,7 @@ struct GenerateView: View {
     private var topics: [String] { model.availableTopics }
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 8) {
@@ -30,16 +31,22 @@ struct GenerateView: View {
                                 ForEach(CEFRLevel.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                             }.pickerStyle(.segmented).frame(width: 140).disabled(model.generating)
                             Spacer()
-                            Text("~\(model.settings.defaultWordCount) words").foregroundStyle(.secondary).font(.subheadline)
+                            Text(model.settings.writingGenre == .poem ? "8–12 lines" : "~\(model.settings.defaultWordCount) words").foregroundStyle(.secondary).font(.subheadline)
                         }
                         Divider()
                         Picker("Topic", selection: $topic) {
                             ForEach(topics, id: \.self) { Text($0).tag($0) }
                         }.pickerStyle(.menu).frame(maxWidth: .infinity, alignment: .leading).disabled(model.generating)
+                        ReadingOptionsView(settings: Binding(get: { model.settings }, set: { settings in
+                            Task {
+                                do { try await model.updateSettings(settings) }
+                                catch { model.errorMessage = error.localizedDescription }
+                            }
+                        })).disabled(model.generating)
                         if model.generating {
                             HStack {
                                 ProgressView()
-                                Text("Writing on your device…").font(.subheadline)
+                                Text(model.generationPhase).font(.subheadline)
                                 Spacer()
                                 Button("Cancel") { model.cancelGeneration() }
                             }
@@ -61,11 +68,14 @@ struct GenerateView: View {
                         }
                     }.padding(20).background(.background, in: RoundedRectangle(cornerRadius: 24))
 
+                    if let message = model.generationMessage {
+                        Label(message, systemImage: "info.circle").font(.footnote).foregroundStyle(.secondary)
+                    }
                     if model.passages.isEmpty {
                         ContentUnavailableView("Your next good read starts here", systemImage: "book.pages",
-                            description: Text("Generated passages will stay in your library, ready to read offline."))
+                            description: Text("Readings stay here during this session. Closing the app clears them; saved vocabulary stays in your lists."))
                     } else {
-                        Text("YOUR READING LIBRARY").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.secondary)
+                        Text("THIS SESSION").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.secondary)
                         ForEach(model.passages) { passage in
                             VStack(alignment: .leading, spacing: 14) {
                                 HStack {
@@ -73,18 +83,31 @@ struct GenerateView: View {
                                     Spacer()
                                     Text(passage.cefrLevel.rawValue).font(.caption.bold()).foregroundStyle(Theme.forest)
                                 }
+                                if let genre = passage.metadata["writingGenre"].flatMap(WritingGenre.init(rawValue:)) {
+                                    Text(genre.title).font(.caption).foregroundStyle(.secondary)
+                                }
+                                if passage.metadata["replacementStatus"] == "processing", model.generating {
+                                    Label("Preparing translations…",systemImage:"hourglass").font(.caption).foregroundStyle(.secondary)
+                                } else if passage.metadata["replacementMode"] == "aggressive", passage.metadata["replacementComplete"] == "false" {
+                                    Label("English draft · Aggressive translation is incomplete",systemImage:"exclamationmark.circle").font(.caption).foregroundStyle(.secondary)
+                                    if let missing = passage.metadata["unresolvedWords"], !missing.isEmpty {
+                                        Text("Unresolved: " + missing).font(.caption).foregroundStyle(.secondary)
+                                    }
+                                }
                                 InteractivePassageView(passage: passage)
                                 HStack {
-                                    if let density = passage.metadata["actualDensity"].flatMap(Double.init) {
+                                    if passage.metadata["replacementMode"] == "aggressive", let eligible = passage.metadata["eligibleWordCount"] {
+                                        Text("\(passage.metadata["replacedWordCount"] ?? String(passage.replacements.count)) of \(eligible) selected tokens translated").font(.caption).foregroundStyle(.secondary)
+                                    } else if let density = passage.metadata["actualDensity"].flatMap(Double.init) {
                                         Text("\(passage.replacements.count) words mixed · \(Int((density * 100).rounded()))%")
                                             .font(.caption).foregroundStyle(.secondary)
                                     }
                                     Spacer()
                                     Button("Remix", systemImage: "shuffle") { Task { await model.remix(passage) } }
                                         .font(.caption).disabled(model.remixing || model.generating)
-                                        .accessibilityLabel("Remix passage with saved language frequencies")
+                                        .accessibilityLabel("Remix passage with current practice settings")
                                 }
-                                if let requested = passage.metadata["requestedDensity"].flatMap(Double.init),
+                                if passage.metadata["replacementMode"] != "aggressive", let requested = passage.metadata["requestedDensity"].flatMap(Double.init),
                                    let actual = passage.metadata["actualDensity"].flatMap(Double.init), requested - actual > 0.025 {
                                     Text("Target \(Int((requested * 100).rounded()))% · words without a clear match stayed in English.")
                                         .font(.caption).foregroundStyle(.secondary)
@@ -97,10 +120,19 @@ struct GenerateView: View {
                                     }
                                 }.font(.caption).foregroundStyle(.secondary)
                             }.padding(22).background(.background, in: RoundedRectangle(cornerRadius: 22))
+                                .id(passage.id)
                         }
                     }
                 }.padding(20)
             }.background(Theme.paper)
+            .onChange(of: model.passages.first?.id) { _, id in
+                guard let id else { return }
+                Task { @MainActor in
+                    await Task.yield()
+                    withAnimation { proxy.scrollTo(id, anchor: .top) }
+                }
+            }
+            }
             .navigationTitle("LinguaFranca").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .topBarTrailing) { Image(systemName: "leaf").foregroundStyle(Theme.forest).accessibilityLabel("Offline reading") } }
         }

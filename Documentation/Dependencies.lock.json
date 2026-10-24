@@ -77,6 +77,23 @@
         "license": "MIT",
         "pythonModule": true
       }
+    ],
+    "paradigms": [
+      {
+        "filename": "unimorph-deu-d226d211.tar.gz",
+        "url": "https://codeload.github.com/unimorph/deu/tar.gz/d226d2112d3490d8f04ece10d4538123d4297a39",
+        "sha256": "ece48b98ba3b5dc43d8cba110d71b4427cab03801ffc650718b33975fa82cf97",
+        "revision": "d226d2112d3490d8f04ece10d4538123d4297a39",
+        "license": "CC-BY-SA-3.0"
+      },
+      {
+        "filename": "kaikki-de-verbs-2026-10-21.jsonl",
+        "url": "https://kaikki.org/dictionary/German/pos-verb/kaikki.org-dictionary-German-by-pos-verb.jsonl",
+        "sha256": "26353e398a839fa308b1039a428caa66b0f37ef5044ad63c443c4f649a82f399",
+        "extractionDate": "2026-10-21",
+        "dumpDate": "2026-10-01",
+        "license": "CC-BY-SA-4.0"
+      }
     ]
   }
 }

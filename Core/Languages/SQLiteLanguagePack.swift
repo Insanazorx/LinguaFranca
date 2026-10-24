@@ -7,6 +7,8 @@ public actor SQLiteLanguagePack: LanguagePack {
     private let database: DatabaseQueue
     private let preferredTranslations: [String:String]
     private let hasNounForms: Bool
+    private let hasPracticeForms: Bool
+    private let hasCaseForms: Bool
     public init(manifestURL: URL) throws {
         metadata = try JSONDecoder().decode(LanguagePackMetadata.self, from: Data(contentsOf: manifestURL))
         guard metadata.schemaVersion == 1,
@@ -17,6 +19,8 @@ public actor SQLiteLanguagePack: LanguagePack {
         database = try DatabaseQueue(path: manifestURL.deletingLastPathComponent()
             .appendingPathComponent(metadata.lexiconDatabaseName).path, configuration: configuration)
         hasNounForms = try database.read { try $0.tableExists("nounForm") }
+        hasPracticeForms = try database.read { try $0.tableExists("practiceForm") }
+        hasCaseForms = try database.read { try $0.tableExists("caseForm") }
         let policyURL = manifestURL.deletingPathExtension().appendingPathExtension("policy.json")
         if FileManager.default.fileExists(atPath: policyURL.path) {
             preferredTranslations = try JSONDecoder().decode([String:String].self, from: Data(contentsOf: policyURL))
@@ -48,6 +52,34 @@ public actor SQLiteLanguagePack: LanguagePack {
     }
     public func inflect(_ entry: LexicalEntry, features: [String: String]) throws -> String? {
         guard features["requiresInflection"] != "true", features["case"] == nil || features["case"] == "nominative" else { return nil }
+        if ["verb","adjective"].contains(entry.partOfSpeech) {
+            guard hasPracticeForms, var form = features["form"] else { return nil }
+            var tense = features["tense"] ?? "", person = features["person"] ?? "", number = features["number"] ?? "", gender = ""
+            if entry.partOfSpeech == "adjective" { person = "" }
+            if metadata.languageCode == "ru" {
+                if form == "finite", tense == "past" {
+                    guard features["habitual"] == "true" || features["allowGeneralPast"] == "true" else { return nil }
+                    form = features["habitual"] == "true" ? "habitualPast" : "finitePast"; person = ""; gender = number == "plural" ? "" : features["gender"] ?? ""
+                    guard number == "plural" || !gender.isEmpty else { return nil }
+                } else if ["predicative","comparative"].contains(form) {
+                    gender = number == "plural" ? "" : features["gender"] ?? ""
+                    guard number == "plural" || !gender.isEmpty else { return nil }
+                }
+            } else if metadata.languageCode == "de", ["predicative","comparative"].contains(form) {
+                tense = ""; person = ""; number = ""
+            }
+            let lemma = entry.targetLemma.replacingOccurrences(of:"\u{301}",with:"").precomposedStringWithCanonicalMapping.lowercased()
+            let forms = try database.read { db in
+                try String.fetchAll(db, sql:"SELECT DISTINCT surface FROM practiceForm WHERE lemma=? AND pos=? AND form=? AND tense=? AND person=? AND number=? AND gender=? ORDER BY surface", arguments:[lemma,entry.partOfSpeech,form,tense,person,number,gender])
+            }
+            if metadata.languageCode == "ru", entry.englishLemma == "write", lemma == "писать", tense == "present" {
+                // писа́ть (write) and пи́сать (urinate) are separate OpenCorpora paradigms.
+                // Only select an attested form from the documented writing paradigm.
+                let writing = forms.filter { $0.hasPrefix("пиш") }
+                return writing.count == 1 ? writing.first : nil
+            }
+            return forms.count == 1 ? forms.first : nil
+        }
         if features["number"] == "plural" {
             guard hasNounForms, entry.partOfSpeech == "noun" else { return nil }
             let key = entry.targetLemma.replacingOccurrences(of:"\u{301}",with:"").precomposedStringWithCanonicalMapping.lowercased()
@@ -61,11 +93,52 @@ public actor SQLiteLanguagePack: LanguagePack {
     }
     public func validateReplacement(_ entry: LexicalEntry, surface: String, context: String) -> Bool {
         supportsPartOfSpeech(entry.partOfSpeech) && !surface.isEmpty && surface.count <= 100
-            && !surface.hasPrefix("-") && !surface.hasSuffix("-") && !surface.contains("...")
+            && !surface.hasPrefix("-") && !surface.hasSuffix("-") && !surface.contains("...") && !surface.contains("…")
             && !entry.provenance.isEmpty && !context.isEmpty
     }
+    public func nounPhrase(_ entry: LexicalEntry, number: String, grammaticalCase: String, article: String?) async throws -> String? {
+        guard entry.partOfSpeech == "noun", hasCaseForms else { return nil }
+        let lemma = entry.targetLemma.replacingOccurrences(of: "\u{301}", with: "").precomposedStringWithCanonicalMapping.lowercased()
+        func forms(_ grammaticalCase: String) throws -> [(String,String)] {
+            try database.read { db in
+                try Row.fetchAll(db, sql: "SELECT DISTINCT surface,gender FROM caseForm WHERE lemma=? AND number=? AND grammaticalCase=? ORDER BY surface,gender", arguments: [lemma,number,grammaticalCase]).map { ($0["surface"],$0["gender"]) }
+            }
+        }
+        var choices = try forms(grammaticalCase)
+        // Russian spatial location may require the second locative: в лесу, not в лесе.
+        if metadata.languageCode == "ru", grammaticalCase == "prepositional" {
+            let locative = try forms("locative")
+            if !locative.isEmpty {
+                // The second locative is lexical/collocational, not a universal alternative.
+                // в доме is ordinary location; на дому belongs to a different construction.
+                if ["лес","сад","шкаф"].contains(lemma) { choices = locative }
+                else if lemma != "дом" { return nil }
+            }
+        }
+        guard Set(choices.map { $0.0 }).count == 1, let surface = choices.first?.0 else { return nil }
+        if metadata.languageCode == "ru" { return surface }
+        guard metadata.languageCode == "de" else { return nil }
+        let genders = Set(choices.map { $0.1 })
+        guard genders.count == 1, let gender = genders.first else { return nil }
+        let key = number == "plural" ? "p" : gender
+        let definite = ["nominative":["m":"der","f":"die","n":"das","p":"die"], "accusative":["m":"den","f":"die","n":"das","p":"die"], "dative":["m":"dem","f":"der","n":"dem","p":"den"], "genitive":["m":"des","f":"der","n":"des","p":"der"]]
+        let indefinite = ["nominative":["m":"ein","f":"eine","n":"ein"], "accusative":["m":"einen","f":"eine","n":"ein"], "dative":["m":"einem","f":"einer","n":"einem"], "genitive":["m":"eines","f":"einer","n":"eines"]]
+        if article == "the", let prefix = definite[grammaticalCase]?[key] { return prefix + " " + surface }
+        if ["a","an"].contains(article ?? ""), let prefix = indefinite[grammaticalCase]?[key] { return prefix + " " + surface }
+        return article == nil && number == "plural" ? surface : nil
+    }
     public nonisolated func supportsPartOfSpeech(_ pos: String) -> Bool {
-        ["noun", "adverb", "conjunction", "preposition", "pronoun"].contains(pos)
+        ["noun", "adjective", "adverb", "verb", "conjunction", "preposition", "pronoun", "prepositional_phrase"].contains(pos)
+    }
+    public func practiceSurfaces(targetLemma: String, partOfSpeech: String) async throws -> [String] {
+        let lemma = targetLemma.replacingOccurrences(of: "\u{301}", with: "").precomposedStringWithCanonicalMapping.lowercased()
+        if partOfSpeech == "noun", hasCaseForms {
+            return try await database.read { try String.fetchAll($0, sql: "SELECT DISTINCT surface FROM caseForm WHERE lemma=? ORDER BY surface LIMIT 128", arguments: [lemma]) }
+        }
+        if ["verb","adjective"].contains(partOfSpeech), hasPracticeForms {
+            return try await database.read { try String.fetchAll($0, sql: "SELECT DISTINCT surface FROM practiceForm WHERE lemma=? AND pos=? ORDER BY surface LIMIT 128", arguments: [lemma,partOfSpeech]) }
+        }
+        return []
     }
 }
 

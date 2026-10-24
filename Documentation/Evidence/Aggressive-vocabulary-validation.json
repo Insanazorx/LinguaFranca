@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-23",
+  "automatedTests": {
+    "coreSwift": 55,
+    "inferenceSwift": 4,
+    "pythonBuildTools": 9,
+    "total": 68,
+    "result": "passed"
+  },
+  "offlineBuild": "passed",
+  "bundleIntegrityAndChecksums": "passed",
+  "nativeVocabularyRuns": [
+    {
+      "language": "de",
+      "batch": 0,
+      "words": 166,
+      "result": "passed"
+    },
+    {
+      "language": "de",
+      "batch": 1,
+      "words": 94,
+      "result": "passed"
+    },
+    {
+      "language": "ru",
+      "batch": 0,
+      "words": 81,
+      "result": "passed"
+    },
+    {
+      "language": "ru",
+      "batch": 1,
+      "words": 53,
+      "result": "passed"
+    }
+  ],
+  "outputWordCountLimit": null,
+  "vocabularyLengthGrammar": false,
+  "aggressiveFrequencyIndependent": true,
+  "wholePhrasePractice": true,
+  "caseFormRows": {
+    "de": 680582,
+    "ru": 304206
+  },
+  "simulator": {
+    "name": "iPhone Duo",
+    "runtime": "iOS 27.1",
+    "installed": true,
+    "languageGroupAndTopActionVerified": true,
+    "demoList": "Deneme",
+    "demoWord": "Garten",
+    "finalGenerationStarted": true,
+    "finalGenerationCompletionChecked": false,
+    "reason": "User requested stopping further checks."
+  },
+  "notPerformed": [
+    "physical iPhone 13 validation",
+    "linguistic quality certification"
+  ],
+  "knownLimits": [
+    "Small-model output can contain grammatical errors.",
+    "Unresolved translations and case constructions remain English.",
+    "Native inference retains a bounded context/token budget.",
+    "Large vocabulary groups use batches of up to three vocabulary inputs; generated texts have no word-count bound."
+  ]
+}

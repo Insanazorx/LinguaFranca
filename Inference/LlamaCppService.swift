@@ -18,7 +18,7 @@ public struct BundledModel: Codable, Sendable {
 }
 
 /// Coordinates task cancellation while the worker owns all native handles on its own executor.
-public actor LlamaCppService: TextGenerationService {
+public actor LlamaCppService: TextGenerationService, ContextualSenseSelecting {
     private let worker: LlamaWorker
     private var active: Task<GenerationResult, Error>?
     private var activeID: UUID?
@@ -43,6 +43,17 @@ public actor LlamaCppService: TextGenerationService {
         }
     }
     public func cancelGeneration() { active?.cancel() }
+    public func selectSense(_ request: ContextualSenseRequest) async throws -> Int? {
+        var configuration = GenerationConfiguration(); configuration.maximumTokens = 64; configuration.temperature = 0
+        let result = try await generate(request:.init(topic:"Dictionary sense",seed:42,configuration:configuration,senseSelection:request))
+        guard let index = try request.selection(result.englishText) else { return nil }
+        // A small model can prefer the first numbered option even when no sense fits.
+        // Contrast its selection with an explicit rejection option before accepting it.
+        let verification = ContextualSenseRequest(expression:request.expression,partOfSpeech:request.partOfSpeech,sentence:request.sentence,languageCode:request.languageCode,
+            options:[.init(definition:"This definition does not fit: the marked expression has a different meaning or is a literal combination of separate words.",target:"no match"),request.options[index]])
+        let checked = try await generate(request:.init(topic:"Dictionary sense verification",seed:43,configuration:configuration,senseSelection:verification))
+        return try verification.selection(checked.englishText) == 1 ? index : nil
+    }
     public func unloadModel() async {
         guard !unloading else { return }
         unloading = true
@@ -110,7 +121,15 @@ private actor LlamaWorker {
             let elapsedBeforeAttempt = seconds(start.duration(to: .now))
             let output = try infer(model: model.pointer, request: request, seed: effectiveSeed)
             do {
-                let clean = try PassageValidator.validate(output.text, requestedWords: request.wordCount)
+                let clean: String
+                if let sense = request.senseSelection {
+                    _ = try sense.selection(output.text); clean = output.text.trimmingCharacters(in:.whitespacesAndNewlines)
+                }
+                else if let practice = request.vocabularyPractice { clean = try VocabularyPracticeValidator.validate(output.text, request: practice) }
+                else {
+                    clean = try PassageValidator.validate(output.text, requestedWords: request.wordCount, genre: request.genre)
+                }
+                try PassageNoveltyValidator.validate(clean, previous: request.previousPassages)
                 return GenerationResult(englishText: clean, duration: seconds(start.duration(to: .now)), modelIdentifier: descriptor.identifier,
                     seed: request.seed, tokenCount: output.tokens, metadata: [
                         "runtime": "llama.cpp-b11829", "modelRevision": descriptor.revision,
@@ -118,6 +137,12 @@ private actor LlamaWorker {
                         "effectiveSeed": String(effectiveSeed), "contextWindow": String(request.configuration.contextWindow),
                         "timeToFirstTokenSeconds": String(elapsedBeforeAttempt + output.firstTokenSeconds),
                         "modelLoadSeconds": String(loadSeconds), "thinking": "disabled",
+                        "contextPolicy": "fresh-per-attempt", "scenarioID": request.scenario.map { String($0.id) } ?? "none",
+                        "writingGenre": request.genre.rawValue,
+                        "formatConstraint": request.outputGrammar == nil ? "prose" : "grammar",
+                        "outputLanguage": request.vocabularyPractice?.languageCode ?? "en",
+                        "aggressiveIntensity": request.aggressiveDomains.isEmpty ? "none" : "extreme",
+                        "noveltyHistoryCount": String(request.previousPassages.count),
                         "wordCount": String(clean.split(whereSeparator: \.isWhitespace).count), "contentSource": "local-model"
                     ])
             } catch let error as GenerationError { if attempt == 1 { throw error } }
@@ -139,6 +164,12 @@ private actor LlamaWorker {
         defer { llama_free(context) }
         guard let sampler = llama_sampler_chain_init(llama_sampler_chain_default_params()) else { throw GenerationError.contextFailure }
         defer { llama_sampler_free(sampler) }
+        if let grammar = request.outputGrammar {
+            guard let constraint = llama_sampler_init_grammar(vocab, grammar, "root") else {
+                throw GenerationError.invalidOutput("literary format could not be initialized")
+            }
+            llama_sampler_chain_add(sampler, constraint)
+        }
         llama_sampler_chain_add(sampler, llama_sampler_init_top_k(40))
         llama_sampler_chain_add(sampler, llama_sampler_init_top_p(config.topP, 1))
         llama_sampler_chain_add(sampler, llama_sampler_init_penalties(llama_vocab_n_tokens(vocab), 64, config.repetitionPenalty, 0, 0))

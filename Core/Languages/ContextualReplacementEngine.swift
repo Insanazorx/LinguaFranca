@@ -6,20 +6,45 @@ public struct ReplacementResult: Sendable {
     public let requestedDensity: Double
     public let actualDensity: Double
     public let languageCounts: [String: Int]
+    public let eligibleWordCount: Int
+    public let replacedWordCount: Int
+    public let unresolved: [ReplacementGap]
+    public var isComplete: Bool { unresolved.isEmpty }
+}
+
+public struct ReplacementGap: Sendable, Equatable {
+    public let surface: String
+    public let partOfSpeech: String
+    public let range: UTF16Span
+    public let contextExpression: String?
 }
 
 /// English analysis, lexical lookup and deterministic allocation are independent of inference and UI.
 public struct ContextualReplacementEngine: Sendable {
     private let registry: LanguagePackRegistry
-    public init(registry: LanguagePackRegistry) { self.registry = registry }
+    private let senseSelector: (any ContextualSenseSelecting)?
+    public init(registry: LanguagePackRegistry, senseSelector: (any ContextualSenseSelecting)? = nil) {
+        self.registry = registry; self.senseSelector = senseSelector
+    }
 
     public func replace(text: String, sourceTextID: String, settings: AppSettings, seed: UInt32) async throws -> ReplacementResult {
         try settings.validate()
         let tokens = EnglishAnalyzer.tokens(in: text,bundledTagger:registry.englishTagger)
-        let frequencies = settings.effectiveFrequencies.filter { $0.value > 0 }
-        let requested = frequencies.values.reduce(0, +)
-        guard !tokens.isEmpty, requested > 0 else {
-            return ReplacementResult(spans: [], wordCount: tokens.count, requestedDensity: requested, actualDensity: 0, languageCounts: [:])
+        let frequencies = settings.replacementLanguageShares.filter { $0.value > 0 }
+        let focused = settings.replacementMode == .aggressive
+        func eligible(_ token: EnglishToken) -> Bool {
+            focused ? settings.practiceDomains.contains(where: { $0.includes(token.pos) }) : ["noun", "adverb", "conjunction", "preposition", "pronoun"].contains(token.pos)
+        }
+        let phrases = focused ? PrepositionalPractice.patterns(tokens).filter {
+            settings.practiceDomains.contains(.prepositionalPhrases) || (settings.practiceDomains.contains(.structure) && tokens[$0.indices.lowerBound].lemma == "of")
+        } : []
+        let predicates = focused && settings.practiceDomains.contains(.actions) ? VerbPhrasePractice.patterns(tokens) : []
+        var reserved: Set<Int> = []
+        let required = Set(tokens.indices.filter { eligible(tokens[$0]) }).union(settings.practiceDomains.contains(.prepositionalPhrases) ? phrases.flatMap { Array($0.indices) } : [])
+        let eligibleCount = required.count
+        let requested = focused ? Double(eligibleCount) / Double(max(1, tokens.count)) : frequencies.values.reduce(0, +)
+        guard !tokens.isEmpty, requested > 0, !frequencies.isEmpty else {
+            return ReplacementResult(spans: [], wordCount: tokens.count, requestedDensity: requested, actualDensity: 0, languageCounts: [:], eligibleWordCount: eligibleCount, replacedWordCount: 0, unresolved: [])
         }
         let packs = registry.packs.filter { frequencies[$0.metadata.languageCode] != nil }
         struct Choice {
@@ -29,93 +54,202 @@ public struct ContextualReplacementEngine: Sendable {
             let confidence: Double
         }
         var options: [Int: [Choice]] = [:]
+        var phraseEnds: [Int:Int] = [:]
+        var protectedExpressions: [Range<Int>] = []
+        if focused, settings.practiceDomains.contains(.structure) {
+            for range in IndirectQuestionPractice.ranges(tokens) {
+                guard reserved.isDisjoint(with:range) else { continue }
+                for pack in packs {
+                    if let entry = try await IndirectQuestionPractice.entry(range,tokens:tokens,pack:pack,text:text) {
+                        options[range.lowerBound,default:[]].append(Choice(entry:entry,surface:entry.targetLemma,pack:pack,confidence:0.94))
+                        phraseEnds[range.lowerBound] = range.upperBound-1; reserved.formUnion(range)
+                    }
+                }
+            }
+        }
+        for predicate in predicates {
+            guard reserved.isDisjoint(with:predicate.indices) else { continue }
+            let start = predicate.indices.lowerBound
+            for pack in packs {
+                if let entry = try await VerbPhrasePractice.entry(predicate,tokens:tokens,pack:pack,text:text) {
+                    options[start,default:[]].append(Choice(entry:entry,surface:entry.targetLemma,pack:pack,confidence:0.94))
+                    phraseEnds[start] = predicate.indices.upperBound-1
+                    reserved.formUnion(predicate.indices)
+                }
+            }
+        }
+        if focused {
+            let expressions = try await LexicalExpressionPractice.choices(tokens:tokens,text:text,required:required,packs:packs,selector:senseSelector,excluded:reserved)
+            protectedExpressions = expressions.protectedRanges
+            for range in protectedExpressions { reserved.formUnion(range) }
+            for choice in expressions.choices {
+                options[choice.range.lowerBound,default:[]].append(Choice(entry:choice.entry,surface:choice.surface,pack:choice.pack,confidence:0.92))
+                phraseEnds[choice.range.lowerBound] = choice.range.upperBound-1; reserved.formUnion(choice.range)
+            }
+        }
+        protectedExpressions += phrases.map(\.indices)
+        for phrase in phrases {
+            guard reserved.isDisjoint(with:phrase.indices) else { continue }
+            try Task.checkCancellation()
+            let start = phrase.indices.lowerBound
+            for pack in packs {
+                if let entry = try await PrepositionalPractice.entry(pattern: phrase, tokens: tokens, pack: pack, source: text, aggressive: focused, selector:senseSelector) {
+                    var surface = entry.targetLemma
+                    if tokens[start].isSentenceInitial, let first = surface.first { surface = String(first).uppercased() + surface.dropFirst() }
+                    options[start, default: []].append(Choice(entry: entry, surface: surface, pack: pack, confidence: 0.94))
+                    phraseEnds[start] = phrase.indices.upperBound - 1
+                    reserved.formUnion(phrase.indices)
+                }
+            }
+        }
         // Passage-local cache only; the lexicon itself stays on disk.
         var cache: [String: [LexicalEntry]] = [:]
         for (i, token) in tokens.enumerated() {
             try Task.checkCancellation()
             // Citation forms are only defensible for uninflected source nouns and invariant words.
-            guard ["noun", "adverb", "conjunction", "preposition", "pronoun"].contains(token.pos),
+            guard eligible(token), !reserved.contains(i),
                   token.pos != "pronoun" || token.surface.lowercased() == token.lemma,
                   !(token.pos == "adverb" && ["more","most","less","least"].contains(token.lemma)),
                   !(token.pos == "noun" && token.isPlural && ["that","which","who"].contains(token.previousWord ?? "")
                     && ["determiner","pronoun"].contains(token.followingPOS ?? "")),
                   !token.isCompoundComponent,
-                  !token.surface.contains("’"), !token.surface.contains("'") else { continue }
+                  !token.surface.contains("’"), !token.surface.contains("'"),
+                  let features = EnglishInflection.features(token, aggressive: focused) else { continue }
             for pack in packs where pack.supportsPartOfSpeech(token.pos) {
                 let code = pack.metadata.languageCode
-                let lemmas = token.pos == "noun" ? EnglishAnalyzer.nounLemmaCandidates(token) : [token.lemma]
+                let lemmas = EnglishInflection.lemmas(token)
                 var resolutions: [SenseResolver.Resolution] = []
+                var availableEntries: [LexicalEntry] = []
                 for lemma in lemmas {
                     let key = code + ":" + lemma
                     let entries: [LexicalEntry]
                     if let found = cache[key] { entries = found }
                     else { entries = try await pack.lookup(englishLemma: lemma); cache[key] = entries }
+                    availableEntries += entries
                     var source = token; source.lemma = lemma
-                    if let resolved = SenseResolver.resolve(entries:entries,token:source) { resolutions.append(resolved) }
+                    let resolved = focused ? GrammaticalSenseResolver.resolve(entries, token: source, language: code) : SenseResolver.resolve(entries:entries,token:source)
+                    if let resolved { resolutions.append(resolved) }
                 }
-                guard resolutions.count == 1, let resolved = resolutions.first,
-                      let form = try await pack.inflect(resolved.entry, features: ["number": token.isPlural ? "plural" : "singular"]),
-                      try await pack.validateReplacement(resolved.entry, surface: form, context: token.sentence)
-                else { continue }
+                if resolutions.count != 1, focused, let senseSelector {
+                    var candidates: [Choice] = [], seenSenses: Set<String> = []
+                    let contextWords = SenseResolver.words(token.sentence)
+                    let rankedEntries = availableEntries.enumerated().sorted {
+                        let a = SenseResolver.words($0.element.morphologicalTags["definition"] ?? "").intersection(contextWords).count
+                        let b = SenseResolver.words($1.element.morphologicalTags["definition"] ?? "").intersection(contextWords).count
+                        return a == b ? $0.offset < $1.offset : a > b
+                    }.map(\.element)
+                    for entry in rankedEntries where entry.partOfSpeech == token.pos && seenSenses.insert(entry.senseID).inserted {
+                        let definition = (entry.morphologicalTags["definition"] ?? "").lowercased()
+                        guard !["archaic","obsolete","vulgar","offensive","slang","historical","rare","nonstandard"].contains(where:definition.contains) else { continue }
+                        for alternative in GrammaticalSenseResolver.alternatives(entry) {
+                            let variant = GrammaticalSenseResolver.replacingTarget(entry,alternative)
+                            guard GrammaticalSenseResolver.permitsIsolated(variant,token:token,language:code) else { continue }
+                            if let surface = try await pack.inflect(variant,features:features),
+                               try await pack.validateReplacement(variant,surface:surface,context:token.sentence) {
+                                candidates.append(Choice(entry:variant,surface:surface,pack:pack,confidence:0.8)); break
+                            }
+                        }
+                        if candidates.count == 9 { break }
+                    }
+                    if !candidates.isEmpty {
+                        let range = try token.span.range(in:text)
+                        let start = text.index(range.lowerBound,offsetBy:-240,limitedBy:text.startIndex) ?? text.startIndex
+                        let end = text.index(range.upperBound,offsetBy:240,limitedBy:text.endIndex) ?? text.endIndex
+                        let marked = String(text[start..<range.lowerBound]) + " [[" + token.surface + "]] " + String(text[range.upperBound..<end])
+                        let request = ContextualSenseRequest(expression:token.surface,partOfSpeech:token.pos,sentence:marked,languageCode:code,
+                            options:candidates.map { .init(definition:String(($0.entry.morphologicalTags["definition"] ?? "").prefix(240)),target:$0.surface) })
+                        if let index = try await senseSelector.selectSense(request), candidates.indices.contains(index) {
+                            let selected = candidates[index]
+                            var surface = selected.surface
+                            if token.isSentenceInitial, let first = surface.first { surface = String(first).uppercased() + surface.dropFirst() }
+                            options[i,default:[]].append(Choice(entry:selected.entry,surface:surface,pack:pack,confidence:selected.confidence))
+                        }
+                    }
+                    continue
+                }
+                guard resolutions.count == 1, let resolved = resolutions.first else { continue }
+                var inflected: (LexicalEntry,String)?
+                let alternatives = focused ? GrammaticalSenseResolver.alternatives(resolved.entry) : [resolved.entry.targetLemma]
+                for alternative in alternatives {
+                    let entry = GrammaticalSenseResolver.replacingTarget(resolved.entry, alternative)
+                    guard !focused || GrammaticalSenseResolver.permitsIsolated(entry,token:token,language:code) else { continue }
+                    guard focused || LexicalContrastPolicy.isDistinct(english:entry.englishLemma,target:entry.targetLemma),
+                          let form = try await pack.inflect(entry, features:features),
+                          try await pack.validateReplacement(entry,surface:form,context:token.sentence) else { continue }
+                    inflected = (entry,form); break
+                }
+                guard let (entry, form) = inflected else { continue }
                 var surface = form
                 // Preserve sentence-initial case. German dictionary noun capitals remain intact.
                 if token.isSentenceInitial, let first = surface.first {
                     surface = String(first).uppercased() + surface.dropFirst()
                 }
-                guard surface != token.surface else { continue }
-                options[i, default: []].append(Choice(entry: resolved.entry, surface: surface, pack: pack, confidence: resolved.confidence))
+                guard focused || LexicalContrastPolicy.isDistinct(english: token.surface, target: surface) else { continue }
+                options[i, default: []].append(Choice(entry: entry, surface: surface, pack: pack, confidence: resolved.confidence))
             }
         }
-        let limit = min(Int((Double(tokens.count) * requested).rounded()), tokens.count / 2)
+        let limit = focused ? options.count : min(Int((Double(tokens.count) * requested).rounded()), tokens.count / 2)
         var rng = SeededGenerator(seed: UInt64(seed)), order = Array(options.keys).sorted()
         order.shuffle(using: &rng)
         var selected: [Int: Choice] = [:], counts: [String: Int] = [:]
         // Prefer spaced words, then at high density allow pairs, never three in a row.
-        let passes = requested >= 0.33 ? 2 : 1
+        let passes = !focused && requested >= 0.33 ? 2 : 1
         for pass in 0..<passes {
           for i in order where selected.count < limit {
             guard selected[i] == nil, let choices = options[i] else { continue }
-            if pass == 0 {
+            if !focused && pass == 0 {
                 guard selected[i-1] == nil, selected[i+1] == nil else { continue }
-            } else {
+            } else if !focused {
                 guard !(selected[i-2] != nil && selected[i-1] != nil),
                       !(selected[i-1] != nil && selected[i+1] != nil),
                       !(selected[i+1] != nil && selected[i+2] != nil) else { continue }
             }
             let ranked = choices.sorted { a, b in
                 let ac = a.pack.metadata.languageCode, bc = b.pack.metadata.languageCode
-                let ad = (frequencies[ac] ?? 0) * Double(tokens.count) - Double(counts[ac, default: 0])
-                let bd = (frequencies[bc] ?? 0) * Double(tokens.count) - Double(counts[bc, default: 0])
+                let denominator = focused ? frequencies.values.reduce(0,+) : 1
+                let target = focused ? Double(selected.count + 1) : Double(tokens.count)
+                let ad = (frequencies[ac] ?? 0) / denominator * target - Double(counts[ac, default: 0])
+                let bd = (frequencies[bc] ?? 0) / denominator * target - Double(counts[bc, default: 0])
                 return ad == bd ? ac < bc : ad > bd
             }
             guard let chosen = ranked.first(where: {
                 let code = $0.pack.metadata.languageCode
-                return Double(counts[code, default: 0]) < ((frequencies[code] ?? 0) * Double(tokens.count)).rounded()
+                return focused || Double(counts[code, default: 0]) < ((frequencies[code] ?? 0) * Double(tokens.count)).rounded()
             }) else { continue }
             selected[i] = chosen
             counts[chosen.pack.metadata.languageCode, default: 0] += 1
           }
         }
-        var spans: [ReplacementSpan] = [], offset = 0
+        var spans: [ReplacementSpan] = [], offset = 0, replacedWords = 0
+        var covered: Set<Int> = []
         for i in selected.keys.sorted() {
             guard let choice = selected[i] else { continue }
-            let token = tokens[i], code = choice.pack.metadata.languageCode
+            let token = tokens[i], code = choice.pack.metadata.languageCode, last = tokens[phraseEnds[i] ?? i]
+            let sourceSpan = UTF16Span(location: token.span.location, length: last.span.location + last.span.length - token.span.location)
+            let original = (text as NSString).substring(with: NSRange(location: sourceSpan.location, length: sourceSpan.length))
+            replacedWords += (phraseEnds[i] ?? i) - i + 1
+            covered.formUnion(i...(phraseEnds[i] ?? i))
             spans.append(ReplacementSpan(id: "\(sourceTextID)-\(token.span.location)-\(code)", sourceTextID: sourceTextID,
-                originalUTF16Range: token.span,
+                originalUTF16Range: sourceSpan,
                 renderedUTF16Range: UTF16Span(location: token.span.location + offset, length: choice.surface.utf16.count),
-                originalSurface: token.surface, originalLemma: choice.entry.englishLemma, originalPartOfSpeech: token.pos,
+                originalSurface: original, originalLemma: choice.entry.englishLemma, originalPartOfSpeech: choice.entry.partOfSpeech,
                 sourceSenseID: choice.entry.senseID, targetLanguageCode: code,
                 targetLemma: choice.entry.targetLemma, targetSurface: choice.surface,
                 translationConfidence: choice.confidence, languagePackVersion: choice.pack.metadata.version,
-                senseDescription: choice.entry.morphologicalTags["definition"]))
-            offset += choice.surface.utf16.count - token.span.length
+                senseDescription: SenseResolver.description(choice.entry)))
+            offset += choice.surface.utf16.count - sourceSpan.length
         }
         return ReplacementResult(spans: spans, wordCount: tokens.count, requestedDensity: requested,
-            actualDensity: Double(spans.count) / Double(tokens.count), languageCounts: counts)
+            actualDensity: Double(replacedWords) / Double(tokens.count), languageCounts: counts, eligibleWordCount: eligibleCount,
+            replacedWordCount: covered.intersection(required).count,
+            unresolved: focused ? required.subtracting(covered).sorted().map { i in
+                let expression = protectedExpressions.first { $0.contains(i) }.map { $0.map { tokens[$0].surface }.joined(separator:" ") }
+                return .init(surface:tokens[i].surface,partOfSpeech:tokens[i].pos,range:tokens[i].span,contextExpression:expression)
+            } : [])
     }
 }
 
-private struct SeededGenerator: RandomNumberGenerator {
+struct SeededGenerator: RandomNumberGenerator {
     var state: UInt64
     init(seed: UInt64) { state = seed }
     mutating func next() -> UInt64 {
@@ -129,10 +263,25 @@ private struct SeededGenerator: RandomNumberGenerator {
 
 enum SenseResolver {
     struct Resolution { let entry: LexicalEntry; let confidence: Double }
+    static func description(_ entry: LexicalEntry) -> String? {
+        if entry.partOfSpeech == "conjunction" {
+            switch entry.englishLemma {
+            case "but": return "Contrasts two statements; not the 'except' meaning."
+            case "if": return "Introduces a condition; not an indirect question."
+            case "that": return "Introduces a content clause; not a relative clause."
+            default: break
+            }
+        }
+        return entry.morphologicalTags["definition"]
+    }
     private static let stop = Set("a an the of to in on at by for from is are was were be being been as that this it its with without and or but one something someone having used use act state quality person thing very more most less little any not no than into their they his her our your my which who when where while during time period experience experiences way make part place".split(separator: " ").map(String.init))
     private static let blocked = ["obsolete", "archaic", "vulgar", "slang", "historical", "rare", "offensive", "derogatory"]
     // High-risk polysemes require positive contextual evidence; POS alone is insufficient.
     private static let senses: [String: [(Set<String>, Set<String>)]] = [
+        "house": [(Set(["home","roof","kitchen","bedroom","door","window","garden","shelter"]), Set(["$general"])),
+                  (Set(["parliament","legislature","debate","politician"]), Set(["chamber","government"]))],
+        "hungry": [(Set(["food","meal","lunch","dinner","breakfast","eat","eating","stomach"]), Set(["$general"])),
+                   (Set(["power","success","ambition","attention","fame"]), Set(["eager","desire"]))],
         "bank": [(Set(["money", "deposit", "loan", "account", "cash", "financial"]), Set(["institution", "financial", "branch"])),
                  (Set(["river", "stream", "water", "shore"]), Set(["river", "water", "slope", "land", "edge"]))],
         "light": [(Set(["lamp", "sun", "bright", "dark", "room", "shine"]), Set(["illumination", "radiation", "visible", "light"])),
@@ -206,6 +355,9 @@ enum SenseResolver {
             case "in":
                 guard ["forest","city","room","park","cafe","café","office","garden","box","cup","bag","house","car"].contains(token.followingNoun ?? "") else { return nil }
                 available = available.filter { $0.morphologicalTags["definition"] == "contained by" }
+            case "into":
+                guard ["forest","city","room","park","office","garden","box","cup","bag","house","car"].contains(token.followingNoun ?? "") else { return nil }
+                available = available.filter { $0.morphologicalTags["definition"] == "going inside" }
             case "on":
                 guard ["table","floor","bench","ground","desk","page","paper","shelf"].contains(token.followingNoun ?? "") else { return nil }
                 available = available.filter { $0.morphologicalTags["definition"] == "positioned at the upper surface of" }
@@ -252,7 +404,7 @@ enum SenseResolver {
         }
         if token.pos == "conjunction" {
             // Exclude idioms and non-equivalent senses of common connective words.
-            guard ["and", "or", "but", "although", "because", "whereas", "that"].contains(token.lemma) else { return nil }
+            guard ["and", "or", "but", "although", "because", "whereas", "that", "if", "before", "after"].contains(token.lemma) else { return nil }
             let lower = token.sentence.lowercased()
             if token.lemma == "but" {
                 guard !lower.contains("anything but"), !lower.contains("nothing but"), !lower.contains("not only") else { return nil }
@@ -266,7 +418,16 @@ enum SenseResolver {
             } else if token.lemma == "whereas" {
                 available = available.filter { ($0.morphologicalTags["definition"] ?? "").contains("but in contrast") }
             } else if token.lemma == "that" {
+                let matrix = Set(["think","thinks","thought","believe","believes","believed","feel","feels","felt","know","knows","knew","say","says","said","tell","tells","told","notice","notices","noticed","hear","hears","heard","hope","hopes","hoped","realize","realizes","realized","decide","decides","decided","conclude","concludes","concluded","show","shows","showed","argue","argues","argued"])
+                guard matrix.contains(token.previousWord ?? "") else { return nil }
                 available = available.filter { $0.morphologicalTags["definition"] == "connecting a noun clause" }
+            } else if token.lemma == "if" {
+                guard !["ask","asked","wonder","wondered","know","knew","whether"].contains(where: { context.contains($0) }) else { return nil }
+                available = available.filter { $0.morphologicalTags["definition"] == "supposing that" }
+            } else if token.lemma == "before" {
+                available = available.filter { $0.morphologicalTags["definition"] == "in advance of the time when" }
+            } else if token.lemma == "after" {
+                available = available.filter { $0.morphologicalTags["definition"] == "signifies that the action of its clause takes place before the action of the other clause" }
             }
             explicitlyResolved = true
         }

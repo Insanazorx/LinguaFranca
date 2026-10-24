@@ -59,6 +59,7 @@ struct BundledEnglishTagger: Sendable {
         if tag.hasPrefix("VB") || tag == "MD" { return "verb" }
         if tag.hasPrefix("JJ") { return "adjective" }
         if tag.hasPrefix("RB") || tag == "WRB" { return "adverb" }
+        if tag == "RP" { return "particle" }
         if tag == "PRP" { return "pronoun" }
         if ["DT","PDT","PRP$","WDT"].contains(tag) { return "determiner" }
         if tag == "CC" { return "conjunction" }

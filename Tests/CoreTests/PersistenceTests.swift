@@ -21,7 +21,7 @@ private func word(_ sense: String = "financial") -> VocabularyDraft {
     #expect(try await second.settings() == settings)
     let queue = try DatabaseQueue(path: url.path)
     let migrations = try await queue.read { try String.fetchAll($0, sql: "SELECT identifier FROM grdb_migrations") }
-    #expect(migrations == ["v1_local_foundation"])
+    #expect(migrations == ["v1_local_foundation", "v2_ephemeral_reading_sessions"])
     #expect(try await queue.read { try Row.fetchAll($0, sql: "PRAGMA foreign_key_check").isEmpty })
 }
 
@@ -110,24 +110,30 @@ private func word(_ sense: String = "financial") -> VocabularyDraft {
     #expect(try await db.studySummary().newCards == 1)
 }
 
-@Test func removingFormerSamplesPreservesRealReadingsAndUserLibrary() async throws {
-    let db = try DatabaseManager()
-    let deck = try await db.createDeck(name: "My own list")
-    let wordID = try await db.saveVocabulary(word(), inDeck: deck)
-    var settings = AppSettings(); settings.dailyReviewTarget = 15
-    try await db.saveSettings(settings)
-    let date = Date(timeIntervalSince1970: 1_700_000_000)
-    let real = GeneratedText(id: "real", originalEnglish: "A genuine model reading.", topic: "Science", cefrLevel: .c1,
-        generatedAt: date, modelID: "Qwen3.5-0.8B-Q4_K_M", seed: 42, metadata: ["contentSource": "local-model"])
-    try await db.savePassage(real)
-    try await db.savePassage(GeneratedText(originalEnglish: "Old fixture.", topic: "Test", cefrLevel: .b2, modelID: "sample-preview", seed: 0))
-    try await db.savePassage(GeneratedText(originalEnglish: "Tagged fixture.", topic: "Test", cefrLevel: .b2, modelID: "legacy", seed: 0,
-        metadata: ["contentSource": "hand-authored-sample"]))
-    #expect(try await db.removeSamplePassages() == 2)
-    #expect(try await db.removeSamplePassages() == 0)
-    #expect(try await db.recentPassages() == [real])
-    #expect(try await db.vocabulary().first?.id == wordID)
-    #expect(try await db.decks().first?.id == deck)
-    #expect(try await db.studySummary().newCards == 1)
-    #expect(try await db.settings() == settings)
+@Test func sessionMigrationRemovesReadingsAndPreservesVocabularyAndReviews() async throws {
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
+    defer { for suffix in ["", "-shm", "-wal"] { try? FileManager.default.removeItem(atPath: url.path + suffix) } }
+    let queue = try DatabaseQueue(path: url.path)
+    try DatabaseManager.migrator.migrate(queue, upTo: "v1_local_foundation")
+    let settings = AppSettings()
+    let json = String(decoding: try JSONEncoder().encode(settings), as: UTF8.self)
+    try await queue.write { db in
+        try db.execute(sql: "INSERT INTO studyDeck VALUES ('deck', 'My list', 'my list', 1, 1)")
+        try db.execute(sql: "INSERT INTO vocabularyItem VALUES ('word', 'knowledge', 'knowledge', 'de', 'Wissen', 'Wissen', 'sense', 'noun', 'Saved example.', 'Saved example.', 'knowledge wissen', 1)")
+        try db.execute(sql: "INSERT INTO deckVocabulary VALUES ('deck', 'word')")
+        try db.execute(sql: "INSERT INTO srsCard (id, vocabularyItemID, dueAt) VALUES ('card', 'word', 123)")
+        try db.execute(sql: "INSERT INTO reviewLog VALUES ('review', 'card', 3, 1, 12, 1, 'new', 'review', 'fixture-only')")
+        try db.execute(sql: "INSERT INTO settings VALUES (1, ?, 1)", arguments: [json])
+        try db.execute(sql: "INSERT INTO generatedText VALUES ('reading', 'Old generated text.', 'Science', 'C1', 1, 'local-model', 42, '{}')")
+        try db.execute(sql: "INSERT INTO replacement VALUES ('span', 'reading', 0, 3, 0, 3, '{}')")
+    }
+    let migrated = try DatabaseManager(path: url.path)
+    #expect(try await migrated.decks().first?.id == "deck")
+    #expect(try await migrated.vocabulary().first?.draft.exampleEnglish == "Saved example.")
+    #expect(try await migrated.settings() == settings)
+    #expect(try await queue.read { try Int.fetchOne($0, sql: "SELECT count(*) FROM reviewLog") } == 1)
+    #expect(try await queue.read { try Int.fetchOne($0, sql: "SELECT dueAt FROM srsCard") } == 123)
+    #expect(try await queue.read { try Int.fetchOne($0, sql: "SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN ('generatedText','replacement')") } == 0)
+    #expect(try await queue.read { try Row.fetchAll($0, sql: "PRAGMA foreign_key_check").isEmpty })
+    _ = try DatabaseManager(path: url.path)
 }

@@ -20,6 +20,17 @@ ROOT = Path(__file__).resolve().parent.parent
 def normalized(text):
     return unicodedata.normalize("NFC", text.strip())
 
+def sense_part_of_speech(lemma, pos, definition):
+    # Some DBnary/WikDict entries group a documented verbal sense under a noun URI.
+    # Correct only explicit evidence in the source gloss; never duplicate every noun as a verb.
+    if re.match(r"^(?:intransitive|transitive):\s*to\b", definition, re.I):
+        return "verb"
+    if lemma == "as":
+        if definition == "Roman coin": return "noun"
+        if definition == "In the role of": return "preposition"
+        if definition.startswith(("at the same", "considering that", "in the same way", "varying through")): return "conjunction"
+    return pos
+
 def build(source, output, code, name):
     input_path = source / f"en-{code}.sqlite3"
     digest = hashlib.sha256(input_path.read_bytes()).hexdigest()
@@ -44,6 +55,7 @@ def build(source, output, code, name):
         if not alternatives or len(lemma) > 80 or not any(c.isalpha() for c in lemma):
             continue
         definition = normalized(sense or "")
+        pos = sense_part_of_speech(lemma, pos, definition)
         sense_id = lexentry + "#" + hashlib.sha256(definition.encode()).hexdigest()[:12]
         provenance = json.dumps({"source": "WikDict / Wiktionary via DBnary", "url": SOURCE + input_path.name,
                                  "license": "CC-BY-SA-4.0", "sourceSHA256": digest, "lexentry": lexentry,

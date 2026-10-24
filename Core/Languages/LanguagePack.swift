@@ -26,8 +26,15 @@ public protocol LanguagePack: Sendable {
     func lookup(englishLemma: String) async throws -> [LexicalEntry]
     func lookupSense(englishLemma: String, senseID: String) async throws -> LexicalEntry?
     func inflect(_ entry: LexicalEntry, features: [String: String]) async throws -> String?
+    func nounPhrase(_ entry: LexicalEntry, number: String, grammaticalCase: String, article: String?) async throws -> String?
+    func practiceSurfaces(targetLemma: String, partOfSpeech: String) async throws -> [String]
     func validateReplacement(_ entry: LexicalEntry, surface: String, context: String) async throws -> Bool
     func supportsPartOfSpeech(_ partOfSpeech: String) -> Bool
+}
+
+public extension LanguagePack {
+    func nounPhrase(_ entry: LexicalEntry, number: String, grammaticalCase: String, article: String?) async throws -> String? { nil }
+    func practiceSurfaces(targetLemma: String, partOfSpeech: String) async throws -> [String] { [] }
 }
 
 public protocol SRSScheduler: Sendable {

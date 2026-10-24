@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-23",
+  "coreTests": 37,
+  "inferenceTests": 4,
+  "buildToolTests": 7,
+  "offlineSimulatorBuild": "passed",
+  "bundleChecksums": "passed",
+  "simulator": "iPhone Duo / iOS 27.1",
+  "installation": "passed",
+  "backgroundRetainsReading": "verified through Home/return",
+  "processRestartClearsReadings": "verified through termination/relaunch",
+  "legacyReadingTables": "removed; foreign_key_check passed",
+  "physicalDeviceValidation": "not performed",
+  "modelRuns": [
+    {
+      "host": "Mac",
+      "seed": 42,
+      "words": 138,
+      "attempts": "2",
+      "scenarioID": "469",
+      "historyCount": "0",
+      "contextPolicy": "fresh-per-attempt"
+    },
+    {
+      "host": "Mac",
+      "seed": 43,
+      "words": 77,
+      "attempts": "2",
+      "scenarioID": "44",
+      "historyCount": "1",
+      "contextPolicy": "fresh-per-attempt"
+    }
+  ],
+  "limitations": [
+    "Similarity heuristic; no verified etymology data",
+    "Semantic uniqueness and CEFR are not certified",
+    "Word-count/topic adherence remains imperfect"
+  ]
+}
