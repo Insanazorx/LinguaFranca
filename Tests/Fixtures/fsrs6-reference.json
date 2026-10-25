@@ -1,0 +1,182 @@
+{
+  "sourceRevision": "9446cb06605c597a063aeee49f7d188d42e34dc2",
+  "fuzz": false,
+  "runs": [
+    [
+      {
+        "delta": 0,
+        "rating": 1,
+        "stability": 0.212,
+        "difficulty": 6.4133,
+        "state": "learning",
+        "step": 0,
+        "due": 1767225660.0,
+        "reviewedAt": 1767225600.0
+      },
+      {
+        "delta": 60,
+        "rating": 3,
+        "stability": 0.24668918777567272,
+        "difficulty": 6.402115069296838,
+        "state": "learning",
+        "step": 1,
+        "due": 1767226260.0,
+        "reviewedAt": 1767225660.0
+      },
+      {
+        "delta": 600,
+        "rating": 3,
+        "stability": 0.2842063592758949,
+        "difficulty": 6.3909413235243795,
+        "state": "review",
+        "step": 0,
+        "due": 1767312660.0,
+        "reviewedAt": 1767226260.0
+      },
+      {
+        "delta": 259200,
+        "rating": 3,
+        "stability": 3.2498030073805153,
+        "difficulty": 6.379778751497693,
+        "state": "review",
+        "step": 0,
+        "due": 1767744660.0,
+        "reviewedAt": 1767485460.0
+      },
+      {
+        "delta": 1728000,
+        "rating": 1,
+        "stability": 0.9402887539861083,
+        "difficulty": 8.79528626241862,
+        "state": "relearning",
+        "step": 0,
+        "due": 1769214060.0,
+        "reviewedAt": 1769213460.0
+      },
+      {
+        "delta": 600,
+        "rating": 2,
+        "stability": 0.9402887539861083,
+        "difficulty": 9.185483250630146,
+        "state": "relearning",
+        "step": 0,
+        "due": 1769214960.0,
+        "reviewedAt": 1769214060.0
+      },
+      {
+        "delta": 900,
+        "rating": 3,
+        "stability": 0.9919911690456188,
+        "difficulty": 9.171526136676354,
+        "state": "review",
+        "step": 0,
+        "due": 1769301360.0,
+        "reviewedAt": 1769214960.0
+      },
+      {
+        "delta": 172800,
+        "rating": 4,
+        "stability": 3.8928492187640447,
+        "difficulty": 8.87991714773246,
+        "state": "review",
+        "step": 0,
+        "due": 1769733360.0,
+        "reviewedAt": 1769387760.0
+      }
+    ],
+    [
+      {
+        "delta": 0,
+        "rating": 2,
+        "stability": 1.2931,
+        "difficulty": 5.112170705601056,
+        "state": "learning",
+        "step": 0,
+        "due": 1767225930.0,
+        "reviewedAt": 1767225600.0
+      },
+      {
+        "delta": 330,
+        "rating": 4,
+        "stability": 2.2981513617969918,
+        "difficulty": 3.4641142975548855,
+        "state": "review",
+        "step": 0,
+        "due": 1767398730.0,
+        "reviewedAt": 1767225930.0
+      },
+      {
+        "delta": 691200,
+        "rating": 2,
+        "stability": 12.7264275676749,
+        "difficulty": 5.646402867740037,
+        "state": "review",
+        "step": 0,
+        "due": 1769040330.0,
+        "reviewedAt": 1767917130.0
+      },
+      {
+        "delta": 2592000,
+        "rating": 3,
+        "stability": 54.371655933757744,
+        "difficulty": 5.635984834169136,
+        "state": "review",
+        "step": 0,
+        "due": 1775174730.0,
+        "reviewedAt": 1770509130.0
+      }
+    ],
+    [
+      {
+        "delta": 0,
+        "rating": 4,
+        "stability": 8.2956,
+        "difficulty": 1.0,
+        "state": "review",
+        "step": 0,
+        "due": 1767916800.0,
+        "reviewedAt": 1767225600.0
+      },
+      {
+        "delta": 5184000,
+        "rating": 1,
+        "stability": 1.8622913082133028,
+        "difficulty": 7.0269895692968385,
+        "state": "relearning",
+        "step": 0,
+        "due": 1772410200.0,
+        "reviewedAt": 1772409600.0
+      },
+      {
+        "delta": 259200,
+        "rating": 1,
+        "stability": 0.5244099018049189,
+        "difficulty": 9.008020057195637,
+        "state": "relearning",
+        "step": 0,
+        "due": 1772669400.0,
+        "reviewedAt": 1772668800.0
+      },
+      {
+        "delta": 600,
+        "rating": 3,
+        "stability": 0.5749150703333319,
+        "difficulty": 8.994240406435278,
+        "state": "review",
+        "step": 0,
+        "due": 1772755800.0,
+        "reviewedAt": 1772669400.0
+      },
+      {
+        "delta": 8640000,
+        "rating": 4,
+        "stability": 8.989832042246064,
+        "difficulty": 8.643390787959845,
+        "state": "review",
+        "step": 0,
+        "due": 1782087000.0,
+        "reviewedAt": 1781309400.0
+      }
+    ]
+  ]
+}

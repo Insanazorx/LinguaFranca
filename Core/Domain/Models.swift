@@ -35,14 +35,18 @@ public struct VocabularyDraft: Sendable, Equatable {
     public var partOfSpeech: String
     public var exampleEnglish: String
     public var exampleMixed: String
+    public var lexicalReference: SemiticVocabularyReference?
     public init(englishLemma: String, targetLanguage: String, targetLemma: String,
                 targetSurface: String, senseID: String, partOfSpeech: String = "unspecified",
-                exampleEnglish: String = "", exampleMixed: String = "") {
+                exampleEnglish: String = "", exampleMixed: String = "", lexicalReference: SemiticVocabularyReference? = nil) {
         self.englishLemma = englishLemma; self.targetLanguage = targetLanguage
         self.targetLemma = targetLemma; self.targetSurface = targetSurface; self.senseID = senseID
         self.partOfSpeech = partOfSpeech; self.exampleEnglish = exampleEnglish; self.exampleMixed = exampleMixed
+        self.lexicalReference = lexicalReference
     }
     public func validated() throws -> Self {
+        try lexicalReference?.validate()
+        guard lexicalReference == nil || lexicalReference?.languageCode == targetLanguage else { throw DomainError.invalidInput("The lexical reference belongs to a different language.") }
         var copy = self
         copy.englishLemma = englishLemma.trimmingCharacters(in: .whitespacesAndNewlines).precomposedStringWithCanonicalMapping
         copy.targetLanguage = targetLanguage.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -64,8 +68,10 @@ public struct VocabularyItem: Identifiable, Sendable, Equatable {
     public let id: String
     public let draft: VocabularyDraft
     public let createdAt: Date
-    public init(id: String, draft: VocabularyDraft, createdAt: Date) {
+    public let studyProgress: StudyProgress
+    public init(id: String, draft: VocabularyDraft, createdAt: Date, studyProgress: StudyProgress = .studying) {
         self.id = id; self.draft = draft; self.createdAt = createdAt
+        self.studyProgress = studyProgress
     }
 }
 
@@ -73,6 +79,7 @@ public struct AppSettings: Codable, Sendable, Equatable {
     public var writingGenre: WritingGenre = .story
     public var replacementMode: ReplacementMode = .balanced
     public var practiceDomains: Set<PracticeDomain> = [.structure, .content, .actions]
+    public var aggressiveLanguageAssignments: [String:String] = [:]
     public var generationLevel: CEFRLevel = .c1
     public var defaultWordCount: Int = 110
     public var enabledLanguages: [String] = ["de", "ru"]
@@ -86,7 +93,7 @@ public struct AppSettings: Codable, Sendable, Equatable {
     public var preferredTopics: [String] = []
     public init() {}
     private enum CodingKeys: String, CodingKey {
-        case writingGenre, replacementMode, practiceDomains
+        case writingGenre, replacementMode, practiceDomains, aggressiveLanguageAssignments
         case generationLevel, defaultWordCount, enabledLanguages, languageWeights, replacementDensity,
              languageFrequencies, dailyReviewTarget, desiredRetention, preferredTopics
     }
@@ -95,6 +102,7 @@ public struct AppSettings: Codable, Sendable, Equatable {
         writingGenre = try c.decodeIfPresent(WritingGenre.self, forKey: .writingGenre) ?? .story
         replacementMode = try c.decodeIfPresent(ReplacementMode.self, forKey: .replacementMode) ?? .balanced
         practiceDomains = try c.decodeIfPresent(Set<PracticeDomain>.self, forKey: .practiceDomains) ?? [.structure, .content, .actions]
+        aggressiveLanguageAssignments = try c.decodeIfPresent([String:String].self, forKey:.aggressiveLanguageAssignments) ?? [:]
         generationLevel = try c.decodeIfPresent(CEFRLevel.self, forKey: .generationLevel) ?? .c1
         defaultWordCount = try c.decodeIfPresent(Int.self, forKey: .defaultWordCount) ?? 110
         enabledLanguages = try c.decodeIfPresent([String].self, forKey: .enabledLanguages) ?? ["de", "ru"]
@@ -104,6 +112,10 @@ public struct AppSettings: Codable, Sendable, Equatable {
         dailyReviewTarget = try c.decodeIfPresent(Int.self, forKey: .dailyReviewTarget) ?? 20
         desiredRetention = try c.decodeIfPresent(Double.self, forKey: .desiredRetention) ?? 0.9
         preferredTopics = try c.decodeIfPresent([String].self, forKey: .preferredTopics) ?? []
+    }
+    public func aggressiveLanguage(for domain: PracticeDomain) -> String {
+        if let explicit=aggressiveLanguageAssignments[domain.rawValue], enabledLanguages.contains(explicit) { return explicit }
+        return "auto"
     }
     public func frequency(for code: String) -> Double {
         if let explicit = languageFrequencies[code] { return explicit }
@@ -165,11 +177,12 @@ public struct ReplacementSpan: Codable, Sendable, Equatable, Identifiable {
     public let targetSurface: String
     public let translationConfidence: Double
     public let languagePackVersion: String
+    public let lexicalReference: SemiticVocabularyReference?
     public init(id: String = UUID().uuidString, sourceTextID: String, originalUTF16Range: UTF16Span,
                 renderedUTF16Range: UTF16Span, originalSurface: String, originalLemma: String,
                 originalPartOfSpeech: String, sourceSenseID: String, targetLanguageCode: String,
                 targetLemma: String, targetSurface: String, translationConfidence: Double, languagePackVersion: String,
-                senseDescription: String? = nil) {
+                senseDescription: String? = nil, lexicalReference: SemiticVocabularyReference? = nil) {
         self.id = id; self.sourceTextID = sourceTextID; self.originalUTF16Range = originalUTF16Range
         self.renderedUTF16Range = renderedUTF16Range; self.originalSurface = originalSurface
         self.originalLemma = originalLemma; self.originalPartOfSpeech = originalPartOfSpeech
@@ -177,10 +190,11 @@ public struct ReplacementSpan: Codable, Sendable, Equatable, Identifiable {
         self.sourceSenseID = sourceSenseID; self.targetLanguageCode = targetLanguageCode
         self.targetLemma = targetLemma; self.targetSurface = targetSurface
         self.translationConfidence = translationConfidence; self.languagePackVersion = languagePackVersion
+        self.lexicalReference = lexicalReference
     }
 }
 
-public struct GeneratedText: Sendable, Equatable, Identifiable {
+public struct GeneratedText: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let originalEnglish: String
     public let topic: String

@@ -236,7 +236,7 @@ public struct ContextualReplacementEngine: Sendable {
                 sourceSenseID: choice.entry.senseID, targetLanguageCode: code,
                 targetLemma: choice.entry.targetLemma, targetSurface: choice.surface,
                 translationConfidence: choice.confidence, languagePackVersion: choice.pack.metadata.version,
-                senseDescription: SenseResolver.description(choice.entry)))
+                senseDescription: SenseResolver.description(choice.entry),lexicalReference:SemiticLanguage(rawValue:code) == nil ? nil : .init(languageCode:code,kind:.lexeme,rootID:choice.entry.morphologicalTags["rootID"],lexemeID:choice.entry.senseID)))
             offset += choice.surface.utf16.count - sourceSpan.length
         }
         return ReplacementResult(spans: spans, wordCount: tokens.count, requestedDensity: requested,

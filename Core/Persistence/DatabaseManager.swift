@@ -3,7 +3,7 @@ import GRDB
 
 /// All database access is serialized away from SwiftUI. No database handles escape this actor.
 public actor DatabaseManager {
-    private let queue: DatabaseQueue
+    let queue: DatabaseQueue
 
     public init(path: String = ":memory:") throws {
         var configuration = Configuration()
@@ -87,6 +87,33 @@ public actor DatabaseManager {
             // Readings are now process-local. User vocabulary/examples and SRS history are independent.
             try db.execute(sql: "DROP TABLE replacement; DROP TABLE generatedText;")
         }
+        migrator.registerMigration("v3_semitic_vocabulary_references") { db in
+            try db.execute(sql:"CREATE TABLE vocabularyLexicalReference(vocabularyItemID TEXT PRIMARY KEY NOT NULL REFERENCES vocabularyItem(id) ON DELETE CASCADE, json TEXT NOT NULL)")
+        }
+        migrator.registerMigration("v4_fsrs6_reviews") { db in
+            try db.execute(sql: """
+                ALTER TABLE srsCard ADD COLUMN learningStep INTEGER NOT NULL DEFAULT 0 CHECK(learningStep >= 0);
+                ALTER TABLE srsCard ADD COLUMN progress TEXT NOT NULL DEFAULT 'studying' CHECK(progress IN ('forgotten','studying','learned'));
+                UPDATE srsCard SET progress = CASE WHEN state = 'review' THEN 'learned' WHEN state = 'relearning' THEN 'forgotten' ELSE 'studying' END;
+                ALTER TABLE reviewLog ADD COLUMN priorCardJSON TEXT;
+                ALTER TABLE reviewLog ADD COLUMN resultingCardJSON TEXT;
+                CREATE INDEX card_progress ON srsCard(progress);
+                """)
+        }
+        migrator.registerMigration("v5_opt_in_saved_readings") { db in
+            try db.execute(sql:"""
+                CREATE TABLE savedReading (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    title TEXT NOT NULL CHECK(length(trim(title))>0),
+                    preview TEXT NOT NULL,
+                    passageJSON TEXT NOT NULL,
+                    translationsJSON TEXT NOT NULL,
+                    savedAt REAL NOT NULL,
+                    updatedAt REAL NOT NULL
+                );
+                CREATE INDEX savedReading_updated ON savedReading(updatedAt DESC);
+                """)
+        }
         return migrator
     }
 
@@ -132,7 +159,7 @@ public actor DatabaseManager {
     public func vocabulary(search: String = "", deckID: String? = nil) async throws -> [VocabularyItem] {
         let query = Self.key(search.trimmingCharacters(in: .whitespacesAndNewlines))
         return try await queue.read { db in
-            var sql = "SELECT v.* FROM vocabularyItem v WHERE instr(v.searchKey, ?) > 0"
+            var sql = "SELECT v.*, r.json AS lexicalReferenceJSON, c.progress AS studyProgress FROM vocabularyItem v LEFT JOIN vocabularyLexicalReference r ON r.vocabularyItemID=v.id LEFT JOIN srsCard c ON c.vocabularyItemID=v.id AND c.direction='targetToEnglish' WHERE instr(v.searchKey, ?) > 0"
             var arguments: StatementArguments = [query]
             if let deckID {
                 sql += " AND EXISTS (SELECT 1 FROM deckVocabulary d WHERE d.vocabularyItemID = v.id AND d.deckID = ?)"
@@ -163,6 +190,10 @@ public actor DatabaseManager {
                                arguments: [cardID, id, now.timeIntervalSince1970])
             }
             try db.execute(sql: "INSERT OR IGNORE INTO deckVocabulary VALUES (?, ?)", arguments: [deckID, id])
+            if let reference = value.lexicalReference {
+                let json = String(decoding:try JSONEncoder().encode(reference),as:UTF8.self)
+                try db.execute(sql:"INSERT OR REPLACE INTO vocabularyLexicalReference VALUES(?,?)",arguments:[id,json])
+            }
             try db.execute(sql: "UPDATE studyDeck SET updatedAt = ? WHERE id = ?", arguments: [now.timeIntervalSince1970, deckID])
             return id
         }
@@ -183,6 +214,11 @@ public actor DatabaseManager {
                 """, arguments: [v.englishLemma, Self.key(v.englishLemma), v.targetLanguage, v.targetLemma, v.targetSurface,
                                   v.senseID, v.partOfSpeech, v.exampleEnglish, v.exampleMixed, Self.searchKey(v), id])
             guard db.changesCount == 1 else { throw DomainError.missingRecord }
+            if let reference = v.lexicalReference {
+                try db.execute(sql:"INSERT OR REPLACE INTO vocabularyLexicalReference VALUES(?,?)",arguments:[id,String(decoding:try JSONEncoder().encode(reference),as:UTF8.self)])
+            } else {
+                try db.execute(sql:"DELETE FROM vocabularyLexicalReference WHERE vocabularyItemID=?",arguments:[id])
+            }
         }
     }
 
@@ -254,9 +290,11 @@ public actor DatabaseManager {
         StudyDeck(id: row["id"], name: row["name"], createdAt: Date(timeIntervalSince1970: row["createdAt"]),
                   updatedAt: Date(timeIntervalSince1970: row["updatedAt"]), wordCount: row["wordCount"])
     }
-    private static func word(_ row: Row) -> VocabularyItem {
-        VocabularyItem(id: row["id"], draft: VocabularyDraft(englishLemma: row["englishLemma"], targetLanguage: row["targetLanguage"],
+    static func word(_ row: Row) -> VocabularyItem {
+        let json: String? = row["lexicalReferenceJSON"]
+        let reference = json.flatMap { try? JSONDecoder().decode(SemiticVocabularyReference.self,from:Data($0.utf8)) }
+        return VocabularyItem(id: row["id"], draft: VocabularyDraft(englishLemma: row["englishLemma"], targetLanguage: row["targetLanguage"],
             targetLemma: row["targetLemma"], targetSurface: row["targetSurface"], senseID: row["senseID"], partOfSpeech: row["partOfSpeech"],
-            exampleEnglish: row["exampleEnglish"], exampleMixed: row["exampleMixed"]), createdAt: Date(timeIntervalSince1970: row["createdAt"]))
+            exampleEnglish: row["exampleEnglish"], exampleMixed: row["exampleMixed"],lexicalReference:reference), createdAt: Date(timeIntervalSince1970: row["createdAt"]), studyProgress: StudyProgress(rawValue: row["studyProgress"] ?? "studying") ?? .studying)
     }
 }

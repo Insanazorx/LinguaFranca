@@ -51,10 +51,7 @@ struct SettingsView: View {
                         LabeledContent("Combined target", value: "\(Int((draft.effectiveFrequencies.values.reduce(0,+) * 100).rounded()))%")
                     }
                 } header: { Text("Language practice") } footer: {
-                    Text(draft.replacementMode == .aggressive ? "Aggressive requires verified translations for every selected component. Balanced frequencies have no effect. Enabled languages participate equally. Incomplete translations remain labeled English drafts. Save, then tap Remix on a reading." : "Psycho targets one word in every 2–3. Each language remembers its frequency; together they share a 50% ceiling. International lookalikes and words without a clear match stay in English, so the actual mix can be lower. Save, then tap Remix on a passage to try it.")
-                }
-                Section("Study preferences") {
-                    Stepper("Daily target: \(draft.dailyReviewTarget)", value: $draft.dailyReviewTarget, in: 1...100)
+                    Text(draft.replacementMode == .aggressive ? "Aggressive uses Qwen3.5-2B and the language assigned to each category. Balanced frequencies have no effect. Coverage is checked automatically; translation meaning and grammar are model-generated. Save, then tap Remix on a reading." : "Psycho targets one word in every 2–3. Each language remembers its frequency; together they share a 50% ceiling. International lookalikes and words without a clear match stay in English, so the actual mix can be lower. Save, then tap Remix on a passage to try it.")
                 }
                 Section("On your device") {
                     LabeledContent("Saved vocabulary", value: "\(model.vocabulary.count)")
@@ -99,7 +96,9 @@ struct NoticesView: View {
         List {
             Section("GRDB.swift") { Text("Gwendal Roué and contributors · MIT license · v7.11.1") }
             Section("llama.cpp") { Text("The ggml authors · MIT license · b11829") }
-            Section("Qwen3.5-0.8B") { Text("Qwen Team, Alibaba Cloud · Apache License 2.0. Quantization distributed by Unsloth.") }
+            Section("Qwen3.5-0.8B · Balanced") { Text("Qwen Team, Alibaba Cloud · Apache License 2.0. Quantization distributed by Unsloth.") }
+            Section("Qwen3.5-2B · Aggressive") { Text("Qwen Team, Alibaba Cloud · Apache License 2.0. Quantization distributed by bartowski.") }
+            Section("FSRS 6") { Text("Open Spaced Repetition · MIT. Local Swift scheduler with default FSRS 6 weights.") }
             Section("Offline language packs") { Text("WikDict by Karl Bartel. Wiktionary contributors via DBnary · CC BY-SA 4.0. June 2026 data, normalized and indexed by LinguaFranca. Dictionary data remains under the same license.") }
             Section { Text("Full license texts and pinned dependency details are included with this build.").font(.footnote) }
             if let url = Bundle.main.url(forResource: "THIRD-PARTY-NOTICES", withExtension: "txt"),

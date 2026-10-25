@@ -63,7 +63,7 @@ enum EnglishInflection {
             if token.previousWord == "to" || ["can","could","may","might","must","shall","should","will","would"].contains(token.previousWord ?? "") { return ["form":"infinitive"] }
             guard aggressive, subject["person"] != nil else { return nil }
             return subject.merging(["form":"finite","tense":"present"]) { _, new in new }
-        case "VBZ": return ["form":"finite","tense":"present","person":"3","number":"singular"]
+        case "VBZ": return subject.merging(["form":"finite","tense":"present","person":"3","number":"singular"]) { _,new in new }
         case "VBP", "VBD":
             guard subject["person"] != nil, subject["number"] != nil else { return nil }
             var result = subject; result["form"] = "finite"; result["tense"] = token.pennTag == "VBD" ? "past" : "present"

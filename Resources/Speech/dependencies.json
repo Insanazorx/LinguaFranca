@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "archives": [
+    {
+      "filename": "sherpa-onnx-v1.13.8-macos-static.xcframework.zip",
+      "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/xcframework/sherpa-onnx-v1.13.8-macos-static.xcframework.zip",
+      "sha256": "93f7a064abe99e0d6185a88c5b36ce18c4bff35cd0d5e4e81f81151de8e3e7e5",
+      "byteCount": 11628310,
+      "id": "sherpa-macos",
+      "archiveRoot": "sherpa-onnx.xcframework",
+      "vendoredPath": "Vendor/Speech/Sherpa-macos.xcframework",
+      "license": "Apache-2.0; includes espeak-ng GPL-3.0 components"
+    },
+    {
+      "filename": "onnxruntime-macos-static-xcframework-1.28.1.xcframework.zip",
+      "url": "https://github.com/csukuangfj/onnxruntime-libs/releases/download/v1.28.1/onnxruntime-macos-static-xcframework-1.28.1.xcframework.zip",
+      "sha256": "38c9a1e8bcf2497ff5eb721195743e4b4367ade3cd1eb9869c0cfd1bd367c36b",
+      "byteCount": 23681386,
+      "id": "onnx-macos",
+      "archiveRoot": "onnxruntime.xcframework",
+      "vendoredPath": "Vendor/Speech/Onnx-macos.xcframework",
+      "license": "MIT"
+    },
+    {
+      "filename": "sherpa-onnx-v1.13.8-ios-static.xcframework.zip",
+      "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/xcframework/sherpa-onnx-v1.13.8-ios-static.xcframework.zip",
+      "sha256": "6b8e769cb153343270fdccbe92e3b3db0d1c421d67fa0989ab01fdf5b2fcf2de",
+      "byteCount": 17013113,
+      "id": "sherpa-ios",
+      "archiveRoot": "sherpa-onnx.xcframework",
+      "vendoredPath": "Vendor/Speech/Sherpa-ios.xcframework",
+      "license": "Apache-2.0; includes espeak-ng GPL-3.0 components"
+    },
+    {
+      "filename": "onnxruntime-ios-static-xcframework-1.28.1.xcframework.zip",
+      "url": "https://github.com/csukuangfj/onnxruntime-libs/releases/download/v1.28.1/onnxruntime-ios-static-xcframework-1.28.1.xcframework.zip",
+      "sha256": "992d8a0cc6014cccc3a7815c36bbff5e5a06833ea2c4d47dd43ef071f639cf9d",
+      "byteCount": 33823274,
+      "id": "onnx-ios",
+      "archiveRoot": "onnxruntime.xcframework",
+      "vendoredPath": "Vendor/Speech/Onnx-ios.xcframework",
+      "license": "MIT"
+    },
+    {
+      "filename": "vits-piper-ru_RU-denis-medium.tar.bz2",
+      "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-ru_RU-denis-medium.tar.bz2",
+      "sha256": "efa4c18e0b5e32b81d1b6df36b9d312831e5d545200e27848ef926a4cd930300",
+      "byteCount": 67190991,
+      "id": "russian-denis",
+      "archiveRoot": "vits-piper-ru_RU-denis-medium",
+      "vendoredPath": "Resources/Speech/ru",
+      "license": "Piper MIT; dataset CC0"
+    },
+    {
+      "filename": "sherpa-onnx-small-zipformer-ru-2024-09-18.tar.bz2",
+      "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-small-zipformer-ru-2024-09-18.tar.bz2",
+      "sha256": "f766cea7df7e7204a5eac9edfba2d05e7546523a88e803f4a110b1865358d51a",
+      "byteCount": 109906654,
+      "id": "russian-word-alignment",
+      "archiveRoot": "sherpa-onnx-small-zipformer-ru-2024-09-18",
+      "vendoredPath": "Resources/Speech/ru-alignment",
+      "includeFiles": [
+        "encoder.int8.onnx",
+        "decoder.onnx",
+        "joiner.int8.onnx",
+        "tokens.txt"
+      ],
+      "license": "Apache-2.0"
+    }
+  ]
+}

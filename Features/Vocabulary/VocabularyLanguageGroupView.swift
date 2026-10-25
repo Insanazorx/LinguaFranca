@@ -7,6 +7,7 @@ struct VocabularyLanguageGroupView: View {
     let group: VocabularyLanguageGroup
     let deckID: String
     let deckName: String
+    var practiceGroupID: String? = nil
     @State private var edited: VocabularyItem?
     @State private var deleteItem: VocabularyItem?
     @State private var removedIDs: Set<String> = []
@@ -14,7 +15,7 @@ struct VocabularyLanguageGroupView: View {
         let originalIDs = Set(group.items.map(\.id))
         return model.vocabulary.filter { originalIDs.contains($0.id) && !removedIDs.contains($0.id) && $0.draft.targetLanguage == group.languageCode }
     }
-    private var groupID: String { deckID + ":" + group.languageCode }
+    private var groupID: String { practiceGroupID ?? deckID + ":" + group.languageCode }
     private var readings: [VocabularyPracticeReading] { model.vocabularyReadings.filter { $0.groupID == groupID } }
     var body: some View {
         List {
@@ -24,9 +25,9 @@ struct VocabularyLanguageGroupView: View {
                 } label: {
                     Label("Bu kelimelerle tamamen hedef dilde metin oluştur", systemImage: "sparkles")
                         .padding(.vertical, 6)
-                }.disabled(model.generating || items.isEmpty || !model.canGenerate)
+                }.disabled(model.generating || items.isEmpty || !model.canGenerateVocabulary(group.languageCode))
                     .accessibilityIdentifier("generate-vocabulary-text")
-                Text("All \(items.count) words · \(Theme.language(group.languageCode)) only · Up to 3 words per short text. Dictionary-verified inflections count too. Every expression is checked before a text is shown. Readings last for this app session.")
+                Text("All \(items.count) selections · \(Theme.language(group.languageCode)) only · Up to 3 selections per passage. Roots resolve to verified derivatives. Used and omitted selections are reported. Readings last for this app session.")
                     .font(.footnote).foregroundStyle(.secondary)
                 if model.activeVocabularyGroup == groupID {
                     HStack {
@@ -42,7 +43,19 @@ struct VocabularyLanguageGroupView: View {
                     ForEach(Array(readings.enumerated()), id: \.element.id) { index, reading in
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Text \(index+1) · \(reading.expressionIDs.count) expressions").font(.caption).foregroundStyle(.secondary)
-                            Text(reading.text).font(.system(.body, design: .serif)).lineSpacing(5).textSelection(.enabled)
+                            TargetLanguagePassageView(reading:reading)
+                            if let coverage=reading.coverage {
+                                Text("Used \(coverage.usedIDs.count) / \(coverage.selectedIDs.count)").font(.caption)
+                                if !coverage.omittedIDs.isEmpty {
+                                    let missing=items.filter {coverage.omittedIDs.contains($0.id)}.map{$0.draft.targetSurface}.joined(separator:", ")
+                                    Text("Omitted: "+missing).font(.footnote).foregroundStyle(.orange)
+                                }
+                                Text(coverage.validationNote).font(.caption).foregroundStyle(.secondary)
+                                ForEach(coverage.sourceReferences,id:\.self) { ref in
+                                    if let url=URL(string:ref),url.scheme=="https" { Link("Passage source",destination:url).font(.caption) }
+                                    else { Text(ref).font(.caption).foregroundStyle(.secondary) }
+                                }
+                            }
 
                         }.padding(.vertical, 8)
                     }
@@ -52,7 +65,8 @@ struct VocabularyLanguageGroupView: View {
                 ForEach(items) { item in
                     Button { edited = item } label: {
                         VStack(alignment: .leading, spacing: 5) {
-                            Text(item.draft.targetSurface).font(.title3).foregroundStyle(group.languageCode == "de" ? Theme.german : Theme.russian)
+                            SemiticOrLatinVocabularyText(text:item.draft.targetSurface,language:group.languageCode)
+                                .foregroundStyle(Theme.accent(group.languageCode))
                             Text(item.draft.englishLemma).foregroundStyle(.primary)
                             Text(item.draft.senseID).font(.caption).foregroundStyle(.secondary)
                         }.padding(.vertical, 6)

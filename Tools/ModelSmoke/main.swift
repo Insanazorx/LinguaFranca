@@ -22,11 +22,13 @@ private struct Run: Codable {
             print("Usage: swift run model-smoke /absolute/model.gguf [--suite | --session-check] [--output /absolute/report.json]")
             return
         }
+        if arguments.contains("--aggressive-model-check") { try await checkAggressiveModel(path:path,arguments:arguments); return }
         if arguments.contains("--aggressive-check") {
             try await checkAggressive(path:path,arguments:arguments)
             return
         }
         if arguments.contains("--sense-check") { try await checkSenses(path:path,arguments:arguments); return }
+        if arguments.contains("--semitic-check") { try await checkSemitic(path:path,arguments:arguments); return }
         let sessionCheck = arguments.contains("--session-check")
         if arguments.contains("--vocabulary-check") {
             try await checkVocabulary(path: path, arguments: arguments)

@@ -21,7 +21,7 @@ private func word(_ sense: String = "financial") -> VocabularyDraft {
     #expect(try await second.settings() == settings)
     let queue = try DatabaseQueue(path: url.path)
     let migrations = try await queue.read { try String.fetchAll($0, sql: "SELECT identifier FROM grdb_migrations") }
-    #expect(migrations == ["v1_local_foundation", "v2_ephemeral_reading_sessions"])
+    #expect(migrations == ["v1_local_foundation", "v2_ephemeral_reading_sessions", "v3_semitic_vocabulary_references", "v4_fsrs6_reviews", "v5_opt_in_saved_readings"])
     #expect(try await queue.read { try Row.fetchAll($0, sql: "PRAGMA foreign_key_check").isEmpty })
 }
 
@@ -51,7 +51,7 @@ private func word(_ sense: String = "financial") -> VocabularyDraft {
     let queue = try DatabaseQueue(path: url.path)
     try await queue.write { connection in
         let card = try String.fetchOne(connection, sql: "SELECT id FROM srsCard")!
-        try connection.execute(sql: "INSERT INTO reviewLog VALUES (?, ?, 3, ?, 12, 1, 'fixture-prior', 'fixture-result', 'fixture-only')",
+        try connection.execute(sql: "INSERT INTO reviewLog(id,cardID,rating,reviewedAt,elapsedTime,scheduledInterval,priorState,resultingState,schedulerVersion) VALUES (?, ?, 3, ?, 12, 1, 'fixture-prior', 'fixture-result', 'fixture-only')",
                                arguments: [UUID().uuidString, card, Date.now.timeIntervalSince1970])
     }
     let reopened = try DatabaseManager(path: url.path)

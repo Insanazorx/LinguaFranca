@@ -32,3 +32,8 @@ Final end-to-end simulator check: a new C1 Education request produced 111 whites
 ## Physical installation update — 2026-10-23
 
 Signed Debug build 0.1.0 (1), bundle com.linguafranca.app, installed successfully on the user’s iPhone 13 running iOS 26.6.1. Native code-signature validation and app-bundle checksum verification passed. The development profile matches the connected device, team and application entitlements and expires on 2026-10-30 at 14:54 Istanbul time. The user explicitly authorized certificate/profile creation. iOS initially denied launch during trust validation; after the user trusted their own developer certificate in phone settings, they confirmed the application opened. No reinstall or source-code change was needed to resolve that denial. This records app installation/launch only, not measured physical-device model generation or release readiness.
+
+
+## Physical 2B update — 2026-10-25
+
+See iPhone13Memory.md and Evidence/iPhone13-memory-validation.json for actual iPhone 13 results. CPU baseline: 96 words, 31/31 expressions, 303.117 seconds. An initial partial-GPU/CPU-cache experiment used a longer 196-word passage and took 602.994 seconds; it is not a controlled speedup comparison. The final bounded-GPU/cache/prefix-recovery/pressure-policy revision was reported fast and successful by the user, but final exact latency/peak was not retrieved. Model weights and quantization were unchanged. Old jetsam reports were on iOS 26.6.1; validation followed the user's update to iOS 27.0.1. Thermal/battery and broad linguistic quality remain unmeasured.

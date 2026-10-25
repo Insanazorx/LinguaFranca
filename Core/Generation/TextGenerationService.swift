@@ -10,7 +10,7 @@ public struct GenerationConfiguration: Codable, Sendable, Equatable {
     public var batchSize: Int = 64
     public init() {}
     public func validate() throws {
-        guard (512...4096).contains(contextWindow), (64...320).contains(maximumTokens),
+        guard (512...4096).contains(contextWindow), (64...1536).contains(maximumTokens),
               maximumTokens < contextWindow, [32, 64].contains(batchSize),
               temperature.isFinite, (0...2).contains(temperature), topP.isFinite, (0.01...1).contains(topP),
               repetitionPenalty.isFinite, (1...2).contains(repetitionPenalty)
@@ -35,6 +35,8 @@ public struct GenerationRequest: Sendable, Equatable {
     public var aggressiveDomains: Set<PracticeDomain>
     public var avoidWords: [String]
     public var senseSelection: ContextualSenseRequest?
+    public var aggressiveTask: AggressiveModelTask? = nil
+    public var readingTranslation: ReadingTranslationTask? = nil
     public init(topic: String, level: CEFRLevel = .c1, wordCount: Int = 110,
                 seed: UInt32, style: String? = nil, configuration: GenerationConfiguration = .init(),
                 targetLanguageCodes: [String] = [], vocabularyHints: [GenerationVocabularyHint] = [],
@@ -53,6 +55,10 @@ public struct GenerationRequest: Sendable, Equatable {
         try configuration.validate()
         try vocabularyPractice?.validate()
         try senseSelection?.validate()
+        try readingTranslation?.validate()
+        if readingTranslation != nil && (aggressiveTask != nil || senseSelection != nil || vocabularyPractice != nil) {
+            throw DomainError.invalidInput("Reading translation must be an independent model task.")
+        }
         guard (90...150).contains(wordCount), !topic.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               topic.count <= 100, (style?.count ?? 0) <= 100,
               !topic.contains("<|"), !(style?.contains("<|") ?? false)
@@ -64,6 +70,10 @@ public struct GenerationRequest: Sendable, Equatable {
         else { throw DomainError.invalidInput("Invalid local vocabulary guidance.") }
     }
     public var prompt: String {
+        if let readingTranslation { return readingTranslation.prompt }
+        if let aggressiveTask {
+            return aggressiveTask.instructions + (aggressiveTask.repair == nil ? "Topic: \(topic). \(genre.instruction) CEFR \(level.rawValue). \(scenarioGuidance) Naturally include these English concepts if provided: \(vocabularyHints.map(\.englishLemma).joined(separator:", "))." : "")
+        }
         if let senseSelection { return senseSelection.prompt }
         if let vocabularyPractice { return vocabularyPractice.prompt + (scenario.map { vocabularyPractice.sceneGuidance($0.id) } ?? "") }
         return genre.instruction + " "
@@ -112,7 +122,7 @@ public struct GenerationRequest: Sendable, Equatable {
     }
     /// Matches the bundled Qwen3.5 chat template with enable_thinking=false.
     public var chatPrompt: String {
-        let instruction = senseSelection != nil ? "Classify the meaning of the marked English expression. Choose only an exactly applicable English definition; choose 0 for a literal combination that is not the listed idiom. Output only the option number." : vocabularyPractice?.systemInstruction
+        let instruction = readingTranslation != nil ? "You translate English faithfully into Russian. Return only the requested JSON. Never invent events or omit details." : aggressiveTask != nil ? "You are a precise multilingual language teacher. Return only the requested JSON. Keep the original English separate from all translations. Correct meaning, inflection and complete category coverage are essential." : senseSelection != nil ? "Classify the meaning of the marked English expression. Choose only an exactly applicable English definition; choose 0 for a literal combination that is not the listed idiom. Output only the option number." : vocabularyPractice?.systemInstruction
             ?? "You write \(genre.title.lowercased()) in English. Follow the requested literary format. Output only the requested text.\(aggressiveSystemInstruction)"
         return "<|im_start|>system\n\(instruction)<|im_end|>\n"
         + "<|im_start|>user\n\(prompt)<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
@@ -126,7 +136,7 @@ public struct GenerationRequest: Sendable, Equatable {
         if aggressiveDomains.contains(.prepositionalPhrases) { rules += " Stack MANY complete preposition-plus-object phrases with concrete objects and clear spatial relations in every sentence." }
         return rules + " Keep the scene coherent. Start directly with the text."
     }
-    public var outputGrammar: String? { senseSelection?.grammar ?? (vocabularyPractice == nil ? genre.outputGrammar : nil) }
+    public var outputGrammar: String? { readingTranslation?.grammar ?? aggressiveTask?.grammar ?? senseSelection?.grammar ?? (vocabularyPractice == nil ? genre.outputGrammar : vocabularyPractice?.outputGrammar) }
 }
 
 public struct GenerationResult: Sendable, Equatable {

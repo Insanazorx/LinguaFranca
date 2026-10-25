@@ -3,6 +3,7 @@ import LinguaFrancaCore
 
 struct InteractivePassageView: View {
     let passage: GeneratedText
+    var highlightedSourceRange:UTF16Span?=nil
     @State private var selected: ReplacementSpan?
     var body: some View {
         Text(attributed).font(.system(.body, design: .serif)).lineSpacing(7)
@@ -27,7 +28,8 @@ struct InteractivePassageView: View {
                 text += AttributedString(String(passage.originalEnglish[cursor..<range.lowerBound]))
                 var word = AttributedString(span.targetSurface)
                 word.link = URL(string: "linguafranca://word/" + span.id)
-                let color = span.targetLanguageCode == "de" ? Theme.german : Theme.russian
+                let color = Theme.accent(span.targetLanguageCode)
+                if span.targetLanguageCode == "syc" { word.font = .custom("NotoSansSyriac-Regular",size:20,relativeTo:.body) }
                 word.foregroundColor = color
                 word.backgroundColor = color.opacity(0.08)
                 word.underlineStyle = .single
@@ -35,6 +37,11 @@ struct InteractivePassageView: View {
                 cursor = range.upperBound
             }
             text += AttributedString(String(passage.originalEnglish[cursor...]))
+            if let source=highlightedSourceRange,let mapped=try? passage.renderedSpan(for:source),
+               let rendered=try? passage.renderedText(),let range=try? mapped.range(in:rendered),
+               let lower=AttributedString.Index(range.lowerBound,within:text),let upper=AttributedString.Index(range.upperBound,within:text) {
+                text[lower..<upper].backgroundColor = .yellow.opacity(0.22)
+            }
             return text
         } catch { return AttributedString(passage.originalEnglish) }
     }
@@ -51,6 +58,7 @@ struct PassageWordSheet: View {
     @State private var saved = false
     @State private var error: String?
     @State private var speech = SentenceSpeechController()
+    @State private var semiticLexeme: SemiticLexeme?
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         NavigationStack {
@@ -58,7 +66,7 @@ struct PassageWordSheet: View {
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(Theme.language(span.targetLanguageCode).uppercased()).font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.secondary)
-                        Text(span.targetSurface).font(.system(.largeTitle, design: .serif)).foregroundStyle(span.targetLanguageCode == "de" ? Theme.german : Theme.russian)
+                        SemiticOrLatinVocabularyText(text:span.targetSurface,language:span.targetLanguageCode).foregroundStyle(Theme.accent(span.targetLanguageCode))
                         Text(span.originalSurface).font(.title3)
                         Text(span.senseDescription?.isEmpty == false ? span.senseDescription! : span.originalPartOfSpeech.capitalized)
                             .font(.subheadline).foregroundStyle(.secondary)
@@ -66,7 +74,9 @@ struct PassageWordSheet: View {
                             if speech.isSpeaking { speech.stop() }
                             else { speech.speak([span.pronunciation]) }
                         }.buttonStyle(.bordered).font(.subheadline)
+                            .disabled(!SentenceSpeechController.hasLocalVoice(span.targetLanguageCode))
                             .accessibilityIdentifier("pronounce-word")
+                        if let semiticLexeme { NavigationLink("Lexeme, root and morphology") { SemiticLexemeDetailView(lexeme:semiticLexeme) } }
                         if let message = speech.errorMessage { Text(message).font(.footnote).foregroundStyle(.secondary) }
                     }.padding(.vertical, 10)
                 }
@@ -88,6 +98,11 @@ struct PassageWordSheet: View {
             }.navigationTitle("A word to keep").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
                 .onAppear { deck = model.decks.first?.id ?? "new" }
+                .task(id:span.id) {
+                    if let id=span.lexicalReference?.lexemeID {
+                        semiticLexeme=try? await model.semiticLexicon?.lexeme(id:id,language:span.targetLanguageCode)
+                    }
+                }
                 .onDisappear { speech.stop() }
                 .onChange(of: scenePhase) { _, phase in if phase != .active { speech.stop() } }
         }
@@ -101,7 +116,7 @@ struct PassageWordSheet: View {
             let draft = try VocabularyDraft(englishLemma: span.originalLemma, targetLanguage: span.targetLanguageCode,
                 targetLemma: span.targetLemma, targetSurface: span.targetSurface, senseID: span.sourceSenseID,
                 partOfSpeech: span.originalPartOfSpeech, exampleEnglish: context.english,
-                exampleMixed: context.mixed).validated()
+                exampleMixed: context.mixed,lexicalReference:span.lexicalReference).validated()
             let id: String
             if deck == "new" { id = try await database.createDeck(name: name) } else { id = deck }
             _ = try await database.saveVocabulary(draft, inDeck: id)

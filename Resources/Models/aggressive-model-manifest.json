@@ -1,0 +1,13 @@
+{
+  "identifier": "Qwen3.5-2B-Q4_K_M",
+  "filename": "Qwen3.5-2B-Q4_K_M.gguf",
+  "repository": "bartowski/Qwen_Qwen3.5-2B-GGUF",
+  "revision": "7d26695454df6de5fbcce2e58681e62dae06ce43",
+  "downloadFilename": "Qwen_Qwen3.5-2B-Q4_K_M.gguf",
+  "sha256": "57a1085840f497d764a7fc5d346922dbde961efb54cc792ea81d694fd846a1d8",
+  "byteCount": 1396198496,
+  "license": "apache-2.0",
+  "upstream": "https://huggingface.co/Qwen/Qwen3.5-2B",
+  "purpose": "User-authorized Aggressive mode only; Balanced retains Qwen3.5-0.8B and dictionary replacement",
+  "deviceValidation": "pending"
+}

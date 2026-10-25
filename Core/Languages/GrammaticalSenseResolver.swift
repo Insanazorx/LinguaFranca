@@ -12,6 +12,7 @@ enum GrammaticalSenseResolver {
         return true
     }
     static func resolve(_ entries: [LexicalEntry], token: EnglishToken, language: String) -> SenseResolver.Resolution? {
+        guard ["de","ru"].contains(language) else { return SenseResolver.resolve(entries:entries,token:token) }
         let context = Set((token.nearbyWords ?? []).map { $0.lowercased() })
         let following = token.followingNoun ?? token.followingWord ?? ""
         let temporal = Set(["morning","evening","night","day","week","month","year","hour","minute","second","lunch","dinner","breakfast","meal","meeting","class","lesson","work","school","holiday","sunrise","sunset","noon","midnight"])

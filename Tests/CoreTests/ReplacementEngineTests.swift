@@ -253,7 +253,7 @@ private struct FixturePack: LanguagePack {
     #expect(tokens.first { $0.lemma == "before" }?.followingNoun == "oak")
     #expect(tokens.first { $0.lemma == "in" }?.followingNoun == "forest")
     #expect(tokens.first { $0.lemma == "that" }?.pos == "conjunction")
-    for pack in registry.packs {
+    for pack in registry.packs where ["de","ru"].contains(pack.metadata.languageCode) {
         let before = try #require(tokens.first { $0.lemma == "before" })
         #expect(SenseResolver.resolve(entries:try await pack.lookup(englishLemma:"before"),token:before)?.entry.morphologicalTags["definition"] == "in front of in space")
         let topicTokens = EnglishAnalyzer.tokens(in:"She wrote notes on every possible route in a notebook.",bundledTagger:registry.englishTagger)

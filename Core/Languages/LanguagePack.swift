@@ -38,6 +38,6 @@ public extension LanguagePack {
 }
 
 public protocol SRSScheduler: Sendable {
-    var version: String { get }
-    // A validated FSRS implementation will supply its state transition types in Phase 5.
+    static var version: String { get }
+    func review(_ card: SRSCard, rating: ReviewRating, now: Date) throws -> SRSCard
 }

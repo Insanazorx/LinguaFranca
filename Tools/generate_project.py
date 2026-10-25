@@ -29,10 +29,13 @@ def obj(name, body):
     return uid(name)
 
 sources = sorted(p.relative_to(ROOT).as_posix() for directory in ['App', 'Features', 'UIComponents'] for p in (ROOT / directory).rglob('*.swift'))
-resources = ['Resources/Models', 'Resources/LanguagePacks', 'Resources/THIRD-PARTY-NOTICES.txt', 'Resources/CC-BY-SA-4.0.txt', 'Resources/CC-BY-SA-3.0.txt']
+mac_sources = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT/'Mac').rglob('*.swift'))
+resources = ['Resources/Models', 'Resources/LanguagePacks', 'Resources/Fonts', 'Resources/Speech', 'Resources/THIRD-PARTY-NOTICES.txt', 'Resources/CC-BY-SA-4.0.txt', 'Resources/CC-BY-SA-3.0.txt', 'Resources/ETCBC-LICENSE.txt', 'Resources/Noto-OFL.txt', 'Resources/FSRS-LICENSE.txt']
+mac_resources=['Resources/Mac/LinguaFranca.icns']
+ios_resources=['Resources/Assets.xcassets']
 refs = {}
-for path in sources + resources:
-    kind = 'sourcecode.swift' if path.endswith('.swift') else ('folder' if (ROOT / path).is_dir() else 'text')
+for path in sources + mac_sources + resources + mac_resources + ios_resources:
+    kind = 'sourcecode.swift' if path.endswith('.swift') else ('folder.assetcatalog' if path.endswith('.xcassets') else ('image.icns' if path.endswith('.icns') else ('folder' if (ROOT / path).is_dir() else 'text')))
     refs[path] = obj('file:' + path, f'isa = PBXFileReference; lastKnownFileType = {kind}; path = {quote(path)}; sourceTree = "<group>";')
 package = obj('local_package', 'isa = XCLocalSwiftPackageReference; relativePath = .;')
 package_products = {}
@@ -45,17 +48,19 @@ for configuration in ['Debug', 'Release']:
         CLANG_ENABLE_MODULES = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos;
         ONLY_ACTIVE_ARCH = {'YES' if configuration == 'Debug' else 'NO'};
         SWIFT_VERSION = 6.0; SWIFT_STRICT_CONCURRENCY = complete;
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS = "{'DEBUG' if configuration == 'Debug' else ''}";
         SWIFT_OPTIMIZATION_LEVEL = "{'-Onone' if configuration == 'Debug' else '-O'}";
         DEBUG_INFORMATION_FORMAT = {'dwarf' if configuration == 'Debug' else '"dwarf-with-dsym"'};
     }};'''))
 project_config_list = obj('project_config_list', f'isa = XCConfigurationList; buildConfigurations = ({",".join(project_configs)}); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')
 
 products, targets, target_schemes = [], [], []
-for name, preview in [('LinguaFranca', False), ('LinguaFrancaPreviewApp', True)]:
-    product = obj(name + ':product', f'isa = PBXFileReference; explicitFileType = wrapper.application; path = {name}.app; sourceTree = BUILT_PRODUCTS_DIR;')
+for name, preview, mac in [('LinguaFranca',False,False), ('LinguaFrancaPreviewApp',True,False), ('LinguaFrancaMac',False,True)]:
+    product_name = 'LinguaFranca' if mac else name
+    product = obj(name + ':product', f'isa = PBXFileReference; explicitFileType = wrapper.application; path = {product_name}.app; sourceTree = BUILT_PRODUCTS_DIR;')
     products.append(product)
     phases = []
-    for kind, paths in [('Sources', sources), ('Resources', resources)]:
+    for kind, paths in [('Sources', mac_sources if mac else sources), ('Resources', resources + (mac_resources if mac else ios_resources))]:
         builds = [obj(name + ':build:' + p, f'isa = PBXBuildFile; fileRef = {refs[p]};') for p in paths]
         phases.append(obj(name + ':phase:' + kind, f'isa = PBX{kind}BuildPhase; buildActionMask = 2147483647; files = ({",".join(builds)}); runOnlyForDeploymentPostprocessing = 0;'))
     dependencies = [package_products['LinguaFrancaCore'], package_products['LinguaFrancaInference']]
@@ -64,16 +69,25 @@ for name, preview in [('LinguaFranca', False), ('LinguaFrancaPreviewApp', True)]
     configs = []
     for configuration in ['Debug', 'Release']:
         condition = ('DEVELOPMENT_TEAM = ' + quote(args.team_id) + ';') if args.team_id else ''
-        bundle = 'com.linguafranca.app.preview' if preview else 'com.linguafranca.app'
-        configs.append(obj(name + ':' + configuration, f'''isa = XCBuildConfiguration; name = {configuration}; buildSettings = {{
-            PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = {bundle}; GENERATE_INFOPLIST_FILE = YES;
-            INFOPLIST_KEY_CFBundleDisplayName = LinguaFranca; INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-            INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+        bundle = 'com.linguafranca.mac' if mac else ('com.linguafranca.app.preview' if preview else 'com.linguafranca.app')
+        platform_settings = '''SDKROOT = macosx; MACOSX_DEPLOYMENT_TARGET = 14.0; SUPPORTED_PLATFORMS = macosx;
+            CODE_SIGN_STYLE = Manual; ENABLE_APP_SANDBOX = YES;
+            CODE_SIGN_ENTITLEMENTS = Resources/Mac/LinguaFranca.entitlements; ENABLE_HARDENED_RUNTIME = YES;
+            INFOPLIST_KEY_CFBundleIconFile = LinguaFranca; INFOPLIST_KEY_CFBundleName = LinguaFranca;
+            INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+            INFOPLIST_KEY_NSHighResolutionCapable = YES;
+            LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";''' if mac else '''
+            INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
             INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
             TARGETED_DEVICE_FAMILY = 1; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+            ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+            CODE_SIGN_STYLE = Automatic; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";'''
+        configs.append(obj(name + ':' + configuration, f'''isa = XCBuildConfiguration; name = {configuration}; buildSettings = {{
+            PRODUCT_NAME = {product_name}; PRODUCT_BUNDLE_IDENTIFIER = {bundle}; GENERATE_INFOPLIST_FILE = YES;
+            INFOPLIST_KEY_CFBundleDisplayName = LinguaFranca;
             SUPPORTS_MACCATALYST = NO; MARKETING_VERSION = 0.1.0; CURRENT_PROJECT_VERSION = 1;
-            CODE_SIGN_STYLE = Automatic; ENABLE_PREVIEWS = YES; SWIFT_EMIT_LOC_STRINGS = YES; {condition}
-            LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+            ENABLE_PREVIEWS = YES; SWIFT_EMIT_LOC_STRINGS = YES; {condition}
+            {platform_settings}
         }};'''))
     config_list = obj(name + ':configs', f'isa = XCConfigurationList; buildConfigurations = ({",".join(configs)}); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')
     target = obj(name + ':target', f'''isa = PBXNativeTarget; name = {name}; productName = {name};
@@ -81,7 +95,7 @@ for name, preview in [('LinguaFranca', False), ('LinguaFrancaPreviewApp', True)]
         buildConfigurationList = {config_list}; buildPhases = ({",".join(phases)});
         buildRules = (); dependencies = (); packageProductDependencies = ({",".join(dependencies)});''')
     targets.append(target)
-    target_schemes.append((name, 'LinguaFranca Local' if preview else name, target))
+    target_schemes.append((name, 'LinguaFranca Mac' if mac else ('LinguaFranca Local' if preview else name), target, product_name))
 
 products_group = obj('products', f'isa = PBXGroup; children = ({",".join(products)}); name = Products; sourceTree = "<group>";')
 root_group = obj('root_group', f'isa = PBXGroup; children = ({",".join(list(refs.values()) + [products_group])}); sourceTree = "<group>";')
@@ -94,8 +108,8 @@ folder.mkdir(exist_ok=True)
 (folder / 'project.pbxproj').write_text('// !$*UTF8*$!\n{\narchiveVersion = 1; classes = {}; objectVersion = 56;\nobjects = {\n' + '\n'.join(objects) + '\n};\nrootObject = ' + project + ';\n}\n')
 schemes = folder / 'xcshareddata' / 'xcschemes'
 schemes.mkdir(parents=True, exist_ok=True)
-for name, scheme, target in target_schemes:
-    reference = f'<BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="{target}" BuildableName="{name}.app" BlueprintName="{name}" ReferencedContainer="container:LinguaFranca.xcodeproj"/>'
+for name, scheme, target, product_name in target_schemes:
+    reference = f'<BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="{target}" BuildableName="{product_name}.app" BlueprintName="{name}" ReferencedContainer="container:LinguaFranca.xcodeproj"/>'
     (schemes / (scheme + '.xcscheme')).write_text(f'''<?xml version="1.0" encoding="UTF-8"?>
 <Scheme LastUpgradeVersion="2700" version="1.3">
  <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES"><BuildActionEntries><BuildActionEntry buildForTesting="YES" buildForRunning="YES" buildForProfiling="YES" buildForArchiving="YES" buildForAnalyzing="YES">{reference}</BuildActionEntry></BuildActionEntries></BuildAction>

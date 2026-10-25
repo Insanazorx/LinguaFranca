@@ -1,8 +1,10 @@
 import AVFoundation
 import Observation
+import LinguaFrancaInference
 import LinguaFrancaCore
 
 @MainActor @Observable final class SentenceSpeechController: NSObject, AVSpeechSynthesizerDelegate {
+    static weak var active:SentenceSpeechController?
     private let synthesizer = AVSpeechSynthesizer()
     private var pending: Set<ObjectIdentifier> = []
     private(set) var isSpeaking = false
@@ -12,8 +14,15 @@ import LinguaFrancaCore
         super.init()
         synthesizer.delegate = self
     }
+    static func hasLocalVoice(_ language: String) -> Bool {
+        guard language != "syc" else { return false }
+        return AVSpeechSynthesisVoice.speechVoices().contains { !$0.voiceTraits.contains(.isNoveltyVoice) && $0.language.split(separator:"-").first.map(String.init)==language }
+    }
 
     func speak(_ segments: [SentenceSpeechSegment]) {
+        if Self.active !== self {Self.active?.stop()}
+        Self.active=self
+        PassageNarrator.active?.pause()
         stop()
         errorMessage = nil
         // speechVoices enumerates voices available on this device. Never initiate a download.
@@ -53,7 +62,7 @@ import LinguaFrancaCore
         guard pending.remove(id) != nil else { return }
         if pending.isEmpty {
             isSpeaking = false
-            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         }
     }
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {

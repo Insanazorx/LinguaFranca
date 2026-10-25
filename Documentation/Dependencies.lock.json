@@ -95,5 +95,73 @@
         "license": "CC-BY-SA-4.0"
       }
     ]
+  },
+  "semiticData": {
+    "schemaVersion": 1,
+    "sources": [
+      {
+        "languageCode": "ar",
+        "filename": "kaikki-ar-2026-10-21.jsonl",
+        "url": "https://kaikki.org/dictionary/Arabic/kaikki.org-dictionary-Arabic.jsonl",
+        "sha256": "f7afa9be065067859f4681e72074237bf0ded687b79138372b0deb14c300cf9b",
+        "byteCount": 868082262,
+        "extractionDate": "2026-10-21",
+        "license": "CC-BY-SA-4.0"
+      },
+      {
+        "languageCode": "he",
+        "filename": "kaikki-he-2026-10-21.jsonl",
+        "url": "https://kaikki.org/dictionary/Hebrew/kaikki.org-dictionary-Hebrew.jsonl",
+        "sha256": "05647c15c4b3d213e55bf6bb2ecf8115ea859c49602a617b09120ca99f99fd39",
+        "byteCount": 60179927,
+        "extractionDate": "2026-10-21",
+        "license": "CC-BY-SA-4.0"
+      },
+      {
+        "languageCode": "syc",
+        "filename": "kaikki-syc-2026-10-21.jsonl",
+        "url": "https://kaikki.org/dictionary/Classical%20Syriac/kaikki.org-dictionary-ClassicalSyriac.jsonl",
+        "sha256": "50b89fa814cb0d056f4ffb531358eff8c5860a18f4fe675a7c6e4e545ec14186",
+        "byteCount": 15429144,
+        "extractionDate": "2026-10-21",
+        "license": "CC-BY-SA-4.0"
+      }
+    ],
+    "corpus": {
+      "filename": "etcbc-syriac-0.9.tar.gz",
+      "url": "https://codeload.github.com/ETCBC/syriac/tar.gz/ded39ecaa145d3a6b0ec83fe24d0e00699cddb19",
+      "revision": "ded39ecaa145d3a6b0ec83fe24d0e00699cddb19",
+      "sha256": "4b295559f91f74d800579e1e40c2a8de048dbcd5de2daa65b55d400ca4c6f52f",
+      "byteCount": 38009238,
+      "license": "CC-BY-NC-4.0",
+      "distributionScope": "personal-noncommercial",
+      "userAuthorized": true
+    },
+    "fonts": [
+      {
+        "filename": "NotoSansSyriac-Regular.ttf",
+        "url": "https://raw.githubusercontent.com/notofonts/noto-fonts/ffebf8c1ee449e544955a7e813c54f9b73848eac/hinted/ttf/NotoSansSyriac/NotoSansSyriac-Regular.ttf",
+        "sha256": "7e05622602dd5333006807f61b30452a94cca0a0791047a120edff00cf189082",
+        "byteCount": 233516,
+        "license": "OFL-1.1"
+      }
+    ]
+  },
+  "speech": {
+    "dependenciesManifest": "Resources/Speech/dependencies.json",
+    "voiceManifest": "Resources/Speech/ru-manifest.json",
+    "alignmentManifest": "Resources/Speech/ru-alignment-manifest.json",
+    "licenses": "Resources/Speech/Licenses",
+    "sherpaVersion": "1.13.8",
+    "onnxRuntimeVersion": "1.28.1",
+    "voice": "ru_RU-denis-medium",
+    "runtimeDownloads": false
+  },
+  "FSRS6": {
+    "source": "https://github.com/open-spaced-repetition/py-fsrs",
+    "commit": "9446cb06605c597a063aeee49f7d188d42e34dc2",
+    "license": "MIT",
+    "implementation": "Native Swift port; 21 default weights; 1m/10m learning, 10m relearning; fuzz disabled",
+    "referenceVectors": "Tests/Fixtures/fsrs6-reference.json"
   }
 }

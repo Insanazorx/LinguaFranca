@@ -1,21 +1,37 @@
 import SwiftUI
 import UIKit
+import LinguaFrancaCore
+import CoreText
 
 @main struct LinguaFrancaApp: App {
     @State private var environment = AppEnvironment()
     @Environment(\.scenePhase) private var phase
+    init() {
+        if let font=Bundle.main.url(forResource:"NotoSansSyriac-Regular",withExtension:"ttf",subdirectory:"Fonts") {
+            CTFontManagerRegisterFontsForURL(font as CFURL,.process,nil)
+        }
+    }
     var body: some Scene {
         WindowGroup {
-            RootView().environment(environment)
-                .tint(Theme.forest)
-                .task { await environment.open() }
-                .onChange(of: phase) { _, value in
-                    if value == .background { Task { await environment.releaseModel() } }
-                }
+            appContent
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in
-                    Task { await environment.releaseModel() }
+                    Task { await environment.handleMemoryPressure() }
                 }
         }
+    }
+    private var appContent:some View {
+        RootView().environment(environment).tint(Theme.forest)
+            .task {await environment.open()}
+            .onChange(of:keepsDisplayAwake,initial:true) {_,active in
+                UIApplication.shared.isIdleTimerDisabled = active && phase == .active
+            }
+            .onChange(of:phase) {_,value in
+                UIApplication.shared.isIdleTimerDisabled = value == .active && keepsDisplayAwake
+                if value == .background {Task {await environment.releaseModel()}}
+            }
+    }
+    private var keepsDisplayAwake:Bool {
+        environment.generating || environment.remixing || environment.narrator.state == .playing || environment.narrator.state == .buffering
     }
 }
 
@@ -41,6 +57,7 @@ struct RootView: View {
                     GenerateView().tabItem { Label("Generate", systemImage: "text.book.closed") }
                     StudyView().tabItem { Label("Study", systemImage: "rectangle.on.rectangle") }
                     VocabularyView().tabItem { Label("Vocabulary", systemImage: "character.book.closed") }
+                    DictionaryView().tabItem { Label("Dictionary", systemImage: "books.vertical") }
                     SettingsView().tabItem { Label("Settings", systemImage: "slider.horizontal.3") }
                 }
             }
@@ -56,5 +73,8 @@ enum Theme {
     static let paper = Color(uiColor: .systemGroupedBackground)
     static let german = Color(red: 0.55, green: 0.35, blue: 0.16)
     static let russian = Color(red: 0.38, green: 0.35, blue: 0.62)
-    static func language(_ code: String) -> String { Locale(identifier: "en").localizedString(forLanguageCode: code)?.capitalized ?? code.uppercased() }
+    static func language(_ code: String) -> String { SemiticLanguage(rawValue:code)?.title ?? Locale(identifier: "en").localizedString(forLanguageCode: code)?.capitalized ?? code.uppercased() }
+    static func accent(_ code: String) -> Color {
+        switch code { case "de": german; case "ru": russian; case "ar": .teal; case "he": .blue; case "syc": .indigo; default: forest }
+    }
 }

@@ -1107,3 +1107,18 @@ Downloaded JSONL SHA-256: 26353e398a839fa308b1039a428caa66b0f37ef5044ad63c443c4f
 LinguaFranca filters and normalizes attested verb forms into the indexed practiceForm table,
 replacing incomplete paradigms for matching German lemmas. Definitions and translations remain
 from the separately attributed WikDict resources. Source revisions are pinned in Dependencies.lock.json.
+
+Qwen3.5-2B (Aggressive and optional Russian reading translation): Qwen Team, Alibaba Cloud; Apache-2.0. Quantization by bartowski, revision 7d26695454df6de5fbcce2e58681e62dae06ce43.
+FSRS 6: Swift port of open-spaced-repetition/py-fsrs revision 9446cb06605c597a063aeee49f7d188d42e34dc2. MIT; full copyright and license in FSRS-LICENSE.txt. Default weights and formulas retained, random fuzz disabled.
+
+Semitic language packs: English Wiktionary contributors, extracted by Kaikki.org on 2026-10-21; CC BY-SA 4.0. Arabic, Modern Hebrew, and Classical Syriac source records, paradigms, and etymologies are normalized and indexed by LinguaFranca. Record-level source links are retained.
+ETCBC Syriac Corpus 0.9: Eep Talstra Centre for Bible and Computer; revision ded39ecaa145d3a6b0ec83fe24d0e00699cddb19. CC BY-NC 4.0, personal/noncommercial distribution. Full license: ETCBC-LICENSE.txt. https://github.com/ETCBC/syriac
+Noto Sans Syriac: Noto contributors; SIL Open Font License 1.1. Font revision ffebf8c1ee449e544955a7e813c54f9b73848eac. Full license and copyright: Noto-OFL.txt.
+
+
+RUSSIAN READING AUDIO AND WORD ALIGNMENT
+Piper ru_RU-denis-medium, model distributed by rhasspy/piper-voices (MIT); voice dataset OHF-Voice/voice-datasets (CC0). Voice revision: 5041a7a49ae5b3a0f30e6837769eb03fdbb231bd.
+Sherpa-onnx v1.13.8: Apache-2.0. ONNX Runtime 1.28.1 static Apple builds: MIT. espeak-ng phonemizer/runtime/data: GPL-3.0.
+Vosk Small Russian / sherpa-onnx-small-zipformer-ru-2024-09-18: Apache-2.0; source model revision 4d68c4017bcfa44e2a79581f7933339e916a35da.
+Full notices and model cards are included in Speech/Licenses/. Archive URLs, exact SHA-256 digests and selected model files are in Speech/dependencies.json, ru-manifest.json and ru-alignment-manifest.json. No speech model is downloaded by the installed app.
+Upstream sources: https://github.com/k2-fsa/sherpa-onnx/tree/v1.13.8 ; https://github.com/microsoft/onnxruntime/tree/v1.28.1 ; https://github.com/espeak-ng/espeak-ng ; https://github.com/rhasspy/piper ; https://huggingface.co/rhasspy/piper-voices ; https://huggingface.co/alphacep/vosk-model-small-ru .

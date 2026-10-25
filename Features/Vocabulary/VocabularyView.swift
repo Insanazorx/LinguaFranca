@@ -108,7 +108,7 @@ struct VocabularyEditor: View {
             Form {
                 Section("Expression") {
                     TextField("English expression", text: $english)
-                    Picker("Language", selection: $language) { Text("German").tag("de"); Text("Russian").tag("ru") }
+                    Picker("Language", selection: $language) { ForEach(model.languagePacks,id:\.languageCode) { Text($0.displayName).tag($0.languageCode) } }
                     TextField("Target expression", text: $target)
                     TextField("Dictionary form", text: $lemma)
                 }
@@ -148,7 +148,10 @@ struct VocabularyEditor: View {
         saving = true
         defer { saving = false }
         let draft = VocabularyDraft(englishLemma: english, targetLanguage: language, targetLemma: lemma.isEmpty ? target : lemma,
-            targetSurface: target, senseID: sense, partOfSpeech: part, exampleEnglish: example, exampleMixed: item?.draft.exampleMixed ?? "")
+            targetSurface: target, senseID: sense, partOfSpeech: part, exampleEnglish: example, exampleMixed: item?.draft.exampleMixed ?? "",
+            lexicalReference: item.flatMap { old in
+                old.draft.targetLanguage==language && old.draft.targetLemma==(lemma.isEmpty ? target : lemma) && old.draft.targetSurface==target && old.draft.senseID==sense && old.draft.partOfSpeech==part ? old.draft.lexicalReference : nil
+            })
         do {
             if let item { try await db.updateVocabulary(id: item.id, draft: draft) }
             else { _ = try await db.saveVocabulary(draft, inDeck: deck) }
@@ -182,7 +185,7 @@ struct DeckManagerView: View {
             .navigationTitle("Your lists")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
-                ToolbarItem(placement: .primaryAction) { Button("New list", systemImage: "folder.badge.plus") { editingID = nil; name = ""; showName = true } }
+                ToolbarItem(placement: .topBarTrailing) { Button("New list", systemImage: "folder.badge.plus") { editingID = nil; name = ""; showName = true } }
             }
             .alert(editingID == nil ? "New list" : "Rename list", isPresented: $showName) {
                 TextField("List name", text: $name)

@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-25",
+  "device": "iPhone 13 / A15 / 4 GB",
+  "testOS": "iOS 27.0.1",
+  "priorCrashOS": "iOS 26.6.1",
+  "model": "Qwen3.5-2B-Q4_K_M",
+  "modelSHA256": "57a1085840f497d764a7fc5d346922dbde961efb54cc792ea81d694fd846a1d8",
+  "originalFailure": {
+    "reason": "vm-pageshortage",
+    "examinedApplicationReports": 3,
+    "pageSizeBytes": 16384,
+    "applicationPages": [95607, 96014, 95877]
+  },
+  "cpuBaseline": {
+    "words": 96,
+    "selectedExpressions": 31,
+    "translatedExpressions": 31,
+    "durationSeconds": 303.116539292,
+    "tokens": 1207,
+    "modelLoadSeconds": 16.822677542,
+    "timeToFirstTokenSeconds": 37.870706625,
+    "rawInferenceSampledFootprintPeakBytes": 229788664
+  },
+  "partialMetalWithCPUCacheExperiment": {
+    "words": 196,
+    "selectedExpressions": 81,
+    "translatedExpressions": 81,
+    "durationSeconds": 602.994465333,
+    "tokens": 2692,
+    "rawInferenceSampledFootprintPeakBytes": 242273320,
+    "first60SecondsFootprintPeakMiB": 308.7,
+    "first60SecondsResidentPeakMiB": 673.3,
+    "graphSplits": 70
+  },
+  "intermediateBlanketWarningCancellation": {
+    "graphSplits": 2,
+    "traceWindowSeconds": 120,
+    "observedFootprintPeakMiB": 292.1,
+    "endingFootprintMiB": 86.7,
+    "result": "Safely stopped on UIKit warning; replaced by headroom-aware policy"
+  },
+  "finalConfiguration": {
+    "gpuLayers": 16,
+    "maximumPhysicalMicroBatch": 16,
+    "kvOffloadForMetalLayers": true,
+    "additionalCPUWeightRepacking": false,
+    "contextPolicy": "actual prompt plus full output budget; bounded by requested context",
+    "minimumWarningHeadroomBytes": 268435456,
+    "warningFootprintStopBytes": 1342177280,
+    "kernelCriticalAlwaysStops": true,
+    "unloadLargeModelAfterAction": true,
+    "cpuFallbackAfterCriticalPressure": true
+  },
+  "finalPhysicalAcceptance": {
+    "generateCompleted": true,
+    "speedReportedImprovedByUser": true,
+    "remixCompletionReportedByUser": true,
+    "furtherRemixWorkCancelledByUser": true,
+    "exactFinalDurationSeconds": null,
+    "exactFinalFootprintBytes": null,
+    "heavyProfilerAndLiveMirroringClosed": true
+  },
+  "preservedLibrary": {"vocabulary": 4, "decks": 1, "cards": 4, "priorReviewLogs": 0, "savedReadingsInSafetyCopy": 2},
+  "automatedTests": {"coreSwift": 104, "inferenceSwift": 9, "priorUnchangedPythonTools": 17},
+  "physicalReleaseBuild": "passed",
+  "bundleChecksumsAndSignature": "passed",
+  "limitations": ["Different text lengths and OS versions prevent a controlled speedup claim", "Raw inference peaks exclude later repair calls", "Short trace windows are not lifetime peaks", "Final timing and footprint were not retrieved", "No sustained thermal, battery or fresh-airplane-mode test"]
+}

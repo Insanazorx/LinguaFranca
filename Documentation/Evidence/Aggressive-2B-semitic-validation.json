@@ -1,0 +1,197 @@
+[
+  {
+    "domains" : [
+      "structure"
+    ],
+    "mappings" : [
+      {
+        "en" : "During",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "إِبَّانَ"
+      },
+      {
+        "en" : "while",
+        "language" : "he",
+        "pos" : "conjunction",
+        "target" : "בְּעוֹד"
+      },
+      {
+        "en" : "through",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "بِوَاسِطَة"
+      },
+      {
+        "en" : "before",
+        "language" : "ar",
+        "pos" : "conjunction",
+        "target" : "قَبْلَمَا"
+      },
+      {
+        "en" : "in",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "בְּעוֹד"
+      },
+      {
+        "en" : "with",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "אֵצֶל"
+      },
+      {
+        "en" : "of",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "فِي"
+      },
+      {
+        "en" : "on",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "עַל"
+      },
+      {
+        "en" : "across",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "عَبْرَ"
+      },
+      {
+        "en" : "as",
+        "language" : "ar",
+        "pos" : "conjunction",
+        "target" : "عِنْدَمَا"
+      },
+      {
+        "en" : "into",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "לְ־"
+      },
+      {
+        "en" : "and",
+        "language" : "syc",
+        "pos" : "conjunction",
+        "target" : "ܘ"
+      },
+      {
+        "en" : "under",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "أَسْفَلَ"
+      },
+      {
+        "en" : "across",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "עַלָּה"
+      },
+      {
+        "en" : "As",
+        "language" : "ar",
+        "pos" : "conjunction",
+        "target" : "إِذْ"
+      },
+      {
+        "en" : "and",
+        "language" : "ar",
+        "pos" : "conjunction",
+        "target" : "وَ"
+      },
+      {
+        "en" : "on",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "עַל"
+      },
+      {
+        "en" : "of",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "לְ־"
+      },
+      {
+        "en" : "of",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "فِي"
+      },
+      {
+        "en" : "of",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "שֶׁל"
+      },
+      {
+        "en" : "of",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "فِي"
+      },
+      {
+        "en" : "with",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "مَعَ"
+      },
+      {
+        "en" : "as",
+        "language" : "he",
+        "pos" : "conjunction",
+        "target" : "כַּאֲשֶׁר"
+      },
+      {
+        "en" : "with",
+        "language" : "he",
+        "pos" : "preposition",
+        "target" : "עִם"
+      },
+      {
+        "en" : "in",
+        "language" : "ar",
+        "pos" : "preposition",
+        "target" : "فِي"
+      }
+    ],
+    "metadata" : {
+      "aggressiveIntensity" : "extreme",
+      "attempts" : "1",
+      "contentSource" : "local-model",
+      "contextPolicy" : "fresh-per-attempt",
+      "contextWindow" : "4096",
+      "dictionaryFunctionChecks" : "0",
+      "durationSeconds" : "24.08325375",
+      "effectiveSeed" : "91",
+      "eligibleWordCount" : "25",
+      "formatConstraint" : "grammar",
+      "modelLoadSeconds" : "0.918524375",
+      "modelRevision" : "7d26695454df6de5fbcce2e58681e62dae06ce43",
+      "modelSHA256" : "57a1085840f497d764a7fc5d346922dbde961efb54cc792ea81d694fd846a1d8",
+      "noveltyHistoryCount" : "0",
+      "outputLanguage" : "en",
+      "practiceDomains" : "structure",
+      "repairedOccurrences" : "15",
+      "replacedWordCount" : "25",
+      "replacementComplete" : "true",
+      "replacementCount.ar" : "13",
+      "replacementCount.he" : "11",
+      "replacementCount.syc" : "1",
+      "replacementMode" : "aggressive",
+      "replacementStatus" : "local-model",
+      "runtime" : "llama.cpp-b11829",
+      "scenarioID" : "none",
+      "thinking" : "disabled",
+      "timeToFirstTokenSeconds" : "1.23993275",
+      "tokenCount" : "829",
+      "translationValidation" : "coverage-script-and-local-function-checks",
+      "unrepresentedLanguages" : "",
+      "wordCount" : "121",
+      "writingGenre" : "story"
+    },
+    "mixed" : "إِبَّانَ the afternoon, בְּעוֹד I walked بِوَاسِطَة the garden, I noticed the roses blooming قَبْلَمَا the sun rose בְּעוֹד the sky. The gardener was watering the flowers אֵצֶל a gentle rhythm that matched the ticking فِي the clock עַל the wall. I admired how the shadows shifted عَبْرَ the path عِنْدَمَا evening fell לְ־ view, ܘ then I sat أَسْفَلَ the large oak tree to watch the clouds drift slowly עַלָּה the horizon. إِذْ twilight deepened, the air grew cool وَ still, allowing me to reflect עַל the beauty לְ־ nature that surrounds us all. This moment فِي quiet contemplation reminded me שֶׁל the importance فِي patience when working مَعَ plants, just כַּאֲשֶׁר we must be patient עִם ourselves فِي life.",
+    "original" : "During the afternoon, while I walked through the garden, I noticed the roses blooming before the sun rose in the sky. The gardener was watering the flowers with a gentle rhythm that matched the ticking of the clock on the wall. I admired how the shadows shifted across the path as evening fell into view, and then I sat under the large oak tree to watch the clouds drift slowly across the horizon. As twilight deepened, the air grew cool and still, allowing me to reflect on the beauty of nature that surrounds us all. This moment of quiet contemplation reminded me of the importance of patience when working with plants, just as we must be patient with ourselves in life.",
+    "status" : "passed-coverage"
+  }
+]

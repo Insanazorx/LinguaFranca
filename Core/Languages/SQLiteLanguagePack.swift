@@ -9,6 +9,7 @@ public actor SQLiteLanguagePack: LanguagePack {
     private let hasNounForms: Bool
     private let hasPracticeForms: Bool
     private let hasCaseForms: Bool
+    private let hasSemiticForms: Bool
     public init(manifestURL: URL) throws {
         metadata = try JSONDecoder().decode(LanguagePackMetadata.self, from: Data(contentsOf: manifestURL))
         guard metadata.schemaVersion == 1,
@@ -21,6 +22,7 @@ public actor SQLiteLanguagePack: LanguagePack {
         hasNounForms = try database.read { try $0.tableExists("nounForm") }
         hasPracticeForms = try database.read { try $0.tableExists("practiceForm") }
         hasCaseForms = try database.read { try $0.tableExists("caseForm") }
+        hasSemiticForms = try database.read { try $0.tableExists("semForm") }
         let policyURL = manifestURL.deletingPathExtension().appendingPathExtension("policy.json")
         if FileManager.default.fileExists(atPath: policyURL.path) {
             preferredTranslations = try JSONDecoder().decode([String:String].self, from: Data(contentsOf: policyURL))
@@ -28,7 +30,8 @@ public actor SQLiteLanguagePack: LanguagePack {
     }
     public func lookup(englishLemma: String) throws -> [LexicalEntry] {
         try database.read { db in
-            try Row.fetchAll(db, sql: "SELECT * FROM entry WHERE lemma = ? ORDER BY score DESC, senseID", arguments: [englishLemma.lowercased()])
+            let sql = hasSemiticForms ? "SELECT e.*,l.rootID AS rootID FROM entry e LEFT JOIN semLexeme l ON l.id=e.senseID WHERE e.lemma=? ORDER BY e.score DESC,e.senseID" : "SELECT * FROM entry WHERE lemma = ? ORDER BY score DESC, senseID"
+            return try Row.fetchAll(db, sql:sql, arguments: [englishLemma.lowercased()])
                 .compactMap { row in
                     let translations: String = row["translations"], provenance: String = row["provenance"]
                     let alternatives = try JSONDecoder().decode([String].self, from: Data(translations.utf8))
@@ -40,9 +43,11 @@ public actor SQLiteLanguagePack: LanguagePack {
                     let preferred = preferredTranslations[lemma]
                     let target = preferred.flatMap { requested in alternatives.first { key($0) == key(requested) } } ?? first
                     let definition: String = row["definition"]
+                    var tags = ["definition": definition, "alternatives": translations, "form": "citation", "lexemeID": row["senseID"] as String]
+                    if hasSemiticForms, let root: String = row["rootID"] { tags["rootID"] = root }
                     return LexicalEntry(englishLemma: lemma, targetLemma: target, senseID: row["senseID"],
                         partOfSpeech: row["pos"], contextExamples: [],
-                        morphologicalTags: ["definition": definition, "alternatives": translations, "form": "citation"],
+                        morphologicalTags: tags,
                         provenance: try JSONDecoder().decode([String:String].self, from: Data(provenance.utf8)))
                 }
         }
@@ -52,6 +57,14 @@ public actor SQLiteLanguagePack: LanguagePack {
     }
     public func inflect(_ entry: LexicalEntry, features: [String: String]) throws -> String? {
         guard features["requiresInflection"] != "true", features["case"] == nil || features["case"] == "nominative" else { return nil }
+        if hasSemiticForms {
+            let forms=try database.read { db in
+                try Row.fetchAll(db,sql:"SELECT * FROM semForm WHERE lexemeID=? AND status='attested' ORDER BY id LIMIT 1024",arguments:[entry.senseID]).map { r in
+                    SemiticWordForm(id:r["id"],lexemeID:r["lexemeID"],surface:r["surface"],transliteration:r["transliteration"],source:r["source"],rootID:r["rootID"],tags:try JSONDecoder().decode([String].self,from:Data((r["tags"] as String).utf8)),status:.attested)
+                }
+            }
+            return SemiticMorphologyAdapter.surface(forms:forms,entry:entry,features:features,language:metadata.languageCode)
+        }
         if ["verb","adjective"].contains(entry.partOfSpeech) {
             guard hasPracticeForms, var form = features["form"] else { return nil }
             var tense = features["tense"] ?? "", person = features["person"] ?? "", number = features["number"] ?? "", gender = ""
@@ -131,6 +144,9 @@ public actor SQLiteLanguagePack: LanguagePack {
         ["noun", "adjective", "adverb", "verb", "conjunction", "preposition", "pronoun", "prepositional_phrase"].contains(pos)
     }
     public func practiceSurfaces(targetLemma: String, partOfSpeech: String) async throws -> [String] {
+        if hasSemiticForms {
+            return try await database.read { try String.fetchAll($0,sql:"SELECT DISTINCT f.surface FROM semForm f JOIN semLexeme l ON l.id=f.lexemeID WHERE l.normalized=? AND l.pos=? AND f.status='attested' ORDER BY f.surface LIMIT 128",arguments:[SemiticUnicode.key(targetLemma),partOfSpeech]) }
+        }
         let lemma = targetLemma.replacingOccurrences(of: "\u{301}", with: "").precomposedStringWithCanonicalMapping.lowercased()
         if partOfSpeech == "noun", hasCaseForms {
             return try await database.read { try String.fetchAll($0, sql: "SELECT DISTINCT surface FROM caseForm WHERE lemma=? ORDER BY surface LIMIT 128", arguments: [lemma]) }
@@ -154,7 +170,7 @@ public struct LanguagePackRegistry: Sendable {
     }
     public init(directory: URL) throws {
         let manifests = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
-            .filter { $0.pathExtension == "json" && $0.lastPathComponent != "coverage.json" && !$0.lastPathComponent.hasSuffix(".policy.json") }
+            .filter { $0.pathExtension == "json" && $0.lastPathComponent != "coverage.json" && !$0.lastPathComponent.hasSuffix("-coverage.json") && !$0.lastPathComponent.hasSuffix(".policy.json") }
         let englishDirectory = directory.appendingPathComponent("_english",isDirectory:true)
         try self.init(packs: manifests.map { try SQLiteLanguagePack(manifestURL: $0) },
                       englishModelDirectory: FileManager.default.fileExists(atPath:englishDirectory.path) ? englishDirectory : nil)

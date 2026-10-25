@@ -1,0 +1,14 @@
+{
+  "languageCode": "ru",
+  "voiceName": "Denis",
+  "identifier": "piper-ru_RU-denis-medium",
+  "modelFilename": "ru_RU-denis-medium.onnx",
+  "modelSHA256": "75c9f1117d5e4a620a20cb665408adc0828699f4a7a2eb44a233f8c34096be04",
+  "modelByteCount": 63149192,
+  "sampleRate": 22050,
+  "sourceRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+  "sourceURL": "https://huggingface.co/rhasspy/piper-voices/tree/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/ru/ru_RU/denis/medium",
+  "modelLicense": "MIT",
+  "datasetLicense": "CC0",
+  "runtimeLicenseNotes": "Sherpa-onnx Apache-2.0, ONNX Runtime MIT; espeak-ng GPL-3.0 bundled with the runtime/data."
+}

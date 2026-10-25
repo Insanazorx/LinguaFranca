@@ -15,9 +15,12 @@ struct GenerateView: View {
                             .font(.caption.weight(.semibold)).tracking(1.3).foregroundStyle(Theme.forest)
                         Text("A little reading.\nA wider world.")
                             .font(.system(.largeTitle, design: .serif).weight(.medium))
-                        Text("Original English, one passage at a time.")
+                        Text(model.settings.replacementMode == .aggressive ? "Mixed reading with Qwen3.5-2B · experimental." : "Original English, one passage at a time.")
                             .foregroundStyle(.secondary)
                     }.padding(.top, 12)
+                    NavigationLink {SavedReadingsView()} label: {
+                        Label("Saved readings · \(model.savedReadings.count)",systemImage:"books.vertical")
+                    }.accessibilityIdentifier("saved-readings")
                     VStack(spacing: 16) {
                         HStack {
                             Picker("English level", selection: Binding(get: { model.settings.generationLevel }, set: { level in
@@ -31,7 +34,7 @@ struct GenerateView: View {
                                 ForEach(CEFRLevel.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                             }.pickerStyle(.segmented).frame(width: 140).disabled(model.generating)
                             Spacer()
-                            Text(model.settings.writingGenre == .poem ? "8–12 lines" : "~\(model.settings.defaultWordCount) words").foregroundStyle(.secondary).font(.subheadline)
+                            Text("\(model.settings.writingGenre.title)").foregroundStyle(.secondary).font(.subheadline)
                         }
                         Divider()
                         Picker("Topic", selection: $topic) {
@@ -73,7 +76,7 @@ struct GenerateView: View {
                     }
                     if model.passages.isEmpty {
                         ContentUnavailableView("Your next good read starts here", systemImage: "book.pages",
-                            description: Text("Readings stay here during this session. Closing the app clears them; saved vocabulary stays in your lists."))
+                            description: Text("Unsaved readings last for this session. Use Save to keep a text for later reading and listening."))
                     } else {
                         Text("THIS SESSION").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.secondary)
                         ForEach(model.passages) { passage in
@@ -94,10 +97,10 @@ struct GenerateView: View {
                                         Text("Unresolved: " + missing).font(.caption).foregroundStyle(.secondary)
                                     }
                                 }
-                                InteractivePassageView(passage: passage)
+                                PassageReadingView(passage: passage)
                                 HStack {
                                     if passage.metadata["replacementMode"] == "aggressive", let eligible = passage.metadata["eligibleWordCount"] {
-                                        Text("\(passage.metadata["replacedWordCount"] ?? String(passage.replacements.count)) of \(eligible) selected tokens translated").font(.caption).foregroundStyle(.secondary)
+                                        Text("\(passage.metadata["replacedWordCount"] ?? String(passage.replacements.count)) of \(eligible) selected expressions translated").font(.caption).foregroundStyle(.secondary)
                                     } else if let density = passage.metadata["actualDensity"].flatMap(Double.init) {
                                         Text("\(passage.replacements.count) words mixed · \(Int((density * 100).rounded()))%")
                                             .font(.caption).foregroundStyle(.secondary)
@@ -113,7 +116,7 @@ struct GenerateView: View {
                                         .font(.caption).foregroundStyle(.secondary)
                                 }
                                 HStack {
-                                    Text("Qwen3.5 · \(passage.metadata["wordCount"] ?? String(passage.originalEnglish.split(whereSeparator: \.isWhitespace).count)) words")
+                                    Text("\(passage.modelID.contains("2B") ? "Qwen3.5-2B" : "Qwen3.5-0.8B") · \(passage.originalEnglish.split(whereSeparator: \.isWhitespace).count) words")
                                     Spacer()
                                     if let seconds = passage.metadata["durationSeconds"].flatMap(Double.init) {
                                         Text("\(seconds, specifier: "%.1f") s")
@@ -134,7 +137,7 @@ struct GenerateView: View {
             }
             }
             .navigationTitle("LinguaFranca").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .topBarTrailing) { Image(systemName: "leaf").foregroundStyle(Theme.forest).accessibilityLabel("Offline reading") } }
+            .toolbar { ToolbarItem(placement: .primaryAction) { Image(systemName: "leaf").foregroundStyle(Theme.forest).accessibilityLabel("Offline reading") } }
         }
     }
 }
