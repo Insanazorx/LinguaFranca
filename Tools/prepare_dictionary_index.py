@@ -51,6 +51,9 @@ def build(packs, output):
                 root_count+=1
             form_count=source.execute('SELECT count(*) FROM semForm').fetchone()[0]
         else:
+            if 'lexicalForm' in tables:
+                form_count+=source.execute('SELECT count(*) FROM lexicalForm').fetchone()[0]
+                db.executemany('INSERT OR IGNORE INTO nativeForm VALUES(?,?,?)',((code,key(surface),key(lemma)) for lemma,surface in source.execute('SELECT DISTINCT lemma,surface FROM lexicalForm')))
             for table in ['nounForm','caseForm','practiceForm']:
                 if table not in tables:continue
                 form_count+=source.execute('SELECT count(*) FROM '+table).fetchone()[0]

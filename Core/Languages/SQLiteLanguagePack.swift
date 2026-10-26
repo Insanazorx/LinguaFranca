@@ -10,6 +10,7 @@ public actor SQLiteLanguagePack: LanguagePack {
     private let hasPracticeForms: Bool
     private let hasCaseForms: Bool
     private let hasSemiticForms: Bool
+    private let hasLexicalForms: Bool
     public init(manifestURL: URL) throws {
         metadata = try JSONDecoder().decode(LanguagePackMetadata.self, from: Data(contentsOf: manifestURL))
         guard metadata.schemaVersion == 1,
@@ -23,6 +24,7 @@ public actor SQLiteLanguagePack: LanguagePack {
         hasPracticeForms = try database.read { try $0.tableExists("practiceForm") }
         hasCaseForms = try database.read { try $0.tableExists("caseForm") }
         hasSemiticForms = try database.read { try $0.tableExists("semForm") }
+        hasLexicalForms = try database.read { try $0.tableExists("lexicalForm") }
         let policyURL = manifestURL.deletingPathExtension().appendingPathExtension("policy.json")
         if FileManager.default.fileExists(atPath: policyURL.path) {
             preferredTranslations = try JSONDecoder().decode([String:String].self, from: Data(contentsOf: policyURL))
@@ -57,6 +59,25 @@ public actor SQLiteLanguagePack: LanguagePack {
     }
     public func inflect(_ entry: LexicalEntry, features: [String: String]) throws -> String? {
         guard features["requiresInflection"] != "true", features["case"] == nil || features["case"] == "nominative" else { return nil }
+        if hasLexicalForms {
+            let lemma=OfflineDictionary.key(entry.targetLemma)
+            if entry.partOfSpeech == "noun",features["number"] == "plural" {
+                let forms=try database.read { db in
+                    try String.fetchAll(db,sql:"SELECT DISTINCT surface FROM lexicalForm WHERE lemmaKey=? AND pos='noun' AND number='plural' AND grammaticalCase=? ORDER BY surface",arguments:[lemma,metadata.languageCode == "la" ? "nominative":""])
+                }
+                return forms.count == 1 ? forms.first:nil
+            }
+            if entry.partOfSpeech == "verb" {
+                guard let form=features["form"],["finite","infinitive","converb","participle"].contains(form) else {return nil}
+                // Other tenses/aspects and gender agreement remain explicit adapter work.
+                guard form != "finite" || features["tense"] == "present" else {return nil}
+                let forms=try database.read { db in
+                    try String.fetchAll(db,sql:"SELECT DISTINCT surface FROM lexicalForm WHERE lemmaKey=? AND pos='verb' AND form=? AND tense=? AND person=? AND number=? AND voice='active' ORDER BY surface",arguments:[lemma,form,features["tense"] ?? "",features["person"] ?? "",features["number"] ?? ""])
+                }
+                return forms.count == 1 ? forms.first:nil
+            }
+            if entry.partOfSpeech == "adjective" {return nil}
+        }
         if hasSemiticForms {
             let forms=try database.read { db in
                 try Row.fetchAll(db,sql:"SELECT * FROM semForm WHERE lexemeID=? AND status='attested' ORDER BY id LIMIT 1024",arguments:[entry.senseID]).map { r in
@@ -144,6 +165,9 @@ public actor SQLiteLanguagePack: LanguagePack {
         ["noun", "adjective", "adverb", "verb", "conjunction", "preposition", "pronoun", "prepositional_phrase"].contains(pos)
     }
     public func practiceSurfaces(targetLemma: String, partOfSpeech: String) async throws -> [String] {
+        if hasLexicalForms {
+            return try await database.read { try String.fetchAll($0,sql:"SELECT DISTINCT surface FROM lexicalForm WHERE lemmaKey=? AND pos=? ORDER BY surface LIMIT 128",arguments:[OfflineDictionary.key(targetLemma),partOfSpeech]) }
+        }
         if hasSemiticForms {
             return try await database.read { try String.fetchAll($0,sql:"SELECT DISTINCT f.surface FROM semForm f JOIN semLexeme l ON l.id=f.lexemeID WHERE l.normalized=? AND l.pos=? AND f.status='attested' ORDER BY f.surface LIMIT 128",arguments:[SemiticUnicode.key(targetLemma),partOfSpeech]) }
         }
@@ -168,9 +192,11 @@ public struct LanguagePackRegistry: Sendable {
         self.packs = packs.sorted { $0.metadata.languageCode < $1.metadata.languageCode }
         englishTagger = try englishModelDirectory.map { try BundledEnglishTagger(directory:$0) }
     }
-    public init(directory: URL) throws {
-        let manifests = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
-            .filter { $0.pathExtension == "json" && $0.lastPathComponent != "coverage.json" && !$0.lastPathComponent.hasSuffix("-coverage.json") && !$0.lastPathComponent.hasSuffix(".policy.json") }
+    public init(directory: URL, additionalDirectories:[URL] = []) throws {
+        let manifests = try ([directory]+additionalDirectories).flatMap { folder in
+            try FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)
+                .filter { $0.pathExtension == "json" && $0.lastPathComponent.hasPrefix("en-") && !$0.lastPathComponent.hasSuffix(".policy.json") }
+        }
         let englishDirectory = directory.appendingPathComponent("_english",isDirectory:true)
         try self.init(packs: manifests.map { try SQLiteLanguagePack(manifestURL: $0) },
                       englishModelDirectory: FileManager.default.fileExists(atPath:englishDirectory.path) ? englishDirectory : nil)

@@ -26,6 +26,7 @@ struct VocabularyView: View {
         NavigationStack {
             List {
                 Section {
+                    NavigationLink {LatinVocabularyView()} label: {Label("Latin Vocab",systemImage:"point.3.connected.trianglepath.dotted")}
                     Picker("List", selection: $deckID) {
                         Text("All vocabulary").tag("")
                         ForEach(model.decks) { Text("\($0.name) (\($0.wordCount))").tag($0.id) }

@@ -50,8 +50,11 @@ import LinguaFrancaInference
     private var practicePlanner: VocabularyPracticePlanner?
     private(set) var semiticLexicon: SemiticLexicon?
     private(set) var dictionary: OfflineDictionary?
+    private var addonDirectory:URL?
+    private(set) var installingLanguagePack=false
+    private(set) var latinVocabulary:LatinVocabulary?
     private var vocabularyTextGenerator: VocabularyTextGenerator?
-    var canGenerate: Bool { (settings.replacementMode == .aggressive ? aggressiveModelURL : modelURL) != nil && replacementEngine != nil && !loading }
+    var canGenerate: Bool { (settings.replacementMode == .aggressive ? aggressiveModelURL : modelURL) != nil && replacementEngine != nil && !loading && !installingLanguagePack }
     func canGenerateVocabulary(_ language: String) -> Bool { language == "syc" ? semiticLexicon != nil && !loading : canGenerate }
 
     init() {
@@ -93,24 +96,43 @@ import LinguaFrancaInference
             }
             #endif
             try await refresh()
-            if let directory = Bundle.main.url(forResource: "LanguagePacks", withExtension: nil) {
-                let registry = try await Task.detached(priority: .userInitiated) {
-                    try LanguagePackRegistry(directory: directory)
-                }.value
-                languagePacks = registry.packs.map(\.metadata)
-                if FileManager.default.fileExists(atPath:directory.appendingPathComponent("_dictionary/search.sqlite").path) {
-                    dictionary=try await Task.detached(priority:.userInitiated) {try OfflineDictionary(directory:directory)}.value
-                }
-                replacementEngine = ContextualReplacementEngine(registry: registry, senseSelector: generator)
-                aggressiveGenerator = AggressiveReadingGenerator(model:generator,registry:registry)
-                vocabularyPlanner = GenerationVocabularyPlanner(registry: registry)
-                let semitic = try await Task.detached(priority:.userInitiated) { try SemiticLexicon(directory:directory) }.value
-                semiticLexicon = semitic
-                practicePlanner = VocabularyPracticePlanner(registry: registry,semiticLexicon:semitic)
-                vocabularyTextGenerator = VocabularyTextGenerator(model:generator,lexicon:semitic)
-            } else { throw DomainError.invalidInput("The bundled language packs are missing.") }
+            let support=try FileManager.default.url(for:.applicationSupportDirectory,in:.userDomainMask,appropriateFor:nil,create:true)
+            addonDirectory=support.appendingPathComponent(storageFolderName,isDirectory:true).appendingPathComponent("LanguageAddons",isDirectory:true)
+            try await reloadLanguagePacks()
+
         } catch { errorMessage = error.localizedDescription }
         loading = false
+    }
+
+    private func reloadLanguagePacks() async throws {
+        guard let directory=Bundle.main.url(forResource:"LanguagePacks",withExtension:nil),let addonDirectory else { throw DomainError.invalidInput("The bundled language packs are missing.") }
+        let loaded=try await Task.detached(priority:.userInitiated) {
+            let extras=try LanguagePackAddon.installedDirectories(in:addonDirectory)
+            let registry=try LanguagePackRegistry(directory:directory,additionalDirectories:extras)
+            let dictionary=try OfflineDictionary(directory:directory,additionalDirectories:extras)
+            return (registry,dictionary)
+        }.value
+        let registry=loaded.0
+        languagePacks=registry.packs.map(\.metadata);dictionary=loaded.1
+        replacementEngine=ContextualReplacementEngine(registry:registry,senseSelector:generator)
+        aggressiveGenerator=AggressiveReadingGenerator(model:generator,registry:registry)
+        vocabularyPlanner=GenerationVocabularyPlanner(registry:registry)
+        let semitic=try await Task.detached(priority:.userInitiated) {try SemiticLexicon(directory:directory)}.value
+        semiticLexicon=semitic
+        practicePlanner=VocabularyPracticePlanner(registry:registry,semiticLexicon:semitic)
+        vocabularyTextGenerator=VocabularyTextGenerator(model:generator,lexicon:semitic)
+        let latinURL=directory.appendingPathComponent("_latin/etymology.sqlite")
+        if FileManager.default.fileExists(atPath:latinURL.path) {
+            latinVocabulary=try await Task.detached(priority:.userInitiated) {try LatinVocabulary(databaseURL:latinURL)}.value
+        }
+    }
+    func installLanguagePack(from url:URL) async throws {
+        guard !generating,!remixing,!installingLanguagePack,let addonDirectory else { throw DomainError.invalidInput("Finish the current activity before adding a language.") }
+        installingLanguagePack=true;defer {installingLanguagePack=false}
+        let scoped=url.startAccessingSecurityScopedResource();defer {if scoped {url.stopAccessingSecurityScopedResource()}}
+        let installer=LanguagePackInstaller(directory:addonDirectory)
+        _ = try await installer.install(from:url,existingCodes:Set(languagePacks.map(\.languageCode)))
+        try await reloadLanguagePacks()
     }
 
     func refresh() async throws {

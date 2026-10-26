@@ -11,3 +11,7 @@ Rebuild lexical records with Tools/prepare_language_packs.py, then augment noun 
 practiceForm adds indexed lemma/POS/form/tense/person/number/gender/surface/source/license records. German UniMorph and Russian OpenCorpora provide attested forms. Missing/ambiguous rows return no replacement. German predicate adjectives and finite/nonfinite verbs are supported where safe; Russian finite present, infinitive, converb, gender/number-marked short predicate adjectives and explicitly habitual imperfective past are supported. General attributive agreement, progressive-phrase conversion, unknown Russian past gender, arbitrary aspect and separable-verb syntax remain unsupported.
 
 lf4 also exposes bounded form sets for vocabulary-writing coverage checks. These allow valid inflections of saved words in monolingual generated texts; they do not weaken contextual substitution or case validation.
+
+## Modular add-ons and additional languages (27 October 2026)
+
+See [ModularLanguages.md](ModularLanguages.md) for the `.lfpack` envelope, data-only script profiles, offline installation/export, lexicalForm schema, English lookup across all installed languages, passage vocabulary import and the separate source-recorded Latin Vocab catalog. Existing schema-1 packs, user libraries and FSRS histories remain compatible.

@@ -172,31 +172,33 @@ public actor DatabaseManager {
 
     @discardableResult public func saveVocabulary(_ draft: VocabularyDraft, inDeck deckID: String, now: Date = .now) async throws -> String {
         let value = try draft.validated()
-        let wordID = UUID().uuidString, cardID = UUID().uuidString
-        return try await queue.write { db in
-            guard try String.fetchOne(db, sql: "SELECT id FROM studyDeck WHERE id = ?", arguments: [deckID]) != nil
-            else { throw DomainError.missingRecord }
-            let existing = try String.fetchOne(db, sql: """
-                SELECT id FROM vocabularyItem WHERE englishKey = ? AND targetLanguage = ?
-                AND targetLemma = ? AND senseID = ? AND partOfSpeech = ?
-                """, arguments: [Self.key(value.englishLemma), value.targetLanguage, value.targetLemma, value.senseID, value.partOfSpeech])
-            let id = existing ?? wordID
-            if existing == nil {
-                try db.execute(sql: "INSERT INTO vocabularyItem VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    arguments: [id, value.englishLemma, Self.key(value.englishLemma), value.targetLanguage, value.targetLemma,
-                                value.targetSurface, value.senseID, value.partOfSpeech, value.exampleEnglish, value.exampleMixed,
-                                Self.searchKey(value), now.timeIntervalSince1970])
-                try db.execute(sql: "INSERT INTO srsCard(id, vocabularyItemID, dueAt) VALUES (?, ?, ?)",
-                               arguments: [cardID, id, now.timeIntervalSince1970])
-            }
-            try db.execute(sql: "INSERT OR IGNORE INTO deckVocabulary VALUES (?, ?)", arguments: [deckID, id])
-            if let reference = value.lexicalReference {
-                let json = String(decoding:try JSONEncoder().encode(reference),as:UTF8.self)
-                try db.execute(sql:"INSERT OR REPLACE INTO vocabularyLexicalReference VALUES(?,?)",arguments:[id,json])
-            }
-            try db.execute(sql: "UPDATE studyDeck SET updatedAt = ? WHERE id = ?", arguments: [now.timeIntervalSince1970, deckID])
-            return id
+        return try await queue.write { db in try Self.saveVocabulary(value,inDeck:deckID,now:now,db:db) }
+    }
+
+    static func saveVocabulary(_ value:VocabularyDraft,inDeck deckID:String,now:Date,db:Database) throws -> String {
+        let wordID=UUID().uuidString,cardID=UUID().uuidString
+        guard try String.fetchOne(db, sql: "SELECT id FROM studyDeck WHERE id = ?", arguments: [deckID]) != nil
+        else { throw DomainError.missingRecord }
+        let existing = try String.fetchOne(db, sql: """
+            SELECT id FROM vocabularyItem WHERE englishKey = ? AND targetLanguage = ?
+            AND targetLemma = ? AND senseID = ? AND partOfSpeech = ?
+            """, arguments: [Self.key(value.englishLemma), value.targetLanguage, value.targetLemma, value.senseID, value.partOfSpeech])
+        let id = existing ?? wordID
+        if existing == nil {
+            try db.execute(sql: "INSERT INTO vocabularyItem VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                arguments: [id, value.englishLemma, Self.key(value.englishLemma), value.targetLanguage, value.targetLemma,
+                            value.targetSurface, value.senseID, value.partOfSpeech, value.exampleEnglish, value.exampleMixed,
+                            Self.searchKey(value), now.timeIntervalSince1970])
+            try db.execute(sql: "INSERT INTO srsCard(id, vocabularyItemID, dueAt) VALUES (?, ?, ?)",
+                           arguments: [cardID, id, now.timeIntervalSince1970])
         }
+        try db.execute(sql: "INSERT OR IGNORE INTO deckVocabulary VALUES (?, ?)", arguments: [deckID, id])
+        if let reference = value.lexicalReference {
+            let json = String(decoding:try JSONEncoder().encode(reference),as:UTF8.self)
+            try db.execute(sql:"INSERT OR REPLACE INTO vocabularyLexicalReference VALUES(?,?)",arguments:[id,json])
+        }
+        try db.execute(sql: "UPDATE studyDeck SET updatedAt = ? WHERE id = ?", arguments: [now.timeIntervalSince1970, deckID])
+        return id
     }
 
     public func updateVocabulary(id: String, draft: VocabularyDraft) async throws {
@@ -274,14 +276,14 @@ public actor DatabaseManager {
         }
     }
 
-    private static func key(_ text: String) -> String {
+    static func key(_ text: String) -> String {
         text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
             .precomposedStringWithCanonicalMapping
     }
     private static func searchKey(_ value: VocabularyDraft) -> String {
         key([value.englishLemma, value.targetLemma, value.targetSurface, value.senseID, value.exampleEnglish].joined(separator: " "))
     }
-    private static func deckName(_ name: String) throws -> String {
+    static func deckName(_ name: String) throws -> String {
         let clean = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !clean.isEmpty, clean.count <= 80 else { throw DomainError.invalidInput("List names must contain 1–80 characters.") }
         return clean

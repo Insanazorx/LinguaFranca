@@ -116,9 +116,9 @@ private actor ForbiddenSyriacModel: TextGenerationService {
     await #expect(throws:DomainError.self) { try await ClassicalSyriacTextRealizer(lexicon:catalog).generate(request:unsupported,seed:42) }
 }
 
-@Test func allFiveLanguagesRegisterWithoutChangingOldDefaults() throws {
+@Test func allBundledLanguagesRegisterWithoutChangingOldDefaults() throws {
     let registry=try LanguagePackRegistry(directory:semiticPacks)
-    #expect(Set(registry.packs.map{$0.metadata.languageCode})==["de","ru","ar","he","syc"])
+    #expect(Set(registry.packs.map{$0.metadata.languageCode})==["de","ru","ar","he","syc","la","es","fr"])
     #expect(AppSettings().enabledLanguages==["de","ru"])
     let old=#"{"sourceTextID":"x","id":"old","originalUTF16Range":{"location":0,"length":4},"renderedUTF16Range":{"location":0,"length":4},"originalSurface":"book","originalLemma":"book","originalPartOfSpeech":"noun","sourceSenseID":"old","targetLanguageCode":"de","targetLemma":"Buch","targetSurface":"Buch","translationConfidence":1,"languagePackVersion":"old"}"#
     #expect(try JSONDecoder().decode(ReplacementSpan.self,from:Data(old.utf8)).lexicalReference==nil)

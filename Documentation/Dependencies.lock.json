@@ -163,5 +163,71 @@
     "license": "MIT",
     "implementation": "Native Swift port; 21 default weights; 1m/10m learning, 10m relearning; fuzz disabled",
     "referenceVectors": "Tests/Fixtures/fsrs6-reference.json"
+  },
+  "additionalLanguageData": [
+    {
+      "languageCode": "la",
+      "displayName": "Latin",
+      "filename": "en-la.sqlite3",
+      "url": "https://download.wikdict.com/dictionaries/sqlite/2_2026-06/en-la.sqlite3",
+      "sha256": "10e483a51c0f7b11fae9e0e9c59c3890bc437b6df1d5603022eff629fdf05193",
+      "byteCount": 6021120,
+      "license": "CC-BY-SA-4.0",
+      "morphology": {
+        "iso": "lat",
+        "filename": "unimorph-lat-050924c9.tar.gz",
+        "url": "https://codeload.github.com/unimorph/lat/tar.gz/050924c9f013e6aba4d7c87be243a1d79b6c5b10",
+        "revision": "050924c9f013e6aba4d7c87be243a1d79b6c5b10",
+        "sha256": "57654bcdd30c6b8dca051fc7c9a350b65b052cbd55111c187e3d58b6b66245f9",
+        "byteCount": 13891020,
+        "license": "CC-BY-SA-3.0"
+      }
+    },
+    {
+      "languageCode": "es",
+      "displayName": "Spanish",
+      "filename": "en-es.sqlite3",
+      "url": "https://download.wikdict.com/dictionaries/sqlite/2_2026-06/en-es.sqlite3",
+      "sha256": "d66fd6f8b7f3872f5fa17391846468ac18cda11a63b64961ebd36c7ba1069a79",
+      "byteCount": 16146432,
+      "license": "CC-BY-SA-4.0",
+      "morphology": {
+        "iso": "spa",
+        "filename": "unimorph-spa-b9655efb.tar.gz",
+        "url": "https://codeload.github.com/unimorph/spa/tar.gz/b9655efb0e5ce0f99809badaa7f4e93017ab8430",
+        "revision": "b9655efb0e5ce0f99809badaa7f4e93017ab8430",
+        "sha256": "b37a626dc3140197cad1dac9bf6f9743b8736822f611470390eb3f72d3cb1125",
+        "byteCount": 14087092,
+        "license": "CC-BY-SA-3.0"
+      }
+    },
+    {
+      "languageCode": "fr",
+      "displayName": "French",
+      "filename": "en-fr.sqlite3",
+      "url": "https://download.wikdict.com/dictionaries/sqlite/2_2026-06/en-fr.sqlite3",
+      "sha256": "3908275d1c0fea866e681d5e065c25e4fd2c39a6d3d3dd23b48f351eb0e286a2",
+      "byteCount": 24039424,
+      "license": "CC-BY-SA-4.0",
+      "morphology": {
+        "iso": "fra",
+        "filename": "unimorph-fra-f672f8cc.tar.gz",
+        "url": "https://codeload.github.com/unimorph/fra/tar.gz/f672f8cceb2d5f5a1e2241b5622c8845f8274635",
+        "revision": "f672f8cceb2d5f5a1e2241b5622c8845f8274635",
+        "sha256": "c98d343226698c9e82f0fe37f10e7793fb782e9d7da102e78b76b3c74ed64d81",
+        "byteCount": 8611938,
+        "license": "CC-BY-SA-3.0"
+      }
+    }
+  ],
+  "latinEtymology": {
+    "filename": "etymwn-20130208.zip",
+    "url": "https://archive.org/download/etymwn-20130208/etymwn-20130208.zip",
+    "sha256": "7a046f01069945dfdc82be4173dd36ea5bda71758082af47dfc020d48d44d018",
+    "byteCount": 27504275,
+    "license": "CC-BY-SA-3.0",
+    "source": "Gerard de Melo / English Wiktionary",
+    "version": "2013-02-08",
+    "originalSource": "http://www1.icsi.berkeley.edu/~demelo/etymwn/"
   }
 }

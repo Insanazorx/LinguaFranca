@@ -7,6 +7,8 @@ struct ReviewSessionView: View {
     @State private var session: ContinuousStudySession
     let onExit: (() -> Void)?
     @State private var flipped = false
+    @State private var inspection:CardDictionarySelection?
+    @State private var inspectionStarted:Date?
     @State private var drag = CGSize.zero
     @GestureState private var held = false
     @FocusState private var focused: Bool
@@ -14,19 +16,37 @@ struct ReviewSessionView: View {
     @State private var error: String?
     @State private var shownAt = Date.now
     @State private var meaning: String?
-    @State private var tint = CardTint.allCases.randomElement()!
+    @State private var tint:CardTint
+    @State private var nextTint:CardTint
     private let ink = Color(red: 0.08, green: 0.12, blue: 0.14)
 
     init(cards: [StudyCard], onExit: (() -> Void)? = nil) {
         _session = State(initialValue: ContinuousStudySession(cards: cards))
+        let first=CardTint.allCases.randomElement()!
+        _tint=State(initialValue:first)
+        _nextTint=State(initialValue:CardTint.allCases.filter{$0 != first}.randomElement()!)
         self.onExit = onExit
     }
 
     var body: some View {
         GeometryReader { geometry in
-            let width = max(1, min(geometry.size.width - 32, (geometry.size.height - 32) * 2 / 3, 520))
+            let width = max(1, min(geometry.size.width - 48, (geometry.size.height - 64) * 2 / 3, 520))
+            let lift=min(1,abs(drag.width)/max(1,width*0.8))
             ZStack {
                 Color(white: 0.055).ignoresSafeArea()
+                if session.count>1,session.current != nil {
+                    // One closed backing card. No future card faces, dictionary lookups
+                    // or vocabulary views are created for the rest of the selection.
+                    RoundedRectangle(cornerRadius:30)
+                        .fill(nextTint.color)
+                        .overlay {RoundedRectangle(cornerRadius:30).strokeBorder(.white.opacity(0.3),lineWidth:1)}
+                        .frame(width:width,height:width*1.5)
+                        .scaleEffect(0.97+0.03*lift)
+                        .rotationEffect(.degrees(2.2*(1-lift)))
+                        .offset(x:6*(1-lift),y:14*(1-lift))
+                        .shadow(color:.black.opacity(0.3),radius:10,y:8)
+                        .allowsHitTesting(false).accessibilityHidden(true)
+                }
                 ZStack {
                     if let current = session.current {
                         let word = current.word.draft
@@ -40,6 +60,7 @@ struct ReviewSessionView: View {
                 }
                 .frame(width: width, height: width * 1.5)
                 .background(tint.color, in: RoundedRectangle(cornerRadius: 30))
+                .overlay {RoundedRectangle(cornerRadius:30).strokeBorder(.white.opacity(0.22),lineWidth:1).allowsHitTesting(false)}
                 .overlay(alignment: .topLeading) {
                     if abs(drag.width) > 35 {
                         Text(drag.width > 0 ? "I KNOW" : "DON'T KNOW").font(.caption.bold()).padding(22)
@@ -105,6 +126,10 @@ struct ReviewSessionView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .foregroundStyle(ink)
         }
+        .sheet(item:$inspection,onDismiss:{
+            if let started=inspectionStarted {shownAt=shownAt.addingTimeInterval(max(0,Date.now.timeIntervalSince(started)))}
+            inspectionStarted=nil;focused=true
+        }) {selection in StudyWordDictionaryView(word:selection.word)}
         .interactiveDismissDisabled(true)
         .onAppear { focused = true }
         #if os(iOS)
@@ -116,8 +141,17 @@ struct ReviewSessionView: View {
     private func face(_ word: VocabularyDraft, back: Bool) -> some View {
         VStack(spacing: 16) {
             Text(Theme.language(word.targetLanguage).uppercased()).font(.caption.weight(.semibold)).tracking(1.5).opacity(0.65)
-            SemiticOrLatinVocabularyText(text: word.targetSurface, language: word.targetLanguage, size: 42)
-                .lineLimit(3).minimumScaleFactor(0.55)
+            if back {
+                Button {openDictionary(word)} label: {
+                    SemiticOrLatinVocabularyText(text:word.targetSurface,language:word.targetLanguage,size:42)
+                        .lineLimit(3).minimumScaleFactor(0.55)
+                }.buttonStyle(.plain).disabled(!flipped || saving)
+                    .accessibilityLabel("Inspect \(word.targetSurface) in dictionary")
+                    .accessibilityIdentifier("card-dictionary-word")
+            } else {
+                SemiticOrLatinVocabularyText(text:word.targetSurface,language:word.targetLanguage,size:42)
+                    .lineLimit(3).minimumScaleFactor(0.55)
+            }
             if back {
                 Divider().overlay(ink.opacity(0.2))
                 Text(word.englishLemma).font(.title2.weight(.medium)).lineLimit(3).accessibilityIdentifier("card-meaning")
@@ -133,20 +167,26 @@ struct ReviewSessionView: View {
         .multilineTextAlignment(.center).padding(.horizontal, 30).padding(.vertical, 62)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityHidden(back != flipped)
+        .allowsHitTesting(back == flipped)
     }
 
+    private func openDictionary(_ word:VocabularyDraft) {
+        guard flipped,!saving,inspection==nil else {return}
+        drag = .zero;focused=false;inspectionStarted = .now
+        inspection=CardDictionarySelection(word:word)
+    }
     private func flip() {
-        guard !saving, session.current != nil else { return }
+        guard !saving, inspection==nil, session.current != nil else { return }
         focused = true
         withAnimation(.easeInOut(duration: 0.25)) { flipped.toggle() }
     }
     private func recenter() { withAnimation(.spring(response: 0.32, dampingFraction: 0.72)) { drag = .zero } }
     private func exit() {
-        guard !saving else { return }
+        guard !saving,inspection==nil else { return }
         if let onExit { onExit() } else { dismiss() }
     }
     private func rate(_ rating: ReviewRating, width: CGFloat) async {
-        guard !saving, let current = session.current, let db = model.database else { return }
+        guard !saving, inspection==nil, let current = session.current, let db = model.database else { return }
         saving = true; error = nil
         defer { saving = false }
         let now = Date.now
@@ -159,7 +199,8 @@ struct ReviewSessionView: View {
             var transaction = Transaction(); transaction.disablesAnimations = true
             withTransaction(transaction) {
                 session = next; flipped = false; drag = .zero; shownAt = .now
-                tint = CardTint.allCases.filter { $0 != tint }.randomElement()!
+                tint=nextTint
+                nextTint=CardTint.allCases.filter{$0 != tint}.randomElement()!
             }
             try? await model.refresh()
             focused = true
@@ -183,3 +224,5 @@ private enum CardTint: CaseIterable {
         }
     }
 }
+
+private struct CardDictionarySelection:Identifiable {let id=UUID();let word:VocabularyDraft}

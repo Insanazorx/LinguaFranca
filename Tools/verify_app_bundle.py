@@ -52,13 +52,15 @@ def main():
                 if meta['languageCode']=='syc':
                     assert db.execute('select count(*) from semCorpusTemplate').fetchone()[0]>1000
                     assert meta['licenseMetadata']['corpusLicense']=='CC-BY-NC-4.0'
-            else:
+            elif meta['languageCode'] in ('de','ru'):
                 assert db.execute('select count(*) from nounForm').fetchone()[0]>1000
                 assert db.execute('select count(*) from caseForm').fetchone()[0]>1000
                 for pos in ['verb','adjective']:
                     assert db.execute('select count(*) from practiceForm where pos=?',(pos,)).fetchone()[0]>100
+            elif 'attested-forms' in meta['supportedFeatures']:
+                assert db.execute('SELECT count(*) FROM lexicalForm').fetchone()[0]>1000
         if args.checksums:assert sha(database)==meta['licenseMetadata']['databaseSHA256']
-    assert {'de','ru','ar','he','syc'}.issubset(languages), 'Bundled target languages missing'
+    assert {'de','ru','ar','he','syc','la','es','fr'}.issubset(languages), 'Bundled target languages missing'
     assert (resources/'Fonts/NotoSansSyriac-Regular.ttf').stat().st_size==233516, 'Syriac font missing'
     search=packs/'_dictionary/search.sqlite'
     search_meta=json.loads((packs/'_dictionary/manifest.json').read_text())
@@ -69,6 +71,14 @@ def main():
         assert dictionary.execute('select count(*) from document').fetchone()[0]==search_meta['recordCount']
         assert set(r[0] for r in dictionary.execute('select language from pack'))==set(languages)
         assert dictionary.execute("select count(*) from search where search match 'garden'").fetchone()[0]>0
+    latin=packs/'_latin'
+    latin_meta=json.loads((latin/'manifest.json').read_text())
+    assert (latin/'etymology.sqlite').stat().st_size==latin_meta['byteCount']
+    if args.checksums:assert sha(latin/'etymology.sqlite')==latin_meta['sha256']
+    with sqlite3.connect(f"file:{latin/'etymology.sqlite'}?mode=ro",uri=True) as db:
+        assert db.execute('PRAGMA quick_check').fetchone()[0]=='ok'
+        assert db.execute('SELECT count(*) FROM family').fetchone()[0]==latin_meta['families']>100
+        assert db.execute("SELECT count(*) FROM (SELECT familyID FROM member GROUP BY familyID HAVING count(DISTINCT language)<>3)").fetchone()[0]==0
     english=packs/'_english'
     meta=json.loads((english/'model-manifest.json').read_text())
     for name,digest in meta['files'].items():

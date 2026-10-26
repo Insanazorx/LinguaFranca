@@ -4,8 +4,10 @@ import LinguaFrancaCore
 struct DictionaryView:View {
     @Environment(AppEnvironment.self) private var model
     @State private var query=""
+    @State private var mode="english"
     @State private var language="all"
     @State private var packs:[DictionaryPack]=[]
+    @State private var groups:[DictionaryTranslationGroup]=[]
     @State private var records:[DictionaryRecord]=[]
     @State private var more=false
     @State private var loading=false
@@ -15,43 +17,76 @@ struct DictionaryView:View {
         NavigationStack {
             List {
                 Section {
-                    Picker("Language",selection:$language) {
-                        Text("All dictionaries").tag("all")
-                        ForEach(packs) {Text($0.metadata.displayName).tag($0.id)}
-                    }.accessibilityIdentifier("dictionary-language")
-                    NavigationLink {DictionarySourcesView(packs:packs)} label:{Label("Downloaded dictionaries",systemImage:"books.vertical")}
+                    Picker("Search mode",selection:$mode) {
+                        Text("English → all languages").tag("english")
+                        Text("Browse dictionaries").tag("browse")
+                    }.accessibilityIdentifier("dictionary-mode")
+                    if mode=="browse" {
+                        Picker("Language",selection:$language) {
+                            Text("All dictionaries").tag("all")
+                            ForEach(packs) {Text($0.metadata.displayName).tag($0.id)}
+                        }.accessibilityIdentifier("dictionary-language")
+                    }
+                    NavigationLink {LatinVocabularyView()} label:{Label("Latin Vocab",systemImage:"point.3.connected.trianglepath.dotted")}
+                    NavigationLink {DictionarySourcesView(packs:packs)} label:{Label("Installed dictionaries",systemImage:"books.vertical")}
+                    NavigationLink {LanguagePackLibraryView()} label:{Label("Add a language pack",systemImage:"plus.circle")}
                     NavigationLink {SemiticRootsView(embedded:true)} label:{Label("Semitic Roots & Morphology",systemImage:"tree")}
-                    Text("Search English, a target word, an inflected form or a source transliteration. Everything is on your device.")
+                    Text(mode=="english" ? "Enter an English word or expression to see its recorded meanings in every installed language, including languages disabled for reading." : "Search English, a target word, an inflected form or a source transliteration. Everything is on your device.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 if let error {Text(error).foregroundStyle(.red)}
-                ForEach(records) {record in
-                    NavigationLink {DictionaryEntryView(record:record)} label: {
-                        DictionaryResultRow(record:record)
+                if mode=="english" {
+                    if query.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty {
+                        ContentUnavailableView("One word, every language",systemImage:"character.book.closed",description:Text("Try an English word such as house or book."))
+                    } else {
+                        ForEach(groups) {group in
+                            Section(group.pack.metadata.displayName) {
+                                if group.records.isEmpty {
+                                    Text("No recorded equivalent for this English expression.").font(.footnote).foregroundStyle(.secondary)
+                                }
+                                ForEach(group.records) {record in
+                                    NavigationLink {DictionaryEntryView(record:record)} label:{DictionaryResultRow(record:record)}
+                                }
+                                if group.hasMore {
+                                    Button("Show all meanings in this language"){language=group.id;mode="browse"}
+                                }
+                            }
+                        }
                     }
+                } else {
+                    ForEach(records) {record in
+                        NavigationLink {DictionaryEntryView(record:record)} label:{DictionaryResultRow(record:record)}
+                    }
+                    if !loading && more {Button("Load more"){Task{await load(reset:false)}}}
+                    else if !loading && records.isEmpty && error==nil {ContentUnavailableView.search(text:query)}
                 }
                 if loading {ProgressView("Searching local dictionaries…")}
-                else if more {Button("Load more"){Task{await load(reset:false)}}}
-                else if records.isEmpty && error == nil {ContentUnavailableView.search(text:query)}
             }.navigationTitle("Dictionary")
-                .searchable(text:$query,prompt:"English or target expression")
-                .task(id:language+":"+query) {
+                .searchable(text:$query,prompt:mode=="english" ? "English word or expression":"English or target expression")
+                .task(id:mode+":"+language+":"+query+":"+String(model.languagePacks.count)) {
                     do {try await Task.sleep(for:.milliseconds(220));try Task.checkCancellation();await load(reset:true)} catch { }
                 }
         }
     }
     private func load(reset:Bool) async {
         guard let dictionary=model.dictionary else {error="The offline search index is missing. Rebuild with build.sh.";return}
-        if reset {revision+=1;records=[];more=false}
-        let id=revision,requestedQuery=query,requestedLanguage=language,start=records.count
+        if reset {revision+=1;records=[];groups=[];more=false}
+        let id=revision,requestedQuery=query,requestedLanguage=language,requestedMode=mode,start=records.count
         loading=true;error=nil
         defer{if id==revision {loading=false}}
         do {
-            if packs.isEmpty {packs=try await dictionary.packs()}
-            let page=try await dictionary.search(requestedQuery,language:requestedLanguage == "all" ? nil:requestedLanguage,offset:start)
-            try Task.checkCancellation()
-            guard id==revision,requestedQuery==query,requestedLanguage==language else{return}
-            records+=page.records;more=page.hasMore
+            packs=await dictionary.packs()
+            if requestedMode=="english" {
+                let result=try await dictionary.englishTranslations(requestedQuery)
+                try Task.checkCancellation()
+                guard id==revision,requestedQuery==query,mode==requestedMode else{return}
+                groups=result
+            } else {
+                let page=try await dictionary.search(requestedQuery,language:requestedLanguage=="all" ? nil:requestedLanguage,offset:start)
+                try Task.checkCancellation()
+                guard id==revision,requestedQuery==query,requestedLanguage==language,mode==requestedMode else{return}
+                records+=page.records;more=page.hasMore
+            }
         } catch is CancellationError { } catch {if id==revision {self.error=error.localizedDescription}}
     }
 }
@@ -149,7 +184,7 @@ struct DictionaryEntryView:View {
             .task(id:record.id) {
                 do {
                     detail=try await model.dictionary?.detail(record)
-                    selected=detail?.translations.first ?? record.headword
+                    selected=detail?.translations.contains(record.headword)==true ? record.headword:detail?.translations.first ?? record.headword
                     if let id=detail?.rootID {root=try await model.semiticLexicon?.root(id:id,language:record.language)}
                 } catch {self.error=error.localizedDescription}
             }

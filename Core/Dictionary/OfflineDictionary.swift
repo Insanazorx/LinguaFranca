@@ -3,7 +3,7 @@ import GRDB
 
 public enum DictionaryRecordKind:String,Sendable,Codable { case entry,lexeme,root }
 public struct DictionaryRecord:Identifiable,Sendable,Equatable {
-    public let id:Int64
+    public var id:String { language+":"+kind.rawValue+":"+sourceID }
     public let language:String
     public let kind:DictionaryRecordKind
     public let sourceID,headword,english,partOfSpeech,definition,transliteration:String
@@ -12,6 +12,16 @@ public struct DictionaryPack:Identifiable,Sendable {
     public var id:String { metadata.languageCode }
     public let metadata:LanguagePackMetadata
     public let entries,lexemes,roots,forms:Int
+}
+public struct DictionaryTranslationGroup: Identifiable, Sendable {
+    public var id:String { pack.id }
+    public let pack:DictionaryPack
+    public let records:[DictionaryRecord]
+    public let hasMore:Bool
+}
+public struct VocabularyDictionaryInspection: Sendable {
+    public let exact:DictionaryRecord?
+    public let candidates:[DictionaryRecord]
 }
 public struct DictionaryPage:Sendable { public let records:[DictionaryRecord];public let hasMore:Bool }
 public struct DictionaryDetail:Sendable {
@@ -37,29 +47,53 @@ public struct DictionaryFormPage:Sendable { public let forms:[DictionaryForm];pu
 /// Read-only search index plus the original bundled databases. Search is paginated and never
 /// depends on the enabled replacement languages, the LLM, or the user's saved vocabulary.
 public actor OfflineDictionary {
-    private let index:DatabaseQueue
-    private let directory:URL
+    private let indexes:[DatabaseQueue]
+    private let availablePacks:[DictionaryPack]
+    private let packDirectories:[String:URL]
     private var sources:[String:DatabaseQueue]=[:]
-    public init(directory:URL) throws {
-        self.directory=directory
+    public init(directory:URL,additionalDirectories:[URL]=[]) throws {
         var config=Configuration();config.readonly=true
-        index=try DatabaseQueue(path:directory.appendingPathComponent("_dictionary/search.sqlite").path,configuration:config)
+        var queues:[DatabaseQueue]=[],packs:[DictionaryPack]=[],locations:[String:URL]=[:]
+        for folder in [directory]+additionalDirectories {
+            let queue=try DatabaseQueue(path:folder.appendingPathComponent("_dictionary/search.sqlite").path,configuration:config)
+            let found=try queue.read { db in
+                try Row.fetchAll(db,sql:"SELECT * FROM pack ORDER BY language").map { row in
+                    let meta=try JSONDecoder().decode(LanguagePackMetadata.self,from:Data((row["metadata"] as String).utf8))
+                    return DictionaryPack(metadata:meta,entries:row["entryCount"],lexemes:row["lexemeCount"],roots:row["rootCount"],forms:row["formCount"])
+                }
+            }
+            for pack in found {
+                guard locations[pack.id] == nil else { throw DomainError.invalidInput("Duplicate dictionary language.") }
+                locations[pack.id]=folder
+            }
+            queues.append(queue);packs+=found
+        }
+        indexes=queues;availablePacks=packs.sorted { $0.id < $1.id };packDirectories=locations
     }
     public static func key(_ text:String) -> String { SemiticUnicode.key(text).replacingOccurrences(of:"ß",with:"ss") }
-    public func packs() throws -> [DictionaryPack] {
-        try index.read { db in
-            try Row.fetchAll(db,sql:"SELECT * FROM pack ORDER BY language").map { row in
-                let meta=try JSONDecoder().decode(LanguagePackMetadata.self,from:Data((row["metadata"] as String).utf8))
-                return .init(metadata:meta,entries:row["entryCount"],lexemes:row["lexemeCount"],roots:row["rootCount"],forms:row["formCount"])
-            }
-        }
-    }
+    public func packs() -> [DictionaryPack] { availablePacks }
     private func source(_ language:String) throws -> DatabaseQueue {
         if let existing=sources[language] { return existing }
-        guard let pack=try packs().first(where: { $0.id == language }) else { throw DomainError.missingRecord }
+        guard let pack=availablePacks.first(where: { $0.id == language }),let folder=packDirectories[language],
+              pack.metadata.lexiconDatabaseName == URL(fileURLWithPath:pack.metadata.lexiconDatabaseName).lastPathComponent else { throw DomainError.missingRecord }
         var config=Configuration();config.readonly=true
-        let queue=try DatabaseQueue(path:directory.appendingPathComponent(pack.metadata.lexiconDatabaseName).path,configuration:config)
+        let queue=try DatabaseQueue(path:folder.appendingPathComponent(pack.metadata.lexiconDatabaseName).path,configuration:config)
         sources[language]=queue;return queue
+    }
+    /// Every installed language gets its own bounded result set, even when that language is
+    /// disabled for reading. Homonyms keep separate senses and missing coverage stays explicit.
+    public func englishTranslations(_ text:String,limitPerLanguage:Int=12) throws -> [DictionaryTranslationGroup] {
+        try Task.checkCancellation()
+        guard text.count<=200 else { throw DomainError.invalidInput("Use a shorter English expression.") }
+        let clean=Self.key(text.trimmingCharacters(in:.whitespacesAndNewlines)),size=max(1,min(limitPerLanguage,100))
+        return try availablePacks.map { pack in
+            let rows=try indexes.flatMap { index in
+                try index.read { db in
+                    try Row.fetchAll(db,sql:"SELECT * FROM document WHERE language=? AND kind='entry' AND englishKey=? ORDER BY pos,id LIMIT ?",arguments:[pack.id,clean,size+1]).map(Self.record)
+                }
+            }
+            return .init(pack:pack,records:Array(rows.prefix(size)),hasMore:rows.count>size)
+        }
     }
     public func search(_ text:String,language:String?=nil,offset:Int=0,limit:Int=50) throws -> DictionaryPage {
         try Task.checkCancellation()
@@ -71,31 +105,58 @@ public actor OfflineDictionary {
         let match=tokens.prefix(12).map { "\"\($0)\"*" }.joined(separator:" AND ")
         var native:[String:[String]]=[:]
         if !clean.isEmpty {
-            for pack in try packs() where (language == nil || language == pack.id) && SemiticLanguage(rawValue:pack.id) != nil && SemiticUnicode.scriptMatches(clean,language:pack.id) {
+            for pack in packs() where (language == nil || language == pack.id) && SemiticLanguage(rawValue:pack.id) != nil && SemiticUnicode.scriptMatches(clean,language:pack.id) {
                 native[pack.id]=try source(pack.id).read { try String.fetchAll($0,sql:"SELECT DISTINCT lexemeID FROM semForm WHERE normalized=? LIMIT 128",arguments:[clean]) }
             }
         }
-        let rows=try index.read { db in
-            var sql="SELECT d.* FROM document d WHERE 1=1",args:StatementArguments=[]
+        let nativeMatches=native
+        func page(_ index:DatabaseQueue,_ start:Int) throws -> [Row] {
+          try index.read { db in
+            var args:StatementArguments=[]
+            let rank=clean.isEmpty ? "0" : "CASE WHEN d.englishKey=? THEN 0 WHEN d.id IN (SELECT documentID FROM target WHERE key=?) THEN 1 ELSE 2 END"
+            if !clean.isEmpty {args += [clean,clean]}
+            var sql="SELECT d.*, \(rank) AS matchRank FROM document d WHERE 1=1"
             if let language { sql += " AND d.language=?";args += [language] }
             if !clean.isEmpty {
                 var choices=["d.id IN (SELECT rowid FROM search WHERE search MATCH ?)","d.id IN (SELECT documentID FROM target WHERE key=?)","d.id IN (SELECT t.documentID FROM target t JOIN nativeForm f ON f.lemmaKey=t.key JOIN document nd ON nd.id=t.documentID AND nd.language=f.language WHERE f.key=?)"]
                 args += [match,clean,clean]
-                for code in native.keys.sorted() {
-                    let ids=native[code]!
+                for code in nativeMatches.keys.sorted() {
+                    let ids=nativeMatches[code]!
                     if !ids.isEmpty {
                         choices.append("(d.language=? AND d.kind='lexeme' AND d.sourceID IN (\(Array(repeating:"?",count:ids.count).joined(separator:","))))")
                         args += [code];args += StatementArguments(ids)
                     }
                 }
                 sql += " AND ("+choices.joined(separator:" OR ")+")"
-                sql += " ORDER BY CASE WHEN d.englishKey=? THEN 0 WHEN d.id IN (SELECT documentID FROM target WHERE key=?) THEN 1 ELSE 2 END,d.language,d.englishKey,d.id"
-                args += [clean,clean]
+                sql += " ORDER BY matchRank,d.language,d.englishKey,d.id"
             } else { sql += " ORDER BY d.language,d.englishKey,d.id" }
-            sql += " LIMIT ? OFFSET ?";args += [size+1,offset]
-            return try Row.fetchAll(db,sql:sql,arguments:args).map(Self.record)
+            sql += " LIMIT ? OFFSET ?";args += [size+1,start]
+            return try Row.fetchAll(db,sql:sql,arguments:args)
+          }
         }
-        try Task.checkCancellation()
+        // Merge bounded pages from the bundled index and imported add-ons. Only one page
+        // per index is resident, including when the caller browses far into the dictionary.
+        var pages=try indexes.map { try page($0,0) },positions=Array(repeating:0,count:indexes.count),starts=Array(repeating:0,count:indexes.count)
+        var skipped=0,rows:[DictionaryRecord]=[]
+        func precedes(_ a:Row,_ b:Row)->Bool {
+            let ar:Int=a["matchRank"],br:Int=b["matchRank"]
+            if ar != br { return ar<br }
+            let al:String=a["language"],bl:String=b["language"]
+            if al != bl { return al<bl }
+            let ak:String=a["englishKey"],bk:String=b["englishKey"]
+            if ak != bk { return ak<bk }
+            return (a["id"] as Int64)<(b["id"] as Int64)
+        }
+        while rows.count<size+1 {
+            try Task.checkCancellation()
+            let candidates=indexes.indices.filter { positions[$0]<pages[$0].count }
+            guard let chosen=candidates.min(by:{precedes(pages[$0][positions[$0]],pages[$1][positions[$1]])}) else { break }
+            let row=pages[chosen][positions[chosen]];positions[chosen]+=1
+            if skipped<offset { skipped+=1 } else { rows.append(Self.record(row)) }
+            if positions[chosen]==pages[chosen].count && pages[chosen].count==size+1 {
+                starts[chosen]+=pages[chosen].count;pages[chosen]=try page(indexes[chosen],starts[chosen]);positions[chosen]=0
+            }
+        }
         return .init(records:Array(rows.prefix(size)),hasMore:rows.count > size)
     }
     public func detail(_ record:DictionaryRecord) throws -> DictionaryDetail {
@@ -128,6 +189,40 @@ public actor OfflineDictionary {
             return try String.fetchOne(db,sql:"SELECT definition FROM entry WHERE lemma=? AND senseID=? LIMIT 1",arguments:[word.englishLemma.lowercased(),word.senseID])
         }
     }
+    /// Prefer the saved lexical identity. Model/manual cards without one show possible
+    /// dictionary senses instead of silently attributing an arbitrary sense to the card.
+    public func inspect(_ word:VocabularyDraft) throws -> VocabularyDictionaryInspection {
+        guard availablePacks.contains(where:{$0.id==word.targetLanguage}) else {return .init(exact:nil,candidates:[])}
+        let kind:DictionaryRecordKind
+        let identifier:String?
+        if let reference=word.lexicalReference {
+            kind=reference.kind == .root ? .root:.lexeme
+            identifier=reference.kind == .root ? reference.rootID:reference.lexemeID
+        } else {
+            kind = .entry
+            identifier=try source(word.targetLanguage).read { db in
+                try String.fetchOne(db,sql:"SELECT CAST(rowid AS TEXT) FROM entry WHERE senseID=? AND lemma=? ORDER BY rowid LIMIT 1",arguments:[word.senseID,word.englishLemma.lowercased()])
+            }
+        }
+        if let identifier {
+            for index in indexes {
+                if let exact=try index.read({ db in
+                    try Row.fetchOne(db,sql:"SELECT * FROM document WHERE language=? AND kind=? AND sourceID=? LIMIT 1",arguments:[word.targetLanguage,kind.rawValue,identifier]).map(Self.record)
+                }) {return .init(exact:exact,candidates:[exact])}
+            }
+        }
+        let english=try englishTranslations(word.englishLemma,limitPerLanguage:100).first{$0.id==word.targetLanguage}?.records ?? []
+        let keys=Set([Self.key(word.targetLemma),Self.key(word.targetSurface)])
+        var matches:[DictionaryRecord]=[]
+        for record in english where record.partOfSpeech==word.partOfSpeech || word.partOfSpeech=="unknown" {
+            if try detail(record).translations.contains(where:{keys.contains(Self.key($0))}) {matches.append(record)}
+        }
+        if matches.isEmpty {
+            matches=try search(word.targetSurface,language:word.targetLanguage,limit:50).records
+                .filter { $0.kind != .root }
+        }
+        return .init(exact:nil,candidates:matches)
+    }
     public func forms(_ detail:DictionaryDetail,target:String,offset:Int=0,limit:Int=50) throws -> DictionaryFormPage {
         let size=max(1,min(limit,100))
         guard offset >= 0 else { throw DomainError.invalidInput("Invalid dictionary page.") }
@@ -142,19 +237,28 @@ public actor OfflineDictionary {
                 }
             }
             let lemma=target.replacingOccurrences(of:"\u{301}",with:"").precomposedStringWithCanonicalMapping.lowercased()
-            let sql="""
-                SELECT 'noun:'||rowid AS ident,surface,coalesce(number,'')||' · '||coalesce(gender,'') AS analysis,source FROM nounForm WHERE lemma=?
-                UNION ALL SELECT 'case:'||rowid,surface,coalesce(number,'')||' · '||coalesce(grammaticalCase,'')||' · '||coalesce(gender,''),source FROM caseForm WHERE lemma=?
-                UNION ALL SELECT 'practice:'||rowid,surface,coalesce(form,'')||' · '||coalesce(tense,'')||' · '||coalesce(person,'')||' · '||coalesce(number,'')||' · '||coalesce(gender,''),source FROM practiceForm WHERE lemma=?
-                ORDER BY ident LIMIT ? OFFSET ?
-                """
-            return try Row.fetchAll(db,sql:sql,arguments:[lemma,lemma,lemma,size+1,offset]).map { row in
+            var queries:[String]=[],arguments:StatementArguments=[]
+            if try db.tableExists("lexicalForm") {
+                queries.append("SELECT 'lexical:'||rowid AS ident,surface,tags AS analysis,source FROM lexicalForm WHERE lemmaKey=?");arguments += [Self.key(target)]
+            }
+            if try db.tableExists("nounForm") {
+                queries.append("SELECT 'noun:'||rowid AS ident,surface,coalesce(number,'')||' · '||coalesce(gender,'') AS analysis,source FROM nounForm WHERE lemma=?");arguments += [lemma]
+            }
+            if try db.tableExists("caseForm") {
+                queries.append("SELECT 'case:'||rowid AS ident,surface,coalesce(number,'')||' · '||coalesce(grammaticalCase,'')||' · '||coalesce(gender,'') AS analysis,source FROM caseForm WHERE lemma=?");arguments += [lemma]
+            }
+            if try db.tableExists("practiceForm") {
+                queries.append("SELECT 'practice:'||rowid AS ident,surface,coalesce(form,'')||' · '||coalesce(tense,'')||' · '||coalesce(person,'')||' · '||coalesce(number,'')||' · '||coalesce(gender,'') AS analysis,source FROM practiceForm WHERE lemma=?");arguments += [lemma]
+            }
+            guard !queries.isEmpty else { return [] }
+            let sql=queries.joined(separator:" UNION ALL ")+" ORDER BY ident LIMIT ? OFFSET ?";arguments += [size+1,offset]
+            return try Row.fetchAll(db,sql:sql,arguments:arguments).map { row in
                 .init(id:row["ident"],surface:row["surface"],analysis:row["analysis"],transliteration:"",source:row["source"],lexicalReference:nil)
             }
         }
         return .init(forms:Array(forms.prefix(size)),hasMore:forms.count > size)
     }
     private static func record(_ r:Row) -> DictionaryRecord {
-        .init(id:r["id"],language:r["language"],kind:DictionaryRecordKind(rawValue:r["kind"])!,sourceID:r["sourceID"],headword:r["headword"],english:r["english"],partOfSpeech:r["pos"],definition:r["definition"],transliteration:r["transliteration"])
+        .init(language:r["language"],kind:DictionaryRecordKind(rawValue:r["kind"])!,sourceID:r["sourceID"],headword:r["headword"],english:r["english"],partOfSpeech:r["pos"],definition:r["definition"],transliteration:r["transliteration"])
     }
 }

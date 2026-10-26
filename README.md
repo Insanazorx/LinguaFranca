@@ -80,3 +80,7 @@ Debug builds are ad-hoc signed for local development. For a hardened Release, us
 Mac and iOS use the same original book application icon. `build.sh` renders the platform icon assets locally from `Tools/prepare_mac_icon.swift`; no image download is required.
 
 Continuous practice, scheduling details and validation: [ContinuousStudy.md](Documentation/ContinuousStudy.md).
+
+## Additional languages and word families
+
+Latin, Spanish and French join German, Russian, Arabic, Hebrew and Classical Syriac. Dictionary can look up an English expression across every installed language. Latin Vocab shows source-recorded common-origin families; passages can add all translated expressions to a study list without resetting cards. Data-only `.lfpack` folders can add future languages offline. See [the pack and feature guide](Documentation/ModularLanguages.md) for build/export/import instructions, coverage and limitations.

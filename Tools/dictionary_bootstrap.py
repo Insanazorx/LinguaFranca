@@ -9,7 +9,7 @@ from bootstrap import run
 
 def prepare_dictionary(bootstrap):
     packs=bootstrap.root/'Resources/LanguagePacks'
-    sources={p.name:json.loads(p.read_text())['licenseMetadata']['databaseSHA256'] for p in sorted(packs.glob('en-*.json')) if not p.name.endswith('.policy.json')}
+    sources={p.name:json.loads(p.read_text()) for p in sorted(packs.glob('en-*.json')) if not p.name.endswith('.policy.json')}
     scripts=['Tools/prepare_dictionary_index.py','Tools/dictionary_bootstrap.py']
     fingerprint=bootstrap.fingerprint(sources,scripts)
     with (bootstrap.cache/'dictionary-bootstrap.lock').open('w') as lock:

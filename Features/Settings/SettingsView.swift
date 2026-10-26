@@ -53,6 +53,7 @@ struct SettingsView: View {
                 } header: { Text("Language practice") } footer: {
                     Text(draft.replacementMode == .aggressive ? "Aggressive uses Qwen3.5-2B and the language assigned to each category. Balanced frequencies have no effect. Coverage is checked automatically; translation meaning and grammar are model-generated. Save, then tap Remix on a reading." : "Psycho targets one word in every 2–3. Each language remembers its frequency; together they share a 50% ceiling. International lookalikes and words without a clear match stay in English, so the actual mix can be lower. Save, then tap Remix on a passage to try it.")
                 }
+                Section {NavigationLink("Language packs"){LanguagePackLibraryView()}}
                 Section("On your device") {
                     LabeledContent("Saved vocabulary", value: "\(model.vocabulary.count)")
                     LabeledContent("Readings this session", value: "\(model.passageCount)")

@@ -9,6 +9,8 @@ public struct LanguagePackMetadata: Codable, Sendable, Equatable {
     public let lexiconDatabaseName: String
     public let supportedFeatures: [String]
     public let licenseMetadata: [String: String]
+    public var writingProfile: LanguageWritingProfile? = nil
+    public var effectiveWritingProfile: LanguageWritingProfile { writingProfile ?? .standard(languageCode) }
 }
 
 public struct LexicalEntry: Codable, Sendable {

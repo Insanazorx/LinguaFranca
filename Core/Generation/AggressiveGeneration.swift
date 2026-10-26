@@ -47,13 +47,7 @@ public struct AggressiveModelTask: Sendable, Equatable {
                     let choices=slot.attestedOptions.map { literal($0.surface) }.joined(separator:" | ")
                     return "slot\(index) ::= \"{\" ws \"\\\"source\\\":\" ws \(literal(slot.source)) ws \",\" ws \"\\\"target\\\":\" ws target\(index) ws \"}\"\ntarget\(index) ::= \(choices)"
                 }
-                let letters: String
-                switch slot.language {
-                case "ru": letters = #"\u0400-\u052F"#
-                case "he": letters = #"\u0590-\u05FF"#
-                case "ar": letters = #"\u0600-\u06FF"#
-                default: letters = "A-Za-zäöüÄÖÜßẞ"
-                }
+                let letters=(slot.writingProfile ?? .standard(slot.language)).grammarLetters
                 return "slot\(index) ::= \"{\" ws \"\\\"source\\\":\" ws \(literal(slot.source)) ws \",\" ws \"\\\"target\\\":\" ws target\(index) ws \"}\"\ntarget\(index) ::= \"\\\"\" word\(index) (\" \" word\(index)){0,19} \"\\\"\"\nword\(index) ::= [\(letters)]{1,48} ([’'-] [\(letters)]{1,24})?"
             }.joined(separator:"\n")
             return "root ::= \"[\" ws \(sequence) ws \"]\"\nws ::= [ \\t\\n\\r]*\n" + rules + "\n"
@@ -84,6 +78,7 @@ public struct AggressiveSlot: Sendable, Equatable {
     public var language: String
     public let partOfSpeech: String
     public var attestedOptions: [AggressiveAttestedOption] = []
+    public var writingProfile: LanguageWritingProfile? = nil
 }
 public struct AggressiveAttestedOption: Sendable, Equatable {
     public let surface:String
@@ -243,6 +238,7 @@ public struct AggressiveCoverageValidator: Sendable {
             if slot.language == "auto" {
                 slot.language=task.languages[automaticIndex % task.languages.count]; automaticIndex += 1
             }
+            slot.writingProfile=registry?.packs.first(where: { $0.metadata.languageCode == slot.language })?.metadata.effectiveWritingProfile
             return slot
         }
     }
@@ -343,7 +339,9 @@ public struct AggressiveCoverageValidator: Sendable {
         case "ar", "he": return SemiticUnicode.scriptMatches(clean,language:slot.language)
         case "syc": return slot.attestedOptions.contains(where: { $0.surface == clean }) && SemiticUnicode.scriptMatches(clean,language:"syc")
         case "de": return letters.allSatisfy { $0.isASCII || "äöüÄÖÜßẞ".unicodeScalars.contains($0) }
-        default: return false
+        default:
+            guard slot.writingProfile != nil || ["la","es","fr"].contains(slot.language) else { return false }
+            return (slot.writingProfile ?? .standard(slot.language)).accepts(clean)
         }
     }
     public func reading(english: String, slots: [AggressiveSlot], targets: [String], request: GenerationRequest, result: GenerationResult, sourceID: String = UUID().uuidString) throws -> GeneratedText {

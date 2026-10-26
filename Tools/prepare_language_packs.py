@@ -70,6 +70,7 @@ def build(source, output, code, name):
     db.close()
     metadata = {"id": f"en-{code}", "languageCode": code, "displayName": name, "version": VERSION,
         "schemaVersion": 1, "lexiconDatabaseName": path.name,
+        "writingProfile": {"script": "latin" if code != "ru" else "cyrillic", "generationName": name, "systemLanguageDetection": code != "la"},
         "supportedFeatures": ["sense-glosses", "part-of-speech", "multiword-entries", "source-provenance", "indexed-lookup"],
         "licenseMetadata": {"license": "CC-BY-SA-4.0", "licenseURL": LICENSE,
             "attribution": "WikDict by Karl Bartel. Wiktionary contributors, extracted via DBnary.",
@@ -83,7 +84,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--output", type=Path, default=ROOT/"Resources"/"LanguagePacks")
+    parser.add_argument("--language", action="append", help="Repeat CODE:NAME to build additional WikDict languages.")
     args = parser.parse_args()
-    report = [build(args.source,args.output,"de","German"),build(args.source,args.output,"ru","Russian")]
+    languages = args.language or ["de:German", "ru:Russian"]
+    report = [build(args.source,args.output,*language.split(":",1)) for language in languages]
     (args.output/"coverage.json").write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report,indent=2))

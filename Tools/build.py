@@ -11,6 +11,8 @@ from aggressive_bootstrap import prepare_aggressive
 from dictionary_bootstrap import prepare_dictionary
 from mac_bootstrap import prepare_mac
 from narration_bootstrap import prepare_narration
+from additional_language_bootstrap import prepare_additional_languages
+from latin_vocabulary_bootstrap import prepare_latin_vocabulary
 
 
 def main():
@@ -31,6 +33,8 @@ def main():
     else:bootstrap.prepare()
     prepare_semitic(bootstrap)
     prepare_aggressive(bootstrap)
+    prepare_additional_languages(bootstrap)
+    prepare_latin_vocabulary(bootstrap)
     prepare_dictionary(bootstrap)
     prepare_narration(bootstrap)
     run(['xcrun','swift',ROOT/'Tools/prepare_mac_icon.swift',ROOT/'Resources/Mac/LinguaFranca.icns',ROOT/'Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png'],cwd=ROOT,log=bootstrap.cache/'logs/app-icon.log')

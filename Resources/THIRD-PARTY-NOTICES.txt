@@ -1122,3 +1122,10 @@ Sherpa-onnx v1.13.8: Apache-2.0. ONNX Runtime 1.28.1 static Apple builds: MIT. e
 Vosk Small Russian / sherpa-onnx-small-zipformer-ru-2024-09-18: Apache-2.0; source model revision 4d68c4017bcfa44e2a79581f7933339e916a35da.
 Full notices and model cards are included in Speech/Licenses/. Archive URLs, exact SHA-256 digests and selected model files are in Speech/dependencies.json, ru-manifest.json and ru-alignment-manifest.json. No speech model is downloaded by the installed app.
 Upstream sources: https://github.com/k2-fsa/sherpa-onnx/tree/v1.13.8 ; https://github.com/microsoft/onnxruntime/tree/v1.28.1 ; https://github.com/espeak-ng/espeak-ng ; https://github.com/rhasspy/piper ; https://huggingface.co/rhasspy/piper-voices ; https://huggingface.co/alphacep/vosk-model-small-ru .
+
+
+ADDITIONAL LANGUAGE PACKS AND LATIN VOCAB (2026-10-27)
+Latin, Spanish and French lexical senses: WikDict by Karl Bartel, Wiktionary contributors via DBnary, June 2026 exports, CC BY-SA 4.0. Normalized, indexed and repackaged by LinguaFranca.
+Attested Latin, Spanish and French inflections: UniMorph contributors, pinned lat/spa/fra revisions in Documentation/Dependencies.lock.json, CC BY-SA 3.0. Filtered to bundled lexical lemmas and indexed by LinguaFranca.
+Latin Vocab origin links: Gerard de Melo, Etymological Wordnet 2013-02-08, based on English Wiktionary contributors and manual additions. CC BY-SA 3.0. Original project: http://www1.icsi.berkeley.edu/~demelo/etymwn/ . Distribution mirror: https://archive.org/download/etymwn-20130208/etymwn-20130208.zip . Changes: bounded directed origin paths joined to Latin, French and Spanish dictionary records, same English lemma/POS; optional unique attested Latin form-to-lemma resolution. Word-level historical source, incomplete coverage; no spelling-based etymology claims.
+Full CC BY-SA 3.0 and 4.0 license texts ship in the app bundle.

@@ -6,8 +6,9 @@ private var dictionaryDirectory:URL {URL(fileURLWithPath:#filePath).deletingLast
 
 @Test func allDownloadedDictionariesAreSearchableInBothDirections() async throws {
     let dictionary=try OfflineDictionary(directory:dictionaryDirectory),packs=try await dictionary.packs()
-    #expect(Set(packs.map(\.id)) == ["de","ru","ar","he","syc"])
-    #expect(packs.allSatisfy {$0.entries>1000 && $0.forms>1000})
+    #expect(Set(packs.map(\.id)) == ["de","ru","ar","he","syc","la","es","fr"])
+    #expect(packs.allSatisfy {$0.entries>1000})
+    #expect(packs.filter { ["de","ru","ar","he","syc"].contains($0.id) }.allSatisfy {$0.forms>1000})
     #expect(packs.first {$0.id=="ar"}!.forms>1_000_000)
     let banks=try await dictionary.search("bank",language:"de",limit:100)
     #expect(banks.records.filter {$0.english=="bank" && $0.kind == .entry}.count>1)

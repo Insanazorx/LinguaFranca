@@ -75,6 +75,6 @@ enum Theme {
     static let russian = Color(red: 0.38, green: 0.35, blue: 0.62)
     static func language(_ code: String) -> String { SemiticLanguage(rawValue:code)?.title ?? Locale(identifier: "en").localizedString(forLanguageCode: code)?.capitalized ?? code.uppercased() }
     static func accent(_ code: String) -> Color {
-        switch code { case "de": german; case "ru": russian; case "ar": .teal; case "he": .blue; case "syc": .indigo; default: forest }
+        switch code { case "de": german; case "ru": russian; case "ar": .teal; case "he": .blue; case "syc": .indigo; case "la": .brown; case "es": .orange; case "fr": .cyan; default: forest }
     }
 }

@@ -7,6 +7,7 @@ struct PassageReadingView:View {
     let passage:GeneratedText
     @State private var mode="mixed"
     @State private var language="ru"
+    @State private var studyList=false
     @State private var saving=false
     @State private var error:String?
     private var ready:TargetReading? {model.narrationReadings[passage.id]?[language]}
@@ -41,6 +42,9 @@ struct PassageReadingView:View {
                     Task {do {try await model.saveReading(passage)} catch {self.error=error.localizedDescription};saving=false}
                 }.disabled(saved || saving).accessibilityIdentifier("save-reading")
             }.buttonStyle(.bordered)
+            Button("Add words to a study list",systemImage:"text.badge.plus"){studyList=true}
+                .font(.subheadline).disabled(passage.replacements.isEmpty)
+                .accessibilityIdentifier("passage-words-to-list")
             if model.preparingNarrationID==passage.id {
                 HStack {ProgressView().controlSize(.small);Text(model.generationPhase).font(.footnote);Spacer();Button("Cancel"){model.cancelGeneration()}}
             }
@@ -69,6 +73,7 @@ struct PassageReadingView:View {
             if model.narrationErrorSourceID==passage.id,let message=model.narrationErrorMessage {Text(message).font(.footnote).foregroundStyle(.red)}
             if let error {Text(error).font(.footnote).foregroundStyle(.red)}
         }
+        .sheet(isPresented:$studyList){PassageStudyListSheet(passage:passage)}
         .onChange(of:ready?.sourceTextID) {_,id in if id != nil && narrator.followWords {mode=language}}
         .onAppear {if ready != nil && narrator.followWords {mode=language}}
         .onDisappear {

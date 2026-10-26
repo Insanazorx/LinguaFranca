@@ -14,6 +14,8 @@
 /Resources/LanguagePacks/coverage.json
 /Resources/LanguagePacks/en-???.json
 /Resources/LanguagePacks/semitic-coverage.json
+/Resources/LanguagePacks/additional-coverage.json
+*.lfpack/
 /Resources/Fonts/*.ttf
 /Resources/LanguagePacks/_english/averaged_perceptron_tagger_eng.*.json
 /Resources/LanguagePacks/**/*.part
@@ -36,6 +38,7 @@ __pycache__/
 /outputs/
 
 /Resources/LanguagePacks/_dictionary/
+/Resources/LanguagePacks/_latin/
 
 /Resources/Mac/*.icns
 /Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png
