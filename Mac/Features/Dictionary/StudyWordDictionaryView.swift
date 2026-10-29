@@ -5,6 +5,7 @@ struct StudyWordDictionaryView:View {
     @Environment(AppEnvironment.self) private var model
     @Environment(\.dismiss) private var dismiss
     let word:VocabularyDraft
+    var dismissTitle: String = "Back to cards"
     @State private var inspection:VocabularyDictionaryInspection?
     @State private var error:String?
     var body:some View {
@@ -37,7 +38,7 @@ struct StudyWordDictionaryView:View {
                     }.navigationTitle("Dictionary entry")
                 }
             }
-            .toolbar {ToolbarItem(placement:.cancellationAction){Button("Back to cards"){dismiss()}.keyboardShortcut(.cancelAction).accessibilityIdentifier("back-to-cards")}}
+            .toolbar {ToolbarItem(placement:.cancellationAction){Button(dismissTitle){dismiss()}.keyboardShortcut(.cancelAction).accessibilityIdentifier("back-to-cards")}}
             .task {
                 guard let dictionary=model.dictionary else {error="The installed dictionary is unavailable.";return}
                 do {inspection=try await dictionary.inspect(word)} catch {self.error=error.localizedDescription}

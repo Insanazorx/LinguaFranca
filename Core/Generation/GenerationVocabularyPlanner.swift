@@ -30,7 +30,10 @@ public struct GenerationVocabularyPlanner: Sendable {
         ]
         var result: [GenerationVocabularyHint] = [], rng = SeededGenerator(seed: UInt64(seed))
         for pack in registry.packs where (settings.replacementLanguageShares[pack.metadata.languageCode] ?? 0) > 0 {
-            var candidates = pools[topic] ?? general; candidates.shuffle(using: &rng)
+            var candidates = settings.generationLevel == .nichijou
+                ? ["change", "receipt", "appointment", "queue", "neighbour", "meal", "bill", "key", "shelf", "errand", "habit", "advice", "delay", "fare", "break", "shift", "repair", "refund", "budget", "choice"] + (pools[topic] ?? [])
+                : pools[topic] ?? general
+            candidates.shuffle(using: &rng)
             var fallback = general; fallback.shuffle(using: &rng)
             var seen: Set<String> = [], count = 0
             for lemma in candidates + fallback where seen.insert(lemma).inserted {

@@ -1,5 +1,6 @@
 """A Mac UI change must never become an iOS compile input."""
 import json
+import plistlib
 from pathlib import Path
 import shutil
 import subprocess
@@ -40,5 +41,17 @@ class MacTargetTests(unittest.TestCase):
                         self.assertEqual(settings['SUPPORTED_PLATFORMS'], 'macosx')
                         self.assertEqual(settings['ENABLE_APP_SANDBOX'], 'YES')
                         self.assertEqual(settings['ENABLE_HARDENED_RUNTIME'], 'YES')
+                        self.assertEqual(settings['GENERATE_INFOPLIST_FILE'], 'NO')
+                        self.assertEqual(settings['INFOPLIST_FILE'], 'Resources/Mac/Info.plist')
+                        with (repository/settings['INFOPLIST_FILE']).open('rb') as stream:
+                            info=plistlib.load(stream)
+                        self.assertEqual(info['CFBundleIconFile'], 'LinguaFranca.icns')
+                        resources=next(objects[phase] for phase in target['buildPhases'] if objects[phase]['isa']=='PBXResourcesBuildPhase')
+                        paths={objects[objects[key]['fileRef']]['path'] for key in resources['files']}
+                        self.assertIn('Resources/Mac/'+info['CFBundleIconFile'], paths)
+                        self.assertNotIn(settings['INFOPLIST_FILE'], paths)
                     else:
                         self.assertEqual(settings['SUPPORTED_PLATFORMS'], 'iphoneos iphonesimulator')
+                        self.assertEqual(settings['GENERATE_INFOPLIST_FILE'], 'YES')
+                        self.assertNotIn('INFOPLIST_FILE', settings)
+                        self.assertEqual(settings['ASSETCATALOG_COMPILER_APPICON_NAME'], 'AppIcon')

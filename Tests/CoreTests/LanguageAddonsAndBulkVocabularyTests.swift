@@ -190,18 +190,22 @@ private func fixtureAddon(at folder:URL,code:String="pt") throws {
     #expect(throws:DomainError.self) {try LanguagePackAddon.validate(directory:selected)}
 }
 
-@Test func latinFamiliesHaveThreeSourceLinkedLanguagesAndIndependentMeanings() async throws {
+@Test func latinFamiliesUseAnyNativePairAndIndependentMeanings() async throws {
     let latin=try LatinVocabulary(databaseURL:addonPacks.appendingPathComponent("_latin/etymology.sqlite"))
-    let page=try await latin.search("father")
-    let family=try #require(page.families.first { $0.partOfSpeech=="noun" && $0.english=="father" })
+    let page=try await latin.search("pater",pair:.spanishFrench)
+    let family=try #require(page.families.first { $0.hasRecordedOrigin && $0.originWord=="pater" })
     let members=try await latin.members(of:family.id)
     #expect(Set(members.map { $0.record.language })==["la","es","fr"])
     #expect(members.contains { $0.record.headword=="padre" })
     #expect(members.contains { $0.record.headword=="père" })
-    #expect(members.filter { $0.record.language != "la" }.allSatisfy { $0.originPath.count>1 && $0.originPath.last!.hasPrefix("lat:") })
+    #expect(members.allSatisfy { !$0.originPath.contains { $0.hasPrefix("eng:") } })
     let dictionary=try OfflineDictionary(directory:addonPacks)
     for member in members {#expect(try await dictionary.detail(member.record).senseID.isEmpty==false)}
     let first=try await latin.search("",limit:5),second=try await latin.search("",offset:5,limit:5)
     #expect(first.hasMore && Set(first.families.map(\.id)).isDisjoint(with:second.families.map(\.id)))
+    #expect(try await latin.summary().families>800)
+    let caput=try await latin.search("caput",pair:.latinFrench)
+    #expect(!caput.families.isEmpty)
+    for item in caput.families { #expect(Set(item.languages).isSuperset(of:["la","fr"])) }
     #expect(try await latin.search("% ' OR 1=1 --").families.isEmpty)
 }

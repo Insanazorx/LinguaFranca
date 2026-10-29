@@ -83,4 +83,8 @@ Continuous practice, scheduling details and validation: [ContinuousStudy.md](Doc
 
 ## Additional languages and word families
 
-Latin, Spanish and French join German, Russian, Arabic, Hebrew and Classical Syriac. Dictionary can look up an English expression across every installed language. Latin Vocab shows source-recorded common-origin families; passages can add all translated expressions to a study list without resetting cards. Data-only `.lfpack` folders can add future languages offline. See [the pack and feature guide](Documentation/ModularLanguages.md) for build/export/import instructions, coverage and limitations.
+Latin, Spanish and French join German, Russian, Arabic, Hebrew and Classical Syriac. Dictionary can look up an English expression across every installed language. Latin Vocab compares any native pair of Latin, Spanish and French independently of English, with separate recorded-origin and identical-spelling labels; passages can add all translated expressions to a study list without resetting cards. Data-only `.lfpack` folders can add future languages offline. See [the pack and feature guide](Documentation/ModularLanguages.md) for build/export/import instructions, coverage and limitations.
+
+## Everyday reading and vocabulary browser
+
+**Nichijou** sits beside B2/C1 and asks for useful everyday English, from common words to intermediate expressions. Writing genres have flexible but validated layouts, including conversational speaker turns, theatre stage directions and eight-line poems. All generation preferences are above the reading on Generate and save automatically. Vocabulary uses a searchable green word browser with a detail pane on Mac/tablet and a detail push on compact iPhones, plus multi-word selection for practice. See [validation and limitations](Documentation/EverydayReadingAndWordFamilies.md).

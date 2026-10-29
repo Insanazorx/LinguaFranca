@@ -39,6 +39,8 @@ import LinguaFrancaInference
     let narrator=PassageNarrator(speech:PiperSpeechService(directory:(Bundle.main.resourceURL ?? URL(fileURLWithPath:".")).appendingPathComponent("Speech")),aligner:RussianSpeechAligner(directory:(Bundle.main.resourceURL ?? URL(fileURLWithPath:".")).appendingPathComponent("Speech")))
     private var generationTask: Task<Void, Never>?
     private var refreshID = 0
+    private var settingsRevision = 0
+    @ObservationIgnored private var settingsWriteTask: Task<Void, Never>?
     let modelURL: URL?
     let aggressiveModelURL: URL?
     var modelDisplayName: String { settings.replacementMode == .aggressive ? BundledModel.aggressive.identifier : BundledModel.qwen35.identifier }
@@ -138,7 +140,8 @@ import LinguaFrancaInference
     func refresh() async throws {
         guard let database else { return }
         refreshID += 1
-        let id = refreshID
+        let id = refreshID, requestedSettingsRevision = settingsRevision
+        await settingsWriteTask?.value
         async let fetchedDecks = database.decks()
         async let fetchedWords = database.vocabulary()
         async let fetchedSettings = database.settings()
@@ -147,7 +150,8 @@ import LinguaFrancaInference
         async let fetchedReadings = database.savedReadings()
         let result = try await (fetchedDecks, fetchedWords, fetchedSettings, fetchedSummary, fetchedBytes, fetchedReadings)
         guard id == refreshID else { return }
-        (decks, vocabulary, settings, summary, storageBytes, savedReadings) = result
+        (decks, vocabulary, summary, storageBytes, savedReadings) = (result.0, result.1, result.3, result.4, result.5)
+        if requestedSettingsRevision == settingsRevision, settingsWriteTask == nil { settings = result.2 }
     }
 
     func perform(_ operation: (DatabaseManager) async throws -> Void) async {
@@ -156,12 +160,32 @@ import LinguaFrancaInference
         catch { errorMessage = error.localizedDescription }
     }
 
-    func updateSettings(_ value: AppSettings) async throws {
-        guard let database else { throw DomainError.missingRecord }
-        let previous = settings
+    /// Apply the UI change synchronously, then serialize local writes. Fast taps
+    /// cannot copy stale settings or allow an older write to win after a newer one.
+    func autosaveSettings(_ value: AppSettings) {
+        guard let database else { errorMessage = "Your library is unavailable."; return }
+        do { try value.validate() } catch { errorMessage = error.localizedDescription; return }
+        guard value != settings else { return }
+        settingsRevision += 1
+        let revision = settingsRevision, previousWrite = settingsWriteTask
         settings = value
-        do { try await database.saveSettings(value) }
-        catch { if settings == value { settings = previous }; throw error }
+        settingsWriteTask = Task {
+            await previousWrite?.value
+            do { try await database.saveSettings(value) }
+            catch {
+                errorMessage = "Preferences could not be saved: " + error.localizedDescription
+                if revision == settingsRevision, let persisted = try? await database.settings(), revision == settingsRevision {
+                    settings = persisted
+                }
+            }
+            if revision == settingsRevision { settingsWriteTask = nil }
+        }
+    }
+    func updateSettings(_ value: AppSettings) async throws {
+        try value.validate()
+        guard database != nil else { throw DomainError.missingRecord }
+        autosaveSettings(value)
+        await settingsWriteTask?.value
     }
 
     func generate(topic: String) {
@@ -388,6 +412,7 @@ import LinguaFrancaInference
         metadata["practiceDomains"] = settings.practiceDomains.map(\.rawValue).sorted().joined(separator: ",")
     }
     func releaseModel() async {
+        await settingsWriteTask?.value
         generationTask?.cancel()
         await generator.unloadModel()
         await narrator.unload()

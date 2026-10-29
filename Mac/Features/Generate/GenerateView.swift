@@ -3,7 +3,6 @@ import LinguaFrancaCore
 
 struct GenerateView: View {
     @Environment(AppEnvironment.self) private var model
-    @State private var topic = "Random"
     private var topics: [String] { model.availableTopics }
     var body: some View {
         NavigationStack {
@@ -22,30 +21,8 @@ struct GenerateView: View {
                         Label("Saved readings · \(model.savedReadings.count)",systemImage:"books.vertical")
                     }.accessibilityIdentifier("saved-readings")
                     VStack(spacing: 16) {
-                        HStack {
-                            Picker("English level", selection: Binding(get: { model.settings.generationLevel }, set: { level in
-                                var settings = model.settings
-                                settings.generationLevel = level
-                                Task {
-                                    do { try await model.updateSettings(settings) }
-                                    catch { model.errorMessage = error.localizedDescription }
-                                }
-                            })) {
-                                ForEach(CEFRLevel.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                            }.pickerStyle(.segmented).frame(width: 140).disabled(model.generating)
-                            Spacer()
-                            Text("\(model.settings.writingGenre.title)").foregroundStyle(.secondary).font(.subheadline)
-                        }
-                        Divider()
-                        Picker("Topic", selection: $topic) {
-                            ForEach(topics, id: \.self) { Text($0).tag($0) }
-                        }.pickerStyle(.menu).frame(maxWidth: .infinity, alignment: .leading).disabled(model.generating)
-                        ReadingOptionsView(settings: Binding(get: { model.settings }, set: { settings in
-                            Task {
-                                do { try await model.updateSettings(settings) }
-                                catch { model.errorMessage = error.localizedDescription }
-                            }
-                        })).disabled(model.generating)
+                        GenerationOptionsView(settings: Binding(get: { model.settings }, set: { model.autosaveSettings($0) }))
+                            .disabled(model.generating || model.remixing)
                         if model.generating {
                             HStack {
                                 ProgressView()
@@ -55,7 +32,8 @@ struct GenerateView: View {
                             }
                         } else {
                             Button {
-                                let chosen = topic == "Random" ? topics.dropFirst().randomElement()! : topic
+                                let topic = model.settings.generationTopic
+                                let chosen = topic == "Random" ? topics.dropFirst().randomElement() ?? "Daily life" : topic
                                 model.generate(topic: chosen)
                             } label: {
                                 Label("Generate passage", systemImage: "sparkles")

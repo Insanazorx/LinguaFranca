@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-28",
+  "device": "physical iPhone 13",
+  "os": "iOS 27.0.1",
+  "build": "signed Release, com.linguafranca.app",
+  "conditions": "User operated phone. No debugger console attachment, live screen mirroring or heavy system profiling during either generation. Saved results inspected from local library safety copies.",
+  "before": {
+    "vocabularyItems": 164,
+    "decks": 2,
+    "cards": 164,
+    "reviews": 58,
+    "savedReadings": 9
+  },
+  "afterGeneration": {
+    "vocabularyItems": 164,
+    "decks": 2,
+    "cards": 164,
+    "reviews": 58,
+    "savedReadings": 11
+  },
+  "runs": [
+    {
+      "mode": "balanced",
+      "model": "Qwen3.5-0.8B-Q4_K_M",
+      "level": "Nichijou",
+      "topic": "Education",
+      "speakerTurns": 6,
+      "metadata": {
+        "writingGenre": "dialogue",
+        "replacementMode": "balanced",
+        "durationSeconds": "10.687042875",
+        "timeToFirstTokenSeconds": "2.621442167",
+        "modelLoadSeconds": "1.949412125",
+        "wordCount": "82",
+        "tokenCount": "107",
+        "attempts": "1",
+        "eligibleWordCount": "46",
+        "replacedWordCount": "11",
+        "replacementComplete": "true",
+        "gpuLayers": "99",
+        "microBatchSize": "64",
+        "allocatedContextWindow": "2048",
+        "memoryPolicy": "default",
+        "sampledPeakFootprintBytes": "212945336"
+      }
+    },
+    {
+      "mode": "aggressive",
+      "model": "Qwen3.5-2B-Q4_K_M",
+      "level": "Nichijou",
+      "topic": "Society",
+      "speakerTurns": 6,
+      "metadata": {
+        "writingGenre": "dialogue",
+        "replacementMode": "aggressive",
+        "durationSeconds": "75.302922041",
+        "timeToFirstTokenSeconds": "12.75126625",
+        "modelLoadSeconds": "4.417295375",
+        "wordCount": "68",
+        "tokenCount": "547",
+        "attempts": "1",
+        "eligibleWordCount": "16",
+        "replacedWordCount": "16",
+        "replacementComplete": "true",
+        "repairedOccurrences": "16",
+        "gpuLayers": "16",
+        "microBatchSize": "16",
+        "allocatedContextWindow": "2304",
+        "memoryPolicy": "bounded-metal-mmap",
+        "sampledPeakFootprintBytes": "260721776"
+      }
+    }
+  ],
+  "memoryCaveat": "Sampled process footprint is not continuous resident/system-wide peak. Aggressive retains the first inference sample; repair calls are not included in this field.",
+  "knownQualityIssue": "Aggressive mapped tray (serving object) to миска (food bowl). The local Russian dictionary offers подно́с, лото́к, поддо́н, поднос for that tray sense. Coverage is complete for detected slots but semantics are not certified.",
+  "interfaceChecks": "User confirmed vocabulary word detail/dictionary and Latin Vocab Spanish-French family navigation both work. Physical screen showed Juan/Jean family details. Dark-mode green contrast fix installed and app reopened.",
+  "finalCounts": {
+    "vocabularyItem": 164,
+    "studyDeck": 2,
+    "srsCard": 164,
+    "reviewLog": 58,
+    "savedReading": 11
+  },
+  "finalPreferences": {
+    "generationLevel": "Nichijou",
+    "writingGenre": "dialogue",
+    "replacementMode": "aggressive",
+    "enabledLanguages": [
+      "ru"
+    ],
+    "practiceDomains": [
+      "actions",
+      "content"
+    ]
+  },
+  "libraryIntegrity": "SQLite quick_check ok. Full original vocabularyItem, studyDeck, deckVocabulary, srsCard and reviewLog rows match before update. All nine original savedReading rows match exactly. Two test readings were explicitly saved by the user."
+}

@@ -72,14 +72,19 @@ public struct GenerationRequest: Sendable, Equatable {
     public var prompt: String {
         if let readingTranslation { return readingTranslation.prompt }
         if let aggressiveTask {
-            return aggressiveTask.instructions + (aggressiveTask.repair == nil ? "Topic: \(topic). \(genre.instruction) CEFR \(level.rawValue). \(scenarioGuidance) Naturally include these English concepts if provided: \(vocabularyHints.map(\.englishLemma).joined(separator:", "))." : "")
+            if aggressiveTask.repair != nil { return aggressiveTask.instructions }
+            return "ENGLISH FORMAT: \(genre.instruction) \(level.instruction) Topic: \(topic). \(scenarioGuidance) "
+                + aggressiveTask.instructions
+                + " The english field must preserve the requested literary format. "
+                + (genre == .poem ? "Compose brief lyrical lines around one recurring everyday object, with rhythm and sensory imagery. Do not narrate a sequence of tasks. " : "")
+                + "Naturally include these English concepts if provided: \(vocabularyHints.map(\.englishLemma).joined(separator:", "))."
         }
         if let senseSelection { return senseSelection.prompt }
         if let vocabularyPractice { return vocabularyPractice.prompt + (scenario.map { vocabularyPractice.sceneGuidance($0.id) } ?? "") }
         return genre.instruction + " "
         + "Write a complete text in English. Choose a length that suits the scene. "
         + "Topic: \(topic). Keep this topic central, even when adapting the scene below. "
-        + "Use natural CEFR \(level.rawValue) English, specific details and a clear ending. "
+        + level.instruction + "Use specific details and a clear ending. "
         + (style.map { "Style: \($0). " } ?? "")
         + scenarioGuidance
         + vocabularyGuidance
@@ -87,11 +92,15 @@ public struct GenerationRequest: Sendable, Equatable {
         + "Finish the passage. Output only the passage, without title, Markdown, explanations or translations."
     }
     private var scenarioGuidance: String {
+        if level == .nichijou, [.dialogue, .play, .story, .novel].contains(genre) {
+            let situations = ["roommates cook dinner and discover a missing ingredient", "friends work out which bus to take", "a customer politely corrects a cafe order", "coworkers rearrange a shift", "a neighbour borrows a tool and agrees when to return it", "a customer returns the wrong clothing size", "two people arrange an appointment", "a friend needs to borrow a phone charger", "friends change their plans because of rain", "friends split a restaurant bill", "a neighbour helps with a parcel delivered to the wrong door", "roommates resolve an annoying household noise"]
+            return "Everyday scene: \(situations[Int(seed) % situations.count]). Connect it naturally to the selected topic. Keep people's reactions, objects and events realistic. "
+        }
         guard let scenario else { return "" }
         switch genre {
         case .essay: return "Angle: \(scenario.focus), linked to the topic. "
         case .poem: return "Use imagery from \(scenario.situation). "
-        case .dialogue, .play: return "Scene: \(scenario.situation). Conflict: \(scenario.focus). "
+        case .dialogue, .play: return "Scene inspiration: \(scenario.situation). Adapt it into a practical interaction about the requested topic, without forcing abstract debate. "
         case .story, .novel: return "New scene: \(scenario.situation). Focus: \(scenario.focus). Perspective: \(aggressiveDomains.contains(.actions) ? "third-person present tense" : scenario.perspective). "
         }
     }
@@ -129,14 +138,21 @@ public struct GenerationRequest: Sendable, Equatable {
     }
     private var aggressiveSystemInstruction: String {
         guard !aggressiveDomains.isEmpty else { return "" }
-        var rules = " This is an intensive grammar exercise. Set the entire scene NOW. Use third-person simple PRESENT with explicit he, she or they subjects."
+        var rules = " This is an intensive grammar exercise. Set the entire scene NOW. Prefer simple PRESENT and explicit subjects. In dialogue and theatre preserve first/second-person speech, natural replies and the requested speaker layout; in poetry preserve verse lines."
         if aggressiveDomains.contains(.actions) { rules += " Every sentence contains several distinct concrete actions. Chain present-tense verbs and infinitives with clear subjects." }
         if aggressiveDomains.contains(.structure) { rules += " Every sentence contains MANY conjunctions and prepositions: stack time clauses, reasons, conditions, contrasts and concrete spatial relations. Use far more than ordinary writing." }
         if aggressiveDomains.contains(.content) { rules += " Every sentence contains MANY concrete nouns, predicative adjectives and precise adverbs. State qualities with clear subjects." }
         if aggressiveDomains.contains(.prepositionalPhrases) { rules += " Stack MANY complete preposition-plus-object phrases with concrete objects and clear spatial relations in every sentence." }
         return rules + " Keep the scene coherent. Start directly with the text."
     }
-    public var outputGrammar: String? { readingTranslation?.grammar ?? aggressiveTask?.grammar ?? senseSelection?.grammar ?? (vocabularyPractice == nil ? genre.outputGrammar : vocabularyPractice?.outputGrammar) }
+    public var outputGrammar: String? {
+        if let readingTranslation { return readingTranslation.grammar }
+        if let aggressiveTask {
+            guard aggressiveTask.repair == nil, let format = genre.jsonEnglishGrammar else { return aggressiveTask.grammar }
+            return aggressiveTask.grammar.replacingOccurrences(of: #""\"english\":" ws string"#, with: #""\"english\":" ws english"#) + "\n" + format
+        }
+        return senseSelection?.grammar ?? (vocabularyPractice == nil ? genre.outputGrammar : vocabularyPractice?.outputGrammar)
+    }
 }
 
 public struct GenerationResult: Sendable, Equatable {
@@ -193,7 +209,7 @@ public enum PassageValidator {
             throw GenerationError.invalidOutput("control tokens or commentary")
         }
         // Approximate length is guidance, never a reason to throw away valid prose.
-        if genre != .poem, clean.last.map({ ".!?\"”)".contains($0) }) != true {
+        if [.story, .novel, .essay].contains(genre), clean.last.map({ ".!?\"”)".contains($0) }) != true {
             let tokenizer = NLTokenizer(unit: .sentence); tokenizer.string = clean; tokenizer.setLanguage(.english)
             var end: String.Index?
             tokenizer.enumerateTokens(in: clean.startIndex..<clean.endIndex) { range, _ in
@@ -208,7 +224,20 @@ public enum PassageValidator {
         let lines = clean.split(whereSeparator: \.isNewline)
         if [.dialogue, .play].contains(genre) {
             let turns = lines.filter { $0.range(of: #"^[\p{L}][\p{L} ’-]{0,30}:\s*\S"#, options: .regularExpression) != nil }
-            guard turns.count >= 2 else { throw GenerationError.invalidOutput("missing speaker turns") }
+            let speakers = turns.compactMap { $0.split(separator: ":", maxSplits: 1).first.map(String.init) }
+            guard turns.count >= 6, Set(speakers).count >= 2,
+                  zip(speakers, speakers.dropFirst()).allSatisfy({ $0 != $1 }) else {
+                throw GenerationError.invalidOutput("missing alternating speaker turns")
+            }
+            for turn in turns {
+                let body = String(turn.split(separator: ":", maxSplits: 1).last ?? "")
+                if Set(speakers).contains(where: { body.contains($0 + ":") }) {
+                    throw GenerationError.invalidOutput("speaker changes must start a new line")
+                }
+            }
+            if genre == .play, !lines.contains(where: { $0.hasPrefix("(") && $0.hasSuffix(")") }) {
+                throw GenerationError.invalidOutput("missing theatre stage direction")
+            }
         }
         if genre == .poem, lines.count < 4 { throw GenerationError.invalidOutput("missing poem line breaks") }
         guard !letters.isEmpty, Double(latin.count) / Double(letters.count) > 0.95,

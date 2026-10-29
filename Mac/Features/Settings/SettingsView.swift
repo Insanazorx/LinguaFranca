@@ -3,57 +3,14 @@ import LinguaFrancaCore
 
 struct SettingsView: View {
     @Environment(AppEnvironment.self) private var model
-    @State private var draft = AppSettings()
-    @State private var saving = false
-    @State private var saved = false
-    @State private var error: String?
     var body: some View {
         NavigationStack {
             Form {
-                Section("Reading preferences") {
-                    ReadingOptionsView(settings: $draft)
-                    Picker("English level", selection: $draft.generationLevel) {
-                        ForEach(CEFRLevel.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                    }
-                    Stepper("About \(draft.defaultWordCount) words", value: $draft.defaultWordCount, in: 90...150, step: 10)
-                }
                 Section {
-                    ForEach(model.languagePacks, id: \.languageCode) { pack in
-                        let code = pack.languageCode
-                        VStack(alignment: .leading, spacing: 12) {
-                            languageToggle(code, name: pack.displayName)
-                            if draft.enabledLanguages.contains(code) && draft.replacementMode == .balanced {
-                                HStack {
-                                    Text(draft.replacementMode == .aggressive ? "Language weight" : "Frequency")
-                                    Spacer()
-                                    Text(draft.frequency(for: code) >= 0.495 ? "Psycho · 50%" : "\(Int((draft.frequency(for: code) * 100).rounded()))%")
-                                        .fontWeight(.semibold).foregroundStyle(Theme.forest)
-                                }.font(.subheadline)
-                                Slider(value: Binding(get: { draft.frequency(for: code) }, set: { value in
-                                    // Freeze legacy-derived values before changing one language.
-                                    for language in draft.enabledLanguages where draft.languageFrequencies[language] == nil {
-                                        draft.languageFrequencies[language] = draft.frequency(for: language)
-                                    }
-                                    draft.languageFrequencies[code] = value
-                                }), in: 0...0.5, step: 0.01)
-                                    .accessibilityLabel("\(pack.displayName) frequency")
-                                    .accessibilityValue("\(Int((draft.frequency(for: code) * 100).rounded())) percent")
-                                HStack { Text("Off"); Spacer(); Text("Gentle"); Spacer(); Text("Psycho") }
-                                    .font(.caption).foregroundStyle(.secondary)
-                                if draft.frequency(for: code) != draft.effectiveFrequencies[code] {
-                                    Text("Combined share: \(Int(((draft.effectiveFrequencies[code] ?? 0) * 100).rounded()))% of words")
-                                        .font(.caption).foregroundStyle(.secondary)
-                                }
-                            }
-                        }.padding(.vertical, 5)
-                    }
-                    if draft.replacementMode == .balanced {
-                        LabeledContent("Combined target", value: "\(Int((draft.effectiveFrequencies.values.reduce(0,+) * 100).rounded()))%")
-                    }
-                } header: { Text("Language practice") } footer: {
-                    Text(draft.replacementMode == .aggressive ? "Aggressive uses Qwen3.5-2B and the language assigned to each category. Balanced frequencies have no effect. Coverage is checked automatically; translation meaning and grammar are model-generated. Save, then tap Remix on a reading." : "Psycho targets one word in every 2–3. Each language remembers its frequency; together they share a 50% ceiling. International lookalikes and words without a clear match stay in English, so the actual mix can be lower. Save, then tap Remix on a passage to try it.")
+                    Label("Choose your reading options above the text on Generate.", systemImage: "text.book.closed")
+                    Text("Changes are saved automatically.").font(.footnote).foregroundStyle(.secondary)
                 }
-                Section {NavigationLink("Language packs"){LanguagePackLibraryView()}}
+                Section { NavigationLink("Language packs") { LanguagePackLibraryView() } }
                 Section("On your device") {
                     LabeledContent("Saved vocabulary", value: "\(model.vocabulary.count)")
                     LabeledContent("Readings this session", value: "\(model.passageCount)")
@@ -62,33 +19,8 @@ struct SettingsView: View {
                     LabeledContent("Model included", value: model.modelURL == nil ? "Not yet" : "Yes")
                     NavigationLink("Open-source notices") { NoticesView() }
                 }
-                if let error { Section { Text(error).foregroundStyle(.red) } }
-                Section {
-                    Button(saved ? "Preferences saved" : "Save preferences") { Task { await save() } }
-                        .disabled(saving || draft == model.settings).frame(maxWidth: .infinity)
-                }
             }.nativeFormStyle().navigationTitle("Settings")
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button(saved ? "Saved" : "Save") { Task { await save() } }
-                            .disabled(saving || draft == model.settings)
-                    }
-                }
-                .onAppear { draft = model.settings }
-                .onChange(of: draft) { _, _ in saved = false }
         }
-    }
-    private func languageToggle(_ code: String, name: String) -> some View {
-        Toggle(name, isOn: Binding(get: { draft.enabledLanguages.contains(code) }, set: { enabled in
-            if enabled { if !draft.enabledLanguages.contains(code) { draft.enabledLanguages.append(code) }; if draft.languageWeights[code] == nil { draft.languageWeights[code] = 0.5 }; if draft.languageFrequencies[code] == nil { draft.languageFrequencies[code] = 0.1 } }
-            else { draft.enabledLanguages.removeAll { $0 == code } }
-        }))
-    }
-    private func save() async {
-        saving = true
-        defer { saving = false }
-        do { try await model.updateSettings(draft); error = nil; saved = true }
-        catch { self.error = error.localizedDescription }
     }
 }
 

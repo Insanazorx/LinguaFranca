@@ -69,7 +69,11 @@ struct RootView: View {
 }
 
 enum Theme {
-    static let forest = Color(red: 0.17, green: 0.35, blue: 0.28)
+    static let forest = Color(uiColor: UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.38, green: 0.72, blue: 0.55, alpha: 1)
+            : UIColor(red: 0.17, green: 0.35, blue: 0.28, alpha: 1)
+    })
     static let paper = Color(uiColor: .systemGroupedBackground)
     static let german = Color(red: 0.55, green: 0.35, blue: 0.16)
     static let russian = Color(red: 0.38, green: 0.35, blue: 0.62)

@@ -33,8 +33,9 @@ mac_sources = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT/'Mac').rglob(
 resources = ['Resources/Models', 'Resources/LanguagePacks', 'Resources/Fonts', 'Resources/Speech', 'Resources/THIRD-PARTY-NOTICES.txt', 'Resources/CC-BY-SA-4.0.txt', 'Resources/CC-BY-SA-3.0.txt', 'Resources/ETCBC-LICENSE.txt', 'Resources/Noto-OFL.txt', 'Resources/FSRS-LICENSE.txt']
 mac_resources=['Resources/Mac/LinguaFranca.icns']
 ios_resources=['Resources/Assets.xcassets']
+mac_metadata=['Resources/Mac/Info.plist']
 refs = {}
-for path in sources + mac_sources + resources + mac_resources + ios_resources:
+for path in sources + mac_sources + resources + mac_resources + ios_resources + mac_metadata:
     kind = 'sourcecode.swift' if path.endswith('.swift') else ('folder.assetcatalog' if path.endswith('.xcassets') else ('image.icns' if path.endswith('.icns') else ('folder' if (ROOT / path).is_dir() else 'text')))
     refs[path] = obj('file:' + path, f'isa = PBXFileReference; lastKnownFileType = {kind}; path = {quote(path)}; sourceTree = "<group>";')
 package = obj('local_package', 'isa = XCLocalSwiftPackageReference; relativePath = .;')
@@ -73,7 +74,7 @@ for name, preview, mac in [('LinguaFranca',False,False), ('LinguaFrancaPreviewAp
         platform_settings = '''SDKROOT = macosx; MACOSX_DEPLOYMENT_TARGET = 14.0; SUPPORTED_PLATFORMS = macosx;
             CODE_SIGN_STYLE = Manual; ENABLE_APP_SANDBOX = YES;
             CODE_SIGN_ENTITLEMENTS = Resources/Mac/LinguaFranca.entitlements; ENABLE_HARDENED_RUNTIME = YES;
-            INFOPLIST_KEY_CFBundleIconFile = LinguaFranca; INFOPLIST_KEY_CFBundleName = LinguaFranca;
+            INFOPLIST_FILE = Resources/Mac/Info.plist;
             INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
             INFOPLIST_KEY_NSHighResolutionCapable = YES;
             LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";''' if mac else '''
@@ -83,7 +84,7 @@ for name, preview, mac in [('LinguaFranca',False,False), ('LinguaFrancaPreviewAp
             ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
             CODE_SIGN_STYLE = Automatic; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";'''
         configs.append(obj(name + ':' + configuration, f'''isa = XCBuildConfiguration; name = {configuration}; buildSettings = {{
-            PRODUCT_NAME = {product_name}; PRODUCT_BUNDLE_IDENTIFIER = {bundle}; GENERATE_INFOPLIST_FILE = YES;
+            PRODUCT_NAME = {product_name}; PRODUCT_BUNDLE_IDENTIFIER = {bundle}; GENERATE_INFOPLIST_FILE = {'NO' if mac else 'YES'};
             INFOPLIST_KEY_CFBundleDisplayName = LinguaFranca;
             SUPPORTS_MACCATALYST = NO; MARKETING_VERSION = 0.1.0; CURRENT_PROJECT_VERSION = 1;
             ENABLE_PREVIEWS = YES; SWIFT_EMIT_LOC_STRINGS = YES; {condition}

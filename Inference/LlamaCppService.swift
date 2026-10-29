@@ -138,6 +138,8 @@ private actor LlamaWorker {
                 if let task = request.aggressiveTask {
                     if task.repair == nil {
                         let draft=try AggressiveDraft.decodeRetainingSource(output.text)
+                        _ = try PassageValidator.validate(draft.english, requestedWords: request.wordCount, genre: request.genre)
+                        try PassageNoveltyValidator.validate(draft.english, previous: request.previousPassages)
                         clean=String(decoding:try JSONEncoder().encode(draft),as:UTF8.self)
                     }
                     else { _ = try JSONDecoder().decode([AggressiveRepairTarget].self,from:Data(output.text.utf8)); clean=output.text.trimmingCharacters(in:.whitespacesAndNewlines) }

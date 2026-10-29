@@ -1,6 +1,17 @@
 import Foundation
 
-public enum CEFRLevel: String, Codable, CaseIterable, Sendable { case b2 = "B2", c1 = "C1" }
+/// Stored under the original level field to preserve existing readings and preferences.
+/// Nichijou is an everyday-language register, not a CEFR certification.
+public enum CEFRLevel: String, Codable, CaseIterable, Sendable {
+    case b2 = "B2", c1 = "C1", nichijou = "Nichijou"
+    public var instruction: String {
+        switch self {
+        case .b2: "Use natural CEFR B2 English with varied, accessible vocabulary. "
+        case .c1: "Use natural CEFR C1 English with precise vocabulary and varied sentence structures. "
+        case .nichijou: "Use everyday English people actually use: mix very common words with useful intermediate expressions, contractions, phrasal verbs, requests, reactions and practical details. Avoid textbook speeches and academic jargon. Even a specialist topic must become an ordinary real-life situation. Nichijou means everyday life, not a Japanese-language text. "
+        }
+    }
+}
 public enum ReplacementDensity: String, Codable, CaseIterable, Sendable {
     case low, medium, high, psycho
     public var target: Double { switch self { case .low: 0.1; case .medium: 0.2; case .high: 0.3; case .psycho: 0.5 } }
@@ -81,6 +92,7 @@ public struct AppSettings: Codable, Sendable, Equatable {
     public var practiceDomains: Set<PracticeDomain> = [.structure, .content, .actions]
     public var aggressiveLanguageAssignments: [String:String] = [:]
     public var generationLevel: CEFRLevel = .c1
+    public var generationTopic: String = "Random"
     public var defaultWordCount: Int = 110
     public var enabledLanguages: [String] = ["de", "ru"]
     public var languageWeights: [String: Double] = ["de": 0.5, "ru": 0.5]
@@ -94,7 +106,7 @@ public struct AppSettings: Codable, Sendable, Equatable {
     public init() {}
     private enum CodingKeys: String, CodingKey {
         case writingGenre, replacementMode, practiceDomains, aggressiveLanguageAssignments
-        case generationLevel, defaultWordCount, enabledLanguages, languageWeights, replacementDensity,
+        case generationLevel, generationTopic, defaultWordCount, enabledLanguages, languageWeights, replacementDensity,
              languageFrequencies, dailyReviewTarget, desiredRetention, preferredTopics
     }
     public init(from decoder: any Decoder) throws {
@@ -104,6 +116,7 @@ public struct AppSettings: Codable, Sendable, Equatable {
         practiceDomains = try c.decodeIfPresent(Set<PracticeDomain>.self, forKey: .practiceDomains) ?? [.structure, .content, .actions]
         aggressiveLanguageAssignments = try c.decodeIfPresent([String:String].self, forKey:.aggressiveLanguageAssignments) ?? [:]
         generationLevel = try c.decodeIfPresent(CEFRLevel.self, forKey: .generationLevel) ?? .c1
+        generationTopic = try c.decodeIfPresent(String.self, forKey: .generationTopic) ?? "Random"
         defaultWordCount = try c.decodeIfPresent(Int.self, forKey: .defaultWordCount) ?? 110
         enabledLanguages = try c.decodeIfPresent([String].self, forKey: .enabledLanguages) ?? ["de", "ru"]
         languageWeights = try c.decodeIfPresent([String: Double].self, forKey: .languageWeights) ?? ["de": 0.5, "ru": 0.5]
@@ -136,7 +149,8 @@ public struct AppSettings: Codable, Sendable, Equatable {
         return effectiveFrequencies.filter { $0.value > 0 }
     }
     public func validate() throws {
-        guard (90...150).contains(defaultWordCount), (1...500).contains(dailyReviewTarget),
+        guard !generationTopic.isEmpty, generationTopic.count <= 100, !generationTopic.contains("<|"),
+              (90...150).contains(defaultWordCount), (1...500).contains(dailyReviewTarget),
               desiredRetention.isFinite, (0.7...0.97).contains(desiredRetention),
               Set(enabledLanguages).count == enabledLanguages.count,
               enabledLanguages.allSatisfy({ (2...3).contains($0.count)

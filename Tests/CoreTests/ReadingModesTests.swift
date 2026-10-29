@@ -23,7 +23,10 @@ private var packsURL: URL { URL(fileURLWithPath: #filePath).deletingLastPathComp
     #expect(throws: GenerationError.self) { try PassageValidator.validate(poem, requestedWords: 110, genre: .story) }
     #expect(throws: GenerationError.self) { try PassageValidator.validate(poem.replacingOccurrences(of: "\n", with: " "), requestedWords: 110, genre: .poem) }
     let dialogue = (0..<8).map { "\($0.isMultiple(of: 2) ? "Maya" : "Ali"): We can repair the chair together before the visitor returns tonight." }.joined(separator: "\n")
-    for genre in [WritingGenre.dialogue, .play] { #expect(try PassageValidator.validate(dialogue, requestedWords: 110, genre: genre) == dialogue) }
+    #expect(try PassageValidator.validate(dialogue, requestedWords: 110, genre: .dialogue) == dialogue)
+    let play = "(They stand beside a broken chair.)\n" + dialogue
+    #expect(try PassageValidator.validate(play, requestedWords: 110, genre: .play) == play)
+    #expect(throws: GenerationError.self) { try PassageValidator.validate(dialogue, requestedWords: 110, genre: .play) }
     #expect(throws: GenerationError.self) { try PassageValidator.validate(poem + ".", requestedWords: 110, genre: .dialogue) }
 }
 
@@ -120,4 +123,36 @@ private var packsURL: URL { URL(fileURLWithPath: #filePath).deletingLastPathComp
         metadata: ["writingGenre":"poem"], replacements: [span])
     #expect(try reading.vocabularyContext(for: span).english == "A decision waits beneath the stars")
     #expect(try reading.speechSegments(for: span).map(\.text).joined().trimmingCharacters(in: .whitespacesAndNewlines) == "A решение waits beneath the stars")
+}
+
+@Test func nichijouIsEverydayEnglishAndPersistsWithoutChangingCEFRReadings() async throws {
+    var settings = AppSettings(); settings.generationLevel = .nichijou; settings.generationTopic = "Daily life"
+    let db = try DatabaseManager(); try await db.saveSettings(settings)
+    #expect(try await db.settings() == settings)
+    #expect(try JSONDecoder().decode(CEFRLevel.self, from: Data("\"C1\"".utf8)) == .c1)
+    for genre in WritingGenre.allCases {
+        let request = GenerationRequest(topic: "Daily life", level: .nichijou, seed: 45, genre: genre)
+        #expect(request.prompt.contains("everyday English"))
+        #expect(!request.prompt.contains("CEFR Nichijou"))
+        var aggressive = request; settings.replacementMode = .aggressive
+        aggressive.aggressiveTask = try AggressiveModelTask(settings: settings)
+        #expect(aggressive.prompt.contains("everyday English"))
+        if [.dialogue, .play, .poem].contains(genre) {
+            #expect(aggressive.outputGrammar!.contains(#""\"english\":" ws english"#))
+            #expect(aggressive.outputGrammar!.contains(#""\\n""#))
+        }
+    }
+}
+
+@Test func conversationalShortTurnsAndPunctuationSurviveValidation() throws {
+    let text = "Alex: Hey, is this seat taken?\nSam: No, go ahead!\nAlex: Thanks. I'm waiting for the 8:30 bus.\nSam: Me too. Is it usually this late?\nAlex: Only when it rains. Want some coffee?\nSam: I'd love some, thanks!"
+    #expect(try PassageValidator.validate(text, requestedWords: 110, genre: .dialogue) == text)
+    #expect(throws: GenerationError.self) { try PassageValidator.validate("Alex: Hello!\nSam: Hi!", requestedWords: 110, genre: .dialogue) }
+    let repeated = Array(repeating: "Alex: Hello!", count: 6).joined(separator: "\n")
+    #expect(throws: GenerationError.self) { try PassageValidator.validate(repeated, requestedWords: 110, genre: .dialogue) }
+}
+
+@Test func embeddedSpeakerChangesAreNotAcceptedAsCleanDialogue() throws {
+    let text = "Alex: Hello! Sam: Hello there!\nSam: How are you?\nAlex: Fine, thanks!\nSam: Want a coffee?\nAlex: Yes, please!\nSam: Here you go!"
+    #expect(throws: GenerationError.self) { try PassageValidator.validate(text, requestedWords: 110, genre: .dialogue) }
 }

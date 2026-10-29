@@ -22,6 +22,7 @@ private struct Run: Codable {
             print("Usage: swift run model-smoke /absolute/model.gguf [--suite | --session-check] [--output /absolute/report.json]")
             return
         }
+        if arguments.contains("--format-check") { try await checkFormats(path: path, arguments: arguments); return }
         if arguments.contains("--aggressive-model-check") { try await checkAggressiveModel(path:path,arguments:arguments); return }
         if arguments.contains("--aggressive-check") {
             try await checkAggressive(path:path,arguments:arguments)

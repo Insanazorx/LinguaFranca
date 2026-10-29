@@ -77,8 +77,9 @@ def main():
     if args.checksums:assert sha(latin/'etymology.sqlite')==latin_meta['sha256']
     with sqlite3.connect(f"file:{latin/'etymology.sqlite'}?mode=ro",uri=True) as db:
         assert db.execute('PRAGMA quick_check').fetchone()[0]=='ok'
+        assert latin_meta['schemaVersion']==2
         assert db.execute('SELECT count(*) FROM family').fetchone()[0]==latin_meta['families']>100
-        assert db.execute("SELECT count(*) FROM (SELECT familyID FROM member GROUP BY familyID HAVING count(DISTINCT language)<>3)").fetchone()[0]==0
+        assert db.execute("SELECT count(*) FROM (SELECT familyID FROM member GROUP BY familyID HAVING count(DISTINCT language)<2)").fetchone()[0]==0
     english=packs/'_english'
     meta=json.loads((english/'model-manifest.json').read_text())
     for name,digest in meta['files'].items():
@@ -104,7 +105,11 @@ def main():
         assert not info.get('LSRequiresIPhoneOS',False), 'This must be a native Mac application'
         build_version=subprocess.check_output(['xcrun','vtool','-show-build',str(binary)],text=True)
         assert 'platform MACOS' in build_version and 'MACCATALYST' not in build_version, 'Expected a native macOS executable'
-        assert (resources/'LinguaFranca.icns').is_file(), 'Mac app icon missing'
+        assert info.get('CFBundleIconFile')=='LinguaFranca.icns', 'Mac icon is not declared in Info.plist'
+        icon=resources/info['CFBundleIconFile']
+        assert icon.is_file(), 'Mac app icon missing'
+        icon_data=icon.read_bytes()
+        assert icon_data[:4]==b'icns' and int.from_bytes(icon_data[4:8],'big')==len(icon_data), 'Invalid Mac icon container'
         entitlements=plistlib.loads(subprocess.check_output(['codesign','-d','--entitlements',':-',str(app)],stderr=subprocess.DEVNULL))
         assert entitlements.get('com.apple.security.app-sandbox'), 'Mac sandbox must remain enabled'
         assert not entitlements.get('com.apple.security.cs.disable-library-validation'), 'Keep hardened library validation enabled'
