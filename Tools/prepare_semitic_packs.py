@@ -173,11 +173,14 @@ def build(source, destination, code, spec, corpus=None):
         labels=consonant_labels(root,code)
         search=key(root+' '+native_root+' '+info['meaning']+' '+info['roman']+' '+derivatives+' '+labels+' '+labels.replace('-','')+' '+labels.replace('-',' '))
         roman=info['roman'] or (labels+' (consonant letters)' if labels else '')
-        db.execute('INSERT INTO semRoot VALUES(?,?,?,?,?,?,?,?)',(root_id,code,native_root,search,roman,info['meaning'],info['source'],info['etymology']))
+        from prepare_semitic_families import search_key
+        db.execute('INSERT INTO semRoot VALUES(?,?,?,?,?,?,?,?)',(root_id,code,native_root,search+' '+search_key(search),roman,info['meaning'],info['source'],info['etymology']))
     db.execute('DELETE FROM semRelationship WHERE rootID NOT IN (SELECT id FROM semRoot)')
     if corpus:
         from prepare_syriac_corpus import import_corpus
         import_corpus(db,corpus[0],corpus[1])
+    from prepare_semitic_families import apply_reviewed_links
+    apply_reviewed_links(db,code)
     db.commit(); db.execute('VACUUM')
     counts={t:db.execute('SELECT count(*) FROM '+t).fetchone()[0] for t in ('entry','semRoot','semLexeme','semForm','semExample')}
     assert db.execute('PRAGMA quick_check').fetchone()[0]=='ok'
@@ -200,6 +203,8 @@ def main():
         corpus=lock['semiticData'].get('corpus')
         counts[spec['languageCode']]=build(path,a.output,spec['languageCode'],spec,
             (a.sources/corpus['filename'],corpus['revision']) if corpus and spec['languageCode']=='syc' else None)
+    from prepare_semitic_families import build as build_families
+    print(json.dumps(build_families(a.output,a.output/'semitic-families.sqlite'),indent=2))
     (a.output/'semitic-coverage.json').write_text(json.dumps(counts,indent=2)+'\n')
     print(json.dumps(counts,indent=2))
 

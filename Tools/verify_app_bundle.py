@@ -61,6 +61,14 @@ def main():
                 assert db.execute('SELECT count(*) FROM lexicalForm').fetchone()[0]>1000
         if args.checksums:assert sha(database)==meta['licenseMetadata']['databaseSHA256']
     assert {'de','ru','ar','he','syc','la','es','fr'}.issubset(languages), 'Bundled target languages missing'
+    families=packs/'semitic-families.sqlite'
+    family_meta=json.loads((packs/'semitic-families.json').read_text())
+    assert family_meta['schemaVersion']==1
+    if args.checksums:assert sha(families)==family_meta['sha256'], 'Semitic comparisons checksum mismatch'
+    with sqlite3.connect(f'file:{families}?mode=ro',uri=True) as db:
+        assert db.execute('PRAGMA quick_check').fetchone()[0]=='ok'
+        assert db.execute('SELECT count(*) FROM family').fetchone()[0]==family_meta['families']>100
+        assert db.execute('SELECT count(*) FROM (SELECT familyID FROM member GROUP BY familyID HAVING count(DISTINCT language)<2)').fetchone()[0]==0
     assert (resources/'Fonts/NotoSansSyriac-Regular.ttf').stat().st_size==233516, 'Syriac font missing'
     search=packs/'_dictionary/search.sqlite'
     search_meta=json.loads((packs/'_dictionary/manifest.json').read_text())

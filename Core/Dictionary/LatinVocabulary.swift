@@ -2,7 +2,7 @@ import Foundation
 import GRDB
 
 public enum LatinVocabularyPair: String, CaseIterable, Identifiable, Sendable {
-    case all, latinSpanish, latinFrench, spanishFrench
+    case all, latinSpanish, latinFrench, spanishFrench, triple
     public var id: Self { self }
     public var title: String {
         switch self {
@@ -10,6 +10,7 @@ public enum LatinVocabularyPair: String, CaseIterable, Identifiable, Sendable {
         case .latinSpanish: "Latin · Spanish"
         case .latinFrench: "Latin · French"
         case .spanishFrench: "Spanish · French"
+        case .triple: "Latin · Spanish · French"
         }
     }
     public var languages: [String] {
@@ -18,6 +19,7 @@ public enum LatinVocabularyPair: String, CaseIterable, Identifiable, Sendable {
         case .latinSpanish: ["la", "es"]
         case .latinFrench: ["la", "fr"]
         case .spanishFrench: ["es", "fr"]
+        case .triple: ["la", "es", "fr"]
         }
     }
 }
@@ -55,7 +57,7 @@ public struct LatinVocabularySummary: Sendable {
     public let families, nativeWords: Int
 }
 public actor LatinVocabulary {
-    private let database: DatabaseQueue
+    let database: DatabaseQueue
     public init(databaseURL: URL) throws {
         var config = Configuration(); config.readonly = true
         config.prepareDatabase { db in
@@ -94,7 +96,7 @@ public actor LatinVocabulary {
     }
     /// Filter native senses before grouping. A family must still contain two
     /// qualifying languages; the requested pair must qualify in this same type.
-    private static func filteredFamilies(query: String, pair: LatinVocabularyPair, wordType: LatinVocabularyWordType) -> (sql: String, arguments: StatementArguments) {
+    static func filteredFamilies(query: String, pair: LatinVocabularyPair, wordType: LatinVocabularyWordType) -> (sql: String, arguments: StatementArguments) {
         var args: StatementArguments = []
         let predicate: String
         if wordType == .all { predicate = "1" }

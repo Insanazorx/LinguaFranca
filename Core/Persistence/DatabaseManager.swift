@@ -114,6 +114,17 @@ public actor DatabaseManager {
                 CREATE INDEX savedReading_updated ON savedReading(updatedAt DESC);
                 """)
         }
+        migrator.registerMigration("v6_catalog_practice") { db in
+            try db.execute(sql:"""
+                CREATE TABLE catalogCard(id TEXT PRIMARY KEY,source TEXT NOT NULL,familyID TEXT NOT NULL,questionJSON TEXT NOT NULL,cardJSON TEXT NOT NULL,dueAt REAL NOT NULL);
+                CREATE INDEX catalogCard_due ON catalogCard(source,dueAt);
+                CREATE TABLE catalogRound(id TEXT PRIMARY KEY,source TEXT NOT NULL,startedAt REAL NOT NULL,endedAt REAL,scoreJSON TEXT NOT NULL,points INTEGER NOT NULL,answers INTEGER NOT NULL,bestCombo INTEGER NOT NULL);
+                CREATE INDEX catalogRound_source ON catalogRound(source,startedAt);
+                CREATE TABLE catalogRoundCard(sessionID TEXT NOT NULL REFERENCES catalogRound(id),questionID TEXT NOT NULL REFERENCES catalogCard(id),PRIMARY KEY(sessionID,questionID));
+                CREATE TABLE catalogReview(id TEXT PRIMARY KEY,sessionID TEXT NOT NULL REFERENCES catalogRound(id),questionID TEXT NOT NULL REFERENCES catalogCard(id),reviewedAt REAL NOT NULL,rating INTEGER NOT NULL,priorCardJSON TEXT NOT NULL,resultJSON TEXT NOT NULL);
+                CREATE INDEX catalogReview_session ON catalogReview(sessionID,reviewedAt);
+                """)
+        }
         return migrator
     }
 

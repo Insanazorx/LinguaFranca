@@ -14,6 +14,14 @@ from prepare_semitic_packs import roots,root_letters,key,build
 from prepare_syriac_corpus import feature
 
 class SemiticDataTests(unittest.TestCase):
+    def test_broad_header_maintenance_categories_do_not_drop_real_words(self):
+        record={'word':'كتب','lang_code':'ar','pos':'verb','etymology_templates':[{'name':'ar-rootbox','args':{'1':'ك ت ب'}}], 'senses':[{'glosses':['to write'],'categories':[{'name':'Arabic entries with incorrect language header'}]}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);source=root/'sample.jsonl';source.write_text(json.dumps(record)+'\n')
+            counts=build(source,root,'ar',{'extractionDate':'fixture','url':'https://example.invalid/source','sha256':'fixture'})
+            self.assertEqual(counts['semLexeme'],1)
+            self.assertEqual(counts['semRoot'],1)
+
     def test_roots_require_explicit_evidence_in_the_right_language(self):
         self.assertEqual(roots({'word':'كتب','pos':'verb'},'ar'),[])
         record={'word':'كتب','pos':'verb','etymology_templates':[{'name':'ar-rootbox','args':{'1':'ك ت ب'}}]}

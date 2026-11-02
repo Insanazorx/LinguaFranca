@@ -9,7 +9,7 @@ from bootstrap import run
 
 def prepare_semitic(bootstrap):
     spec=bootstrap.lock['semiticData']
-    scripts=['Tools/prepare_semitic_packs.py','Tools/prepare_syriac_corpus.py','Tools/semitic_bootstrap.py']
+    scripts=['Tools/prepare_semitic_packs.py','Tools/prepare_syriac_corpus.py','Tools/semitic_bootstrap.py','Tools/prepare_semitic_families.py','Tools/Data/semitic_learning.json']
     fingerprint=bootstrap.fingerprint(spec,scripts)
     with (bootstrap.cache/'semitic-bootstrap.lock').open('w') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)

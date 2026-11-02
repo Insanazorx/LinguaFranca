@@ -21,7 +21,7 @@ private func word(_ sense: String = "financial") -> VocabularyDraft {
     #expect(try await second.settings() == settings)
     let queue = try DatabaseQueue(path: url.path)
     let migrations = try await queue.read { try String.fetchAll($0, sql: "SELECT identifier FROM grdb_migrations") }
-    #expect(migrations == ["v1_local_foundation", "v2_ephemeral_reading_sessions", "v3_semitic_vocabulary_references", "v4_fsrs6_reviews", "v5_opt_in_saved_readings"])
+    #expect(migrations == ["v1_local_foundation", "v2_ephemeral_reading_sessions", "v3_semitic_vocabulary_references", "v4_fsrs6_reviews", "v5_opt_in_saved_readings", "v6_catalog_practice"])
     #expect(try await queue.read { try Row.fetchAll($0, sql: "PRAGMA foreign_key_check").isEmpty })
 }
 

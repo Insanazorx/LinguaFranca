@@ -4,6 +4,7 @@ import GRDB
 /// Indexed read-only views over the same versioned language packs used by replacement.
 public actor SemiticLexicon: SemiticMorphologyProviding {
     private let databases: [String:DatabaseQueue]
+    public nonisolated let families: SemiticFamilies?
     public init(directory: URL) throws {
         var result: [String:DatabaseQueue] = [:]
         for language in SemiticLanguage.allCases {
@@ -16,19 +17,31 @@ public actor SemiticLexicon: SemiticMorphologyProviding {
             result[language.rawValue] = try DatabaseQueue(path:directory.appendingPathComponent(metadata.lexiconDatabaseName).path,configuration:configuration)
         }
         databases = result
+        let familyURL = directory.appendingPathComponent("semitic-families.sqlite")
+        families = FileManager.default.fileExists(atPath:familyURL.path) ? try SemiticFamilies(databaseURL:familyURL) : nil
     }
     public func availableLanguages() -> [String] { databases.keys.sorted() }
+    func contextRootIDs(languages: [String]) throws -> [String] {
+        var ids:[String]=[]
+        for (code,database) in databases.sorted(by:{$0.key<$1.key}) where languages.isEmpty || languages.contains(code) {
+            ids += try database.read {db in
+                try String.fetchAll(db,sql:"SELECT DISTINCT rootID FROM semLexeme WHERE rootID IS NOT NULL AND pos='noun' AND lower(trim(CASE WHEN instr(gloss,';')>0 THEN substr(gloss,1,instr(gloss,';')-1) ELSE gloss END)) IN (\(CatalogContexts.concepts.map{_ in "?"}.joined(separator:",")))",arguments:StatementArguments(CatalogContexts.concepts))
+            }
+        }
+        return ids
+    }
     public func roots(language: String? = nil, search: String = "", offset: Int = 0, limit: Int = 50) throws -> [SemiticRoot] {
         let offset = max(0,min(offset,20_000)), limit = max(1,min(limit,100)), query = SemiticUnicode.key(search.trimmingCharacters(in:.whitespacesAndNewlines))
-        let compact = query.filter(\.isLetter)
+        let folded = SemiticRootSearch.key(query)
+        let compact = folded.isEmpty && !query.isEmpty ? query : folded
         var result: [SemiticRoot] = []
         for code in databases.keys.sorted() where language == nil || code == language {
             result += try databases[code]!.read { db in
                 try Row.fetchAll(db,sql:"""
                     SELECT r.*,(SELECT count(*) FROM semLexeme l WHERE l.rootID=r.id) AS lexemeCount
-                    FROM semRoot r WHERE instr(r.searchKey,?)>0 OR replace(r.native,' ','')=?
+                    FROM semRoot r WHERE instr(r.searchKey,?)>0 OR replace(r.native,' ','')=? OR instr(r.searchKey,?)>0
                     ORDER BY r.native,r.id LIMIT ?
-                    """,arguments:[query,compact,offset+limit]).map(Self.root)
+                    """,arguments:[query,compact,compact,offset+limit]).map(Self.root)
             }
         }
         return Array(result.sorted { ($0.languageCode,$0.native,$0.id) < ($1.languageCode,$1.native,$1.id) }.dropFirst(offset).prefix(limit))

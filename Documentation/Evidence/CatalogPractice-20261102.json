@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-02",
+  "device": "physical iPhone 13",
+  "features": [
+    "Semitic pair/triple comparisons",
+    "separator-insensitive transliterated root search",
+    "Latin and Semitic scored catalog practice"
+  ],
+  "catalog": {
+    "families": 906,
+    "tripleFamilies": 221,
+    "matchingConsonantFamilies": 840,
+    "recordedHistoricalFamilies": 60,
+    "reviewedComparisons": 6
+  },
+  "tests": {
+    "swiftCorePassed": 124,
+    "swiftInferencePassed": 9,
+    "pythonPassed": 28
+  },
+  "artifacts": {
+    "signedMacRelease": "passed",
+    "signedPhysicalIOSRelease": "passed",
+    "offlineAssetChecksums": "passed",
+    "strictSignatureVerification": "passed",
+    "packagedArabicForms": 1497183
+  },
+  "phone": {
+    "installation": "passed",
+    "launch": "passed",
+    "databaseQuickCheck": "ok",
+    "foreignKeyCheck": "ok",
+    "migration": "v6_catalog_practice",
+    "allOriginalRowsPreserved": true,
+    "vocabularyItems": 165,
+    "decks": 2,
+    "srsCards": 165,
+    "reviewLogs": 61,
+    "savedReadings": 14,
+    "catalogCardsInitially": 0
+  },
+  "interactiveValidation": "Separate signed Mac preview with its own library: k l b search, three-language detail, Syriac word in English context, reveal, dictionary return to same card, right drag scored 15, second recall reached 25/2x, left drag reset combo to 0, continued selection and saved statistics. Separate Latin set: 19 words, 10-point review, independent statistics.",
+  "notClaimed": [
+    "Physical-iPhone gesture acceptance",
+    "Fresh-install airplane-mode acceptance",
+    "New inference or thermal/battery benchmarks",
+    "Verified contemporary spoken usage for every root"
+  ],
+  "limits": "Modern usage notes are reviewed for six families. Other families retain independent source meanings and explicit unverified modern-usage labels. Matching consonants alone are not cognacy evidence."
+}

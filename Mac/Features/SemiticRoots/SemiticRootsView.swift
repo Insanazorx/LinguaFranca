@@ -12,7 +12,7 @@ struct SemiticNativeText: View {
     }
 }
 
-struct SemiticRootsView: View {
+struct SemiticRootInventoryView: View {
     var embedded=false
     init(embedded:Bool=false) {self.embedded=embedded}
     @Environment(AppEnvironment.self) private var model

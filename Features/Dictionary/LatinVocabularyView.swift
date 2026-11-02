@@ -30,6 +30,7 @@ struct LatinVocabularyView: View {
                         .font(.caption).foregroundStyle(Theme.forest)
                 }
             }
+            Section { CatalogPracticeLauncher(source:.latin,latinPair:pair,wordType:wordType,query:query) }
             ForEach(families) { family in
                 NavigationLink { LatinVocabularyFamilyView(family: family, wordType: wordType) } label: { LatinFamilyRow(family: family, wordType: wordType) }
             }

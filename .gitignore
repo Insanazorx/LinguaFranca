@@ -14,6 +14,7 @@
 /Resources/LanguagePacks/coverage.json
 /Resources/LanguagePacks/en-???.json
 /Resources/LanguagePacks/semitic-coverage.json
+/Resources/LanguagePacks/semitic-families.json
 /Resources/LanguagePacks/additional-coverage.json
 *.lfpack/
 /Resources/Fonts/*.ttf

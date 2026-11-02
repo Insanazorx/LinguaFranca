@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-02",
+  "license": "Original learning notes; underlying lexical evidence: Wiktionary CC BY-SA 4.0 and the bundled ETCBC corpus CC BY-NC 4.0.",
+  "families": [
+    {
+      "label": "k-t-b",
+      "roots": {"ar": "كتب", "he": "כתב", "syc": "ܟܬܒ"},
+      "summary": "Writing, written messages and books",
+      "contrast": "The writing family is shared, but the everyday word for book differs: Arabic kitāb and Syriac kṯāḇā belong here; Hebrew sefer belongs to s-p-r. A shared concept does not require a shared root.",
+      "related": ["s-p-r / s-f-r"],
+      "usage": {
+        "ar": "Current standard Arabic: kataba means wrote; kitāb is a book. Spoken dialects have their own pronunciation and inflection.",
+        "he": "Modern Hebrew: katav means wrote; mikhtav is a written letter. The ordinary noun book is sefer, from another root.",
+        "syc": "Classical Syriac: writing and books. A modern Assyrian Neo-Aramaic book continuation is documented on the linked entry; its pronunciation is not the Classical Syriac pronunciation."
+      },
+      "sources": ["https://en.wiktionary.org/wiki/كتب", "https://en.wiktionary.org/wiki/כתב", "https://en.wiktionary.org/wiki/ܟܬܒܐ", "https://en.wiktionary.org/wiki/ספר"],
+      "links": [
+        {"language":"ar","word":"كَتَبَ","pos":"verb","gloss":"to write"},
+        {"language":"he","word":"כָּתַב","pos":"verb","gloss":"to write"},
+        {"language":"syc","word":"ܟܬܒ","pos":"verb","gloss":"to write"}
+      ]
+    },
+    {
+      "label": "ʿ-b-d",
+      "roots": {"ar":"عبد","he":"עבד","syc":"ܥܒܕ"},
+      "summary": "Service, work and doing — meanings diverge",
+      "contrast": "Do not translate this root with one universal English word. Arabic ʿabada commonly concerns worship or service; Hebrew avad is everyday work or functioning; Classical Syriac ʿbad includes doing and making. Arabic everyday work is commonly expressed by ʿ-m-l instead.",
+      "related": ["ʿ-m-l"],
+      "usage": {
+        "ar":"Current standard Arabic: ʿibāda is worship, maʿbad a place of worship. The root is not a general replacement for every English use of work.",
+        "he":"Modern Hebrew: avad means worked and can describe a device functioning; avoda means work or a job. Other constructions have additional meanings.",
+        "syc":"Classical Syriac: do, make, work and service. Assyrian Neo-Aramaic ʿāḇēḏ still means do or make; this is a separately labelled modern variety, not a Classical conjugation."
+      },
+      "sources":["https://en.wiktionary.org/wiki/عبد","https://en.wiktionary.org/wiki/עבד","https://en.wiktionary.org/wiki/ܥܒܕ"],
+      "links":[
+        {"language":"ar","word":"عَبَدَ","pos":"verb","gloss":"to worship"},
+        {"language":"syc","word":"ܥܒܕ","pos":"verb","gloss":"to do, to make, to work"}
+      ]
+    },
+    {
+      "label":"s-p-r / s-f-r",
+      "roots":{"ar":"سفر","he":"ספר","syc":"ܣܦܪ"},
+      "summary":"Counting, telling, books — and Arabic travel",
+      "contrast":"These consonant correspondences do not make every sense identical. Hebrew safar is count, siper tell, sefer book; the haircut/barber branch is a separate sense history. Syriac has writing, books and scribes. Arabic safar is travel; sifr can mean a book or volume. Arabic kitāb comes from k-t-b. Keep the independent senses apart.",
+      "related":["k-t-b"],
+      "usage":{
+        "ar":"Current standard Arabic: sāfara means travel. Book/volume sifr is a literary term; ordinary kitāb belongs to k-t-b.",
+        "he":"Modern Hebrew: sefer book, safar counted, siper told. Identical unpointed letters may also represent a barber; vowels and context matter.",
+        "syc":"Classical Syriac records books, writing and scribes, alongside distinct homographs. No family-wide claim about modern spoken usage is verified here."
+      },
+      "sources":["https://en.wiktionary.org/wiki/سفر","https://en.wiktionary.org/wiki/ספר","https://en.wiktionary.org/wiki/ܣܦܪܐ"],
+      "links":[
+        {"language":"ar","word":"سَافَرَ","pos":"verb","gloss":"to travel"},
+        {"language":"he","word":"סֵפֶר","pos":"noun","gloss":"book"},
+        {"language":"syc","word":"ܣܦܪܐ","pos":"noun","gloss":"writings; document"}
+      ]
+    },
+    {
+      "label":"ṣ-l-ḥ",
+      "roots":{"ar":"صلح","he":"צלח","syc":"ܨܠܚ"},
+      "summary":"Fitness, repair, success and prospering",
+      "contrast":"Arabic ṣ-l-ḥ includes being sound or suitable and repairing/reforming. Hebrew ts-l-ḥ includes crossing and succeeding, with hitsliakh meaning succeeded. Syriac ṣlaḥ means prosper or succeed. This is ṣ/ts and ḥ/kh, not plain s and h; ASCII search accepts s l h as a convenience, not a historical identity rule.",
+      "related":[],
+      "usage":{
+        "ar":"Current standard Arabic: aṣlaḥa means repaired or improved; ṣulḥ is reconciliation. These senses should not be substituted for Hebrew succeed without context.",
+        "he":"Modern Hebrew: hitsliakh succeeded, hatslakha success. The paʿal verb also has a crossing/traversing sense.",
+        "syc":"Classical Syriac: prosper or succeed. Modern spoken continuation is not verified in this pack."
+      },
+      "sources":["https://en.wiktionary.org/wiki/صلح","https://en.wiktionary.org/wiki/צלח","https://en.wiktionary.org/wiki/ܨܠܚ"],
+      "links":[{"language":"syc","word":"ܨܠܚ","pos":"verb","gloss":"to prosper, to succeed"}]
+    },
+    {
+      "label":"k-l-b",
+      "excludedLinks":[{"language":"ar","word":"كُعْلُبَة","pos":"noun","gloss":"An ant of the genus Atta."}],
+      "roots":{"ar":"كلب","he":"כלב","syc":"ܟܠܒ"},
+      "summary":"Dog and related vocabulary",
+      "contrast":"Arabic kalb, Hebrew kelev and Syriac kalbā share the dog word. A family can also contain extended meanings and homographs; those are not synonyms for dog. The native words and their independent dictionary senses appear below.",
+      "related":[],
+      "usage":{
+        "ar":"Kalb is the ordinary standard Arabic dog word. Some figurative uses are insults; the animal sense is the learning default.",
+        "he":"Kelev is the ordinary Modern Hebrew dog word; kalba is the feminine form. Use context to separate neutral animal references from insults.",
+        "syc":"Classical kalbā means dog. The linked source also documents dog in Assyrian Neo-Aramaic and Turoyo; their vowels and pronunciation differ by variety."
+      },
+      "sources":["https://en.wiktionary.org/wiki/كلب","https://en.wiktionary.org/wiki/כלב","https://en.wiktionary.org/wiki/ܟܠܒܐ"],
+      "links":[
+        {"language":"ar","word":"كَلْب","pos":"noun","gloss":"dog"},
+        {"language":"he","word":"כֶּלֶב","pos":"noun","gloss":"dog"},
+        {"language":"syc","word":"ܟܠܒܐ","pos":"noun","gloss":"dog"},
+        {"language":"syc","word":"ܟܰܠܒܳܐ","pos":"noun","gloss":"dog, hound"}
+      ]
+    },
+    {
+      "label":"sh-l-m / s-l-m",
+      "roots":{"ar":"سلم","he":"שלם","syc":"ܫܠܡ"},
+      "summary":"Peace, completeness and well-being",
+      "contrast":"Arabic salām, Hebrew shalom and Syriac shlāma illustrate a documented s/sh correspondence. The family includes completeness and well-being, but its other derived words keep their own meanings.",
+      "related":[],
+      "usage":{
+        "ar":"Salām is peace and occurs in greeting expressions in standard Arabic and spoken varieties.",
+        "he":"Shalom is peace and is used as a greeting in Modern Hebrew.",
+        "syc":"Shlāma is peace and well-being in Classical Syriac. Contemporary liturgical use does not by itself establish a particular modern spoken dialect."
+      },
+      "sources":["https://en.wiktionary.org/wiki/سلام","https://en.wiktionary.org/wiki/שלום","https://en.wiktionary.org/wiki/ܫܠܡܐ"],
+      "links":[]
+    }
+  ]
+}

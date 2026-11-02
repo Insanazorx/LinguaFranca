@@ -30,3 +30,7 @@ are the existing replacement engine/adapter interfaces; no `PolyglotEngine` exis
 The selected user varieties are Modern Standard Arabic, Modern Hebrew and Classical
 Syriac. Biblical Hebrew data is not used as a substitute for Modern Hebrew paradigms.
 ETCBC's main Syriac corpus is CC BY-NC 4.0 and is bundled with the user's explicit authorization for personal/noncommercial use. It is pinned to ded39ecaa145d3a6b0ec83fe24d0e00699cddb19. Kaikki/Wiktionary data supplies additional licensed lexical records. Existing cards/history survive the additive migrations. Native Syriac passages use original corpus frames; Aggressive mixed passages select Syriac expressions only from attested corpus entries, retaining their lexical references. No unrestricted Syriac LLM prose is used.
+
+## Comparative learning and practice
+
+The 2 November 2026 update adds pair/triple root comparisons, reviewed usage notes, separator-insensitive Latin-letter search and scored FSRS practice for both word-family catalogs. See [SemiticFamiliesAndCatalogPractice.md](SemiticFamiliesAndCatalogPractice.md) for evidence rules, coverage, files, validation and limits.
